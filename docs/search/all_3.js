@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['matrix_20statistics_20for_20tatami_0',['Matrix statistics for tatami',['../index.html',1,'']]],
-  ['medians_2ehpp_1',['medians.hpp',['../medians_8hpp.html',1,'']]]
+  ['grouped_5fmedians_2ehpp_0',['grouped_medians.hpp',['../grouped__medians_8hpp.html',1,'']]],
+  ['grouped_5fsums_2ehpp_1',['grouped_sums.hpp',['../grouped__sums_8hpp.html',1,'']]]
 ];
