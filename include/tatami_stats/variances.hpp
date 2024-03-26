@@ -24,6 +24,50 @@ namespace tatami_stats {
 namespace variance {
 
 /**
+ * Add the next value in Welford's method for computing the variance.
+ * This function should be called multiple times to obtain the mean and summed of squared differences.
+ *
+ * @tparam Output_ Type of the output data.
+ * @tparam Value_ Type of the input data.
+ * @tparam Index_ Type of the row/column index.
+ *
+ * @param mean Current value of the mean.
+ * This should be set to zero before the first call to this function.
+ * @param sumsq Current sum of squared differences from the mean.
+ * This should be set to zero before the first call to this function.
+ * @param val Value to be used in the variance calculation.
+ * @param count Number of values that have been used so far, including `val`
+ * (i.e., this should start at 1).
+ */
+template<typename Output_ = double, typename Value_, typename Index_ >
+void add_welford(Output_& mean, Output_& sumsq, Value_ value, Index_ count) {
+    Output_ delta = value - mean;
+    mean += delta / count;
+    sumsq += delta * (value - mean);
+}
+
+/**
+ * Add a number of zeros to Welford's method for computing the variance.
+ * This function is typically called once `add_welford()` has been run on all non-zero values in a sparse dataset.
+ *
+ * @tparam Output_ Type of the output data.
+ * @tparam Index_ Type of the row/column index.
+ *
+ * @param mean Current value of the mean.
+ * @param sumsq Current sum of squared differences from the mean.
+ * @param num_nonzero Number of non-zero values that have been processed,
+ * i.e., `count` in the final call to `add_welford()`.
+ * @param num_all Nominal length of the sparse dataset, including zeros;
+ * this should be no less than `num_nonzeros`.
+ */
+template<typename Output_ = double, typename Index_ >
+void add_welford_zeros(Output_& mean, Output_& sumsq, Index_ num_nonzero, Index_ num_all) {
+    auto ratio = static_cast<Output_>(num_nonzero) / static_cast<Output_>(num_all);
+    sumsq += mean * mean * ratio * (num_all - num_nonzero);
+    mean *= ratio;
+}
+
+/**
  * Compute the mean and variance from an array of values.
  * This is done using Welford's method for numerical stability (and consistency with `RunningDense`).
  *
@@ -45,18 +89,14 @@ std::pair<Output_, Output_> compute(const Value_* ptr, Index_ num) {
 
     if constexpr(skip_nan_) {
         for (Index_ i = 0; i < num; ++i, ++ptr) {
-            if (!std::isnan(*ptr)) {
-                ++count;
-                Output_ delta = *ptr - mean;
-                mean += delta / count;
-                var += delta * (*ptr - mean);
+            auto val = *ptr;
+            if (!std::isnan(val)) {
+                add_welford(mean, var, val, ++count);
             }
         }
     } else {
         for (Index_ i = 1; i <= num; ++i, ++ptr) {
-            Output_ delta = *ptr - mean;
-            mean += delta / i;
-            var += delta * (*ptr - mean);
+            add_welford(mean, var, *ptr, i);
         }
         count = num;
     }
@@ -96,33 +136,25 @@ std::pair<Output_, Output_> compute(const Value_* value, Index_ num_nonzero, Ind
 
     if constexpr(skip_nan_) {
         for (Index_ i = 0; i < num_nonzero; ++i, ++value) {
-            if (!std::isnan(*value)) {
-                ++count;
-                Output_ delta = *value - mean;
-                mean += delta / count;
-                var += delta * (*value - mean);
+            auto val = *value;
+            if (!std::isnan(val)) {
+                add_welford(mean, var, val, ++count);
             }
         }
 
         if (num_nonzero < num_all) {
             auto num_zero = num_all - num_nonzero;
-            auto ratio = static_cast<Output_>(count) / static_cast<Output_>(count + num_zero);
-            var += mean * mean * ratio * num_zero;
-            mean *= ratio;
+            add_welford_zeros(mean, var, count, count + num_zero);
             count += num_zero;
         }
 
     } else {
         for (Index_ i = 1; i <= num_nonzero; ++i, ++value) {
-            Output_ delta = *value - mean;
-            mean += delta / i;
-            var += delta * (*value - mean);
+            add_welford(mean, var, *value, i);
         }
 
         if (num_nonzero < num_all) {
-            auto ratio = static_cast<Output_>(num_nonzero) / static_cast<Output_>(num_all);
-            var += mean * mean * ratio * (num_all - num_nonzero);
-            mean *= ratio;
+            add_welford_zeros(mean, var, num_nonzero, num_all);
         }
 
         count = num_all;
@@ -172,23 +204,16 @@ struct RunningDense {
     void add(const Value_* ptr) {
         if constexpr(skip_nan_) {
             for (Index_ i = 0; i < num; ++i, ++ptr) {
-                if (!std::isnan(*ptr)) {
-                    auto& ct = count[i];
-                    ++ct;
-                    auto& curm = mean[i];
-                    Output_ delta = *ptr - curm;
-                    curm += delta / ct;
-                    variance[i] += delta * (*ptr - curm);
+                auto val = *ptr;
+                if (!std::isnan(val)) {
+                    add_welford(mean[i], variance[i], val, ++(count[i]));
                 }
             }
 
         } else {
             ++count;
             for (Index_ i = 0; i < num; ++i, ++ptr) {
-                auto& curm = mean[i];
-                Output_ delta = *ptr - curm;
-                curm += delta / count;
-                variance[i] += delta * (*ptr - curm);
+                add_welford(mean[i], variance[i], *ptr, count);
             }
         }
     }
@@ -237,15 +262,10 @@ private:
  * This does the same as its dense overload for sparse observed vectors.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
- * @tparam skip_zeros Whether non-structural zeros in `range.value` should be skipped.
- * If `false`, the output `nonzeros` instead contains the number of _structural_ non-zero values in each target vector,
- * which may be useful for informing further operations on the compressed sparse matrix structure.
- * Note that this choice has no effect on the computed means or variances, besides some differences due to numeric imprecision.
  * @tparam Output_ Type of the output data.
  * @tparam Index_ Type of the row/column indices.
- * @tparam Nonzero_ Type of the non-zero counts.
  */
-template<bool skip_nan_ = false, bool skip_zeros_ = true, typename Output_ = double, typename Index_ = int, typename Nonzero_ = int>
+template<bool skip_nan_ = false, typename Output_ = double, typename Index_ = int>
 struct RunningSparse {
     /**
      * @param num Number of target vectors.
@@ -253,14 +273,12 @@ struct RunningSparse {
      * This should be zeroed.
      * @param[out] variance Pointer to an output array of length `num`, containing the variances for each target vector.
      * This should be zeroed.
-     * @param[out] nonzero Pointer to an output array of length `num` containing the number of non-zeros for each target vector.
-     * This should be zeroed.
      * @param subtract Offset to subtract from each element of `index` before using it to index into `mean` and friends.
      * Only relevant if `mean` and friends hold statistics for a contiguous subset of target vectors,
      * e.g., during task allocation for parallelization.
      */
-    RunningSparse(Index_ num, Output_* mean, Output_* variance, Nonzero_* nonzero, Index_ subtract = 0) : 
-        num(num), mean(mean), variance(variance), nonzero(nonzero), subtract(subtract), nan(skip_nan_ ? num : 0) {}
+    RunningSparse(Index_ num, Output_* mean, Output_* variance, Index_ subtract = 0) : 
+        num(num), mean(mean), variance(variance), nonzero(num), subtract(subtract), nan(skip_nan_ ? num : 0) {}
 
     /**
      * Add the next observed vector to the variance calculation.
@@ -281,46 +299,15 @@ struct RunningSparse {
                     auto ri = index[i] - subtract;
                     ++nan[ri];
                 } else {
-                    if ([&]() {
-                        if constexpr(skip_zeros_) {
-                            return val != 0;
-                        } else {
-                            return true;
-                        }
-                    }()) {
-                        auto ri = index[i] - subtract;
-                        auto& curM = mean[ri];
-                        auto& curS = variance[ri];
-                        auto& curNZ = nonzero[ri];
-                        ++curNZ;
-
-                        Output_ delta = val - curM;
-                        curM += delta / curNZ;
-                        curS += delta * (val - curM);
-                    }
+                    auto ri = index[i] - subtract;
+                    add_welford(mean[ri], variance[ri], val, ++(nonzero[ri]));
                 }
             }
 
         } else {
             for (Index_ i = 0; i < number; ++i) {
-                auto val = value[i];
-                if ([&]() {
-                    if constexpr(skip_zeros_) {
-                        return val != 0;
-                    } else {
-                        return true;
-                    }
-                }()) {
-                    auto ri = index[i] - subtract;
-                    auto& curM = mean[ri];
-                    auto& curS = variance[ri];
-                    auto& curNZ = nonzero[ri];
-                    ++curNZ;
-
-                    Output_ delta = val - curM;
-                    curM += delta / curNZ;
-                    curS += delta * (val - curM);
-                }
+                auto ri = index[i] - subtract;
+                add_welford(mean[ri], variance[ri], value[i], ++(nonzero[ri]));
             }
         }
     }
@@ -341,11 +328,8 @@ struct RunningSparse {
                         curM = std::numeric_limits<Output_>::quiet_NaN();
                     }
                 } else {
-                    auto curNZ = nonzero[i];
-                    auto ratio = static_cast<Output_>(curNZ) / static_cast<Output_>(ct);
-                    curV += curM * curM * ratio * (ct - curNZ);
+                    add_welford_zeros(curM, curV, nonzero[i], ct);
                     curV /= ct - 1;
-                    curM *= ratio;
                 }
             }
 
@@ -357,13 +341,9 @@ struct RunningSparse {
                 }
             } else {
                 for (Index_ i = 0; i < num; ++i) {
-                    auto curNZ = nonzero[i];
-                    auto ratio = static_cast<Output_>(curNZ) / static_cast<Output_>(count);
-                    auto& curM = mean[i];
-                    auto& curV = variance[i];
-                    curV += curM * curM * ratio * (count - curNZ);
-                    curV /= count - 1;
-                    curM *= ratio;
+                    auto& var = variance[i];
+                    add_welford_zeros(mean[i], var, nonzero[i], count);
+                    var /= count - 1;
                 }
             }
         }
@@ -373,7 +353,7 @@ private:
     Index_ num;
     Output_* mean;
     Output_* variance;
-    Nonzero_* nonzero;
+    std::vector<Index_> nonzero;
     Index_ subtract;
     Index_ count = 0;
     typename std::conditional<skip_nan_, std::vector<Index_>, bool>::type nan;
@@ -382,7 +362,12 @@ private:
 }
 
 /**
- * Compute variances for each element of a chosen dimension of a `tatami::Matrix`.
+ * Compute variances for each element of a chosen dimension of a `tatami::Matrix` using Welford's method.
+ *
+ * @internal
+ * Previously, we used the two-pass method for the direct variances, and Welford's in the running case.
+ * Now we just use Welford's method all the time to simplify the implementation.
+ * @endinternal
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
  * @tparam Value_ Type of the matrix value, should be numeric.
@@ -421,8 +406,7 @@ void variances(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* outpu
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
                 std::vector<Output_> running_means(l);
-                std::vector<Index_> running_nzeros(l);
-                variance::RunningSparse<skip_nan_, true, Output_, Index_, Index_> runner(l, running_means.data(), output + s, running_nzeros.data(), s);
+                variance::RunningSparse<skip_nan_, Output_, Index_> runner(l, running_means.data(), output + s, s);
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto out = ext->fetch(vbuffer.data(), ibuffer.data());
                     runner.add(out.value, out.index, out.number);

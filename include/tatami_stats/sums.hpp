@@ -26,7 +26,6 @@ namespace sum {
  * This function should be called multiple times to obtain the sum and its error;
  * the latter should then be added to the former to obtain the final compensated sum.
  *
- * @tparam skip_nan_ Whether to check for (and skip) NaNs.
  * @tparam Output_ Type of the output data.
  * @tparam Value_ Type of the input data.
  *
@@ -36,14 +35,8 @@ namespace sum {
  * This should be set to zero before the first call to this function.
  * @param val Value to be added to `sum`.
  */
-template<bool skip_nan_  = false, typename Output_, typename Value_>
-void add(Output_& sum, Output_& error, Value_ val) {
-    if constexpr(skip_nan_) {
-        if (std::isnan(val)) {
-            return;
-        }
-    }
-
+template<typename Output_, typename Value_>
+void add_neumaier(Output_& sum, Output_& error, Value_ val) {
     auto t = sum + val;
     if (std::abs(sum) >= std::abs(val)) {
         error += (sum - t) + val;
@@ -69,7 +62,13 @@ template<bool skip_nan_  = false, typename Output_, typename Value_, typename In
 Output_ compute(const Value_* ptr, Index_ num) {
     Output_ sum = 0, error = 0;
     for (Index_ i = 0; i < num; ++i) {
-        add<skip_nan_>(sum, error, ptr[i]);
+        auto val = ptr[i];
+        if constexpr(skip_nan_) {
+            if (std::isnan(val)) {
+                continue;
+            }
+        }
+        add_neumaier(sum, error, val);
     }
     return sum + error;
 }
@@ -106,7 +105,13 @@ struct RunningDense {
     template<typename Value_>
     void add(const Value_* ptr) {
         for (Index_ i = 0; i < num; ++i) {
-            sum::add<skip_nan_>(sum[i], error[i], ptr[i]);
+            auto val = ptr[i];
+            if constexpr(skip_nan_) {
+                if (std::isnan(val)) {
+                    continue;
+                }
+            }
+            sum::add_neumaier(sum[i], error[i], val);
         }
     }
 
@@ -159,8 +164,14 @@ struct RunningSparse {
     template<typename Value_>
     void add(const Value_* value, const Index_* index, Index_ number) {
         for (Index_ i = 0; i < number; ++i) {
+            auto val = value[i];
+            if constexpr(skip_nan_) {
+                if (std::isnan(val)) {
+                    continue;
+                }
+            }
             auto idx = index[i] - subtract;
-            sum::add<skip_nan_>(sum[idx], error[idx], value[i]);
+            sum::add_neumaier(sum[idx], error[idx], val);
         }
     }
 
@@ -184,18 +195,18 @@ private:
 }
 
 /**
- * Compute sums for each element of a chosen dimension of a `tatami::Matrix`,
- * using Neumaier's method for numerical stability.
+ * Compute sums for each element of a chosen dimension of a `tatami::Matrix` using Neumaier's method.
  *
  * @internal
- * We don't use pairwise summation as this is tricky to implement consistently for sparse data.
- * Namely, should the recursion be done on the full dimension extent, or just the non-zero counts?
- * We can't use the latter because the running sum doesn't know the number of non-zeros per target vector.
- * But if we use the full dimension extent, the direct sum needs to check the index of each element,
- * which involves an additional look-up and comparison.
+ * Pairwise summation is used by NumPy and Julia, but it's rather difficult to do consistently in a running manner.
+ * We need to allocate `log2(N)` additional vectors to hold the intermediate sums, 
+ * and for sparse data, we need to perform an extra `N / base_case_size` sums.
+ * It's just easier to use Neumaier, which doesn't need to do this extra work.
  *
- * Neumaier is slower but is much simpler and, hey, we get stable sums.
- * We can also better handle variable numbers of NaNs.
+ * At that point, we might as well just use Neumaier in the direct case for consistency.
+ * Then people don't have to worry about getting slightly different results when switching between representations.
+ * While Neumaier is slower, it is much simpler and, hey, we get much more accurate sums.
+ * We can also better handle variable numbers of NaNs, which the pairwise method can't handle well.
  * @endinternal
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
