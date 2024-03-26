@@ -134,29 +134,27 @@
     <name>tatami_stats::variance::RunningSparse</name>
     <filename>structtatami__stats_1_1variance_1_1RunningSparse.html</filename>
     <templarg>bool skip_nan_</templarg>
-    <templarg>bool skip_zeros_</templarg>
     <templarg>typename Output_</templarg>
     <templarg>typename Index_</templarg>
-    <templarg>typename Nonzero_</templarg>
     <member kind="function">
       <type></type>
       <name>RunningSparse</name>
       <anchorfile>structtatami__stats_1_1variance_1_1RunningSparse.html</anchorfile>
-      <anchor>a4001766fc0655ba6a52464f58fa0a6ba</anchor>
-      <arglist>(Index_ num, Output_ *mean, Output_ *variance, Nonzero_ *nonzero, Index_ subtract=0)</arglist>
+      <anchor>a049c26884ef59175264a806ac5c1ca9d</anchor>
+      <arglist>(Index_ num, Output_ *mean, Output_ *variance, Index_ subtract=0)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>add</name>
       <anchorfile>structtatami__stats_1_1variance_1_1RunningSparse.html</anchorfile>
-      <anchor>a6428935ce14f1681ee6407ec9ef65252</anchor>
+      <anchor>af32ccc83335301ebba7671399e033675</anchor>
       <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>finish</name>
       <anchorfile>structtatami__stats_1_1variance_1_1RunningSparse.html</anchorfile>
-      <anchor>ac7245c4381b6bd88bf8b442dae7d9aef</anchor>
+      <anchor>a6672c4e025a63d81aeb8b704e463ac0d</anchor>
       <arglist>()</arglist>
     </member>
   </compound>
@@ -167,9 +165,9 @@
     <class kind="struct">tatami_stats::sum::RunningSparse</class>
     <member kind="function">
       <type>void</type>
-      <name>add</name>
+      <name>add_neumaier</name>
       <anchorfile>namespacetatami__stats_1_1sum.html</anchorfile>
-      <anchor>acdc385388681f460d4ff0c9829b3577f</anchor>
+      <anchor>a064515b44604c4a2db10c73356efa69b</anchor>
       <arglist>(Output_ &amp;sum, Output_ &amp;error, Value_ val)</arglist>
     </member>
     <member kind="function">
@@ -185,6 +183,20 @@
     <filename>namespacetatami__stats_1_1variance.html</filename>
     <class kind="struct">tatami_stats::variance::RunningDense</class>
     <class kind="struct">tatami_stats::variance::RunningSparse</class>
+    <member kind="function">
+      <type>void</type>
+      <name>add_welford</name>
+      <anchorfile>namespacetatami__stats_1_1variance.html</anchorfile>
+      <anchor>aea356cc492fdb031186e8f3e4049a396</anchor>
+      <arglist>(Output_ &amp;mean, Output_ &amp;sumsq, Value_ value, Index_ count)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>add_welford_zeros</name>
+      <anchorfile>namespacetatami__stats_1_1variance.html</anchorfile>
+      <anchor>a22ec2e7c62383c5d61ffd4c3f8bc1287</anchor>
+      <arglist>(Output_ &amp;mean, Output_ &amp;sumsq, Index_ num_nonzero, Index_ num_all)</arglist>
+    </member>
     <member kind="function">
       <type>std::pair&lt; Output_, Output_ &gt;</type>
       <name>compute</name>
