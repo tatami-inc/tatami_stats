@@ -12,46 +12,51 @@
 
 TEST(ComputeMedians, Dense) {
     std::vector<int> vec { 2, 1, 4, 5, 3 };
-    EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size()), 3);
-    EXPECT_EQ(tatami_stats::compute_median(vec.data() + 1, vec.size() - 1), 3.5);
+    int vsize = vec.size();
+    EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize), 3);
+    EXPECT_EQ(tatami_stats::median::compute(vec.data() + 1, vsize - 1), 3.5);
 }
 
 TEST(ComputeMedians, Sparse) {
     {
         std::vector<int> vec { 2, 1, 4, 5, 3 };
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 5), 3);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 11), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 10), 0.5);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 9), 1);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 8), 1.5);
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 5), 3);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 11), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 10), 0.5);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 9), 1);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 8), 1.5);
     }
 
     {
         std::vector<int> vec { -2, -1, -4, -5, -3 };
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 5), -3);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 11), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 10), -0.5);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 9), -1);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 8), -1.5);
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 5), -3);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 11), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 10), -0.5);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 9), -1);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 8), -1.5);
     }
 
     // Various mixed flavors.
     {
         std::vector<double> vec { 2.5, -1, 4, -5, 3 };
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 5), 2.5);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 11), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 10), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 6), 1.25);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 7), 0);
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 5), 2.5);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 11), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 10), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 6), 1.25);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 7), 0);
     }
 
     {
         std::vector<double> vec { -2.5, 1, -4, 5, -3 };
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 5), -2.5);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 11), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 10), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 6), -1.25);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 7), 0);
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 5), -2.5);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 11), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 10), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 6), -1.25);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 7), 0);
     }
 }
 
