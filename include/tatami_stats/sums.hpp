@@ -22,32 +22,8 @@ namespace tatami_stats {
 namespace sum {
 
 /**
- * Add the next value for Neumaier summation.
- * This function should be called multiple times to obtain the sum and its error;
- * the latter should then be added to the former to obtain the final compensated sum.
- *
- * @tparam Output_ Type of the output data.
- * @tparam Value_ Type of the input data.
- *
- * @param sum Current value of the sum.
- * This should be set to zero before the first call to this function.
- * @param error Current value of the error.
- * This should be set to zero before the first call to this function.
- * @param val Value to be added to `sum`.
- */
-template<typename Output_, typename Value_>
-void add_neumaier(Output_& sum, Output_& error, Value_ val) {
-    auto t = sum + val;
-    if (std::abs(sum) >= std::abs(val)) {
-        error += (sum - t) + val;
-    } else {
-        error += (val - t) + sum;
-    }
-    sum = t;
-}
-
-/**
- * Perform Neumaier summation on an array of values.
+ * Sum an array of values using naive accumulation.
+ * This is best used with a sufficiently high-precision `Output_`, hence the default of `double`.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
  * @tparam Output_ Type of the output data.
@@ -56,32 +32,36 @@ void add_neumaier(Output_& sum, Output_& error, Value_ val) {
  *
  * @param[in] ptr Pointer to an array of values of length `num`.
  * @param num Size of the array.
- * @return The compensated sum.
+ * @return The sum.
  */
-template<bool skip_nan_  = false, typename Output_, typename Value_, typename Index_>
+template<bool skip_nan_  = false, typename Output_ = double, typename Value_, typename Index_>
 Output_ compute(const Value_* ptr, Index_ num) {
-    Output_ sum = 0, error = 0;
-    for (Index_ i = 0; i < num; ++i) {
-        auto val = ptr[i];
-        if constexpr(skip_nan_) {
+    if constexpr(skip_nan_) {
+        Output_ sum = 0;
+        for (Index_ i = 0; i < num; ++i) {
+            auto val = ptr[i];
             if (std::isnan(val)) {
                 continue;
             }
+            sum += val;
         }
-        add_neumaier(sum, error, val);
+        return sum;
+    } else {
+        return std::accumulate(ptr, ptr + num, static_cast<Output_>(0));
     }
-    return sum + error;
 }
 
 /**
  * @brief Running sums from dense data.
  *
- * Compute running sums from dense data using Neumaier summation.
  * This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn],
  * but data are only available for "observed" vectors [P1, P2, P3, ..., Pm],
  * where Pi[j] contains the i-th element of target vector Vj.
  * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to m - 1,
  * and then finally call `finish()` to obtain the sum for each target vector.
+ *
+ * This class uses naive accumulation to obtain the sum for each target vector.
+ * Callers should use a sufficiently high-precision `Output_` such as `double` to mitigate round-off errors.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
  * @tparam Output_ Type of the output data.
@@ -92,13 +72,12 @@ struct RunningDense {
     /**
      * @param num Number of target vectors, i.e., n.
      * @param[out] sum Pointer to an output array of length `num`.
-     * This should be zeroed on input.
-     * Once `finish()` is called, this array will contain the sums for each target vector.
+     * This should be zeroed on input, and will store the running sums after each `add()`.
      */
-    RunningDense(Index_ num, Output_* sum) : num(num), sum(sum), error(num) {}
+    RunningDense(Index_ num, Output_* sum) : num(num), sum(sum) {}
 
     /**
-     * Add the next observed vector to the sum calculation.
+     * Add the next observed vector to the running sums.
      * @tparam Value_ Type of the input data.
      * @param[in] ptr Pointer to an array of values of length `num`, corresponding to an observed vector.
      */
@@ -111,17 +90,7 @@ struct RunningDense {
                     continue;
                 }
             }
-            sum::add_neumaier(sum[i], error[i], val);
-        }
-    }
-
-    /**
-     * Finish the compensated sum calculation once all observed vectors have been passed to `add()`. 
-     * Sums are stored in the `sum` array passed to the `RunningDense` constructor. 
-     */
-    void finish() {
-        for (Index_ i = 0; i < num; ++i) {
-            sum[i] += error[i];
+            sum[i] += ptr[i];
         }
     }
 
@@ -134,8 +103,8 @@ private:
 /**
  * @brief Running sums from sparse data.
  *
- * Compute running sums from sparse data using Neumaier summation.
- * This does the same as its dense overload for sparse observed vectors.
+ * Compute running sums from sparse data. 
+ * This is the counterpart to `RunningDense`, but for sparse observed vectors.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
  * @tparam Output_ Type of the output data.
@@ -145,20 +114,20 @@ template<bool skip_nan_ = false, typename Output_ = double, typename Index_ = in
 struct RunningSparse {
     /**
      * @param num Number of target vectors.
-     * @param[out] sum Pointer to an output array of length `num`, containing the sums for each target vector.
-     * This should be zeroed on input.
-     * Once `finish()` is called, this array will contain the sums for each target vector.
+     * @param[out] sum Pointer to an output array of length `num`.
+     * This should be zeroed on input, and will store the running sums after each `add()`.
      * @param subtract Offset to subtract from each element of `index` before using it to index into `mean` and friends.
      * Only relevant if `mean` and friends hold statistics for a contiguous subset of target vectors,
      * e.g., during task allocation for parallelization.
      */
-    RunningSparse(Index_ num, Output_* sum, Index_ subtract = 0) : num(num), sum(sum), error(num), subtract(subtract) {}
+    RunningSparse(Index_ num, Output_* sum, Index_ subtract = 0) : num(num), sum(sum), subtract(subtract) {}
 
     /**
-     * Add the next observed vector to the sum.
+     * Add the next observed vector to the running sums.
      * @tparam Value_ Type of the input value.
      * @param[in] value Value of structural non-zero elements.
      * @param[in] index Index of structural non-zero elements.
+     * This does not have to be sorted.
      * @param number Number of non-zero elements in `value` and `index`.
      */
     template<typename Value_>
@@ -170,44 +139,24 @@ struct RunningSparse {
                     continue;
                 }
             }
-            auto idx = index[i] - subtract;
-            sum::add_neumaier(sum[idx], error[idx], val);
-        }
-    }
-
-    /**
-     * Finish the compensated sum calculation once all observed vectors have been passed to `add()`. 
-     * Sums are stored in the `sum` array passed to the `RunningSparse` constructor. 
-     */
-    void finish() {
-        for (Index_ i = 0; i < num; ++i) {
-            sum[i] += error[i];
+            sum[index[i] - subtract] += val;
         }
     }
 
 private:
     Index_ num;
     Output_* sum;
-    std::vector<Output_> error;
     Index_ subtract;
 };
 
 }
 
 /**
- * Compute sums for each element of a chosen dimension of a `tatami::Matrix` using Neumaier's method.
- *
- * @internal
- * Pairwise summation is used by NumPy and Julia, but it's rather difficult to do consistently in a running manner.
- * We need to allocate `log2(N)` additional vectors to hold the intermediate sums, 
- * and for sparse data, we need to perform an extra `N / base_case_size` sums.
- * It's just easier to use Neumaier, which doesn't need to do this extra work.
- *
- * At that point, we might as well just use Neumaier in the direct case for consistency.
- * Then people don't have to worry about getting slightly different results when switching between representations.
- * While Neumaier is slower, it is much simpler and, hey, we get much more accurate sums.
- * We can also better handle variable numbers of NaNs, which the pairwise method can't handle well.
- * @endinternal
+ * Compute sums for each element of a chosen dimension of a `tatami::Matrix`.
+ * This is done using `compute()`, `RunningDense` or `RunningSparse`, 
+ * depending on the requested dimension in `row` and the preferred dimension for access in `p`.
+ * Note that all sums are obtained using naive accumulation,
+ * so it is best to use a sufficiently high-precision `Output_` to mitigate round-off errors.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
  * @tparam Value_ Type of the matrix value, should be numeric.
