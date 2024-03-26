@@ -10,6 +10,7 @@
 #include "tatami_stats/grouped_sums.hpp"
 #include "tatami_stats/sums.hpp"
 #include "tatami_test/tatami_test.hpp"
+#include "utils.h"
 
 TEST(GroupedSums, ByRow) {
     size_t NR = 99, NC = 155;
@@ -37,7 +38,7 @@ TEST(GroupedSums, ByRow) {
             expected[g + r * ngroup] = per_group[r];
         }
     }
-    EXPECT_EQ(expected, rref);
+    compare_double_vectors(expected, rref);
 
     EXPECT_EQ(rref, tatami_stats::row_sums_by_group(dense_column.get(), cgroups.data()));
     EXPECT_EQ(rref, tatami_stats::row_sums_by_group(sparse_row.get(), cgroups.data()));
