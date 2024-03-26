@@ -94,13 +94,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a23ddf9ff9b542217444eee7849c077dc" id="r_a23ddf9ff9b542217444eee7849c077dc"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Value_</a> &gt; </td></tr>
 <tr class="memitem:a23ddf9ff9b542217444eee7849c077dc"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sum_1_1RunningSparse.html#a23ddf9ff9b542217444eee7849c077dc">add</a> (<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">const</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Value_</a> *<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">value</a>, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">const</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Index_</a> *index, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Index_</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">number</a>)</td></tr>
 <tr class="separator:a23ddf9ff9b542217444eee7849c077dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6198a3a80019e1be634ebba9f42e30fc" id="r_a6198a3a80019e1be634ebba9f42e30fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sum_1_1RunningSparse.html#a6198a3a80019e1be634ebba9f42e30fc">finish</a> ()</td></tr>
-<tr class="separator:a6198a3a80019e1be634ebba9f42e30fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">bool</a> skip_nan_ = false, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Output_</a> = double, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Index_</a> = int&gt;<br />
 struct tatami_stats::sum::RunningSparse&lt; skip_nan_, Output_, Index_ &gt;</div><p>Running sums from sparse data. </p>
-<p>Compute running sums from sparse data using Neumaier summation. This does the same as its dense overload for sparse observed vectors.</p>
+<p>Compute running sums from sparse data. This is the counterpart to <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html" title="Running sums from dense data.">RunningDense</a></code>, but for sparse observed vectors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
@@ -154,7 +152,7 @@ template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of target vectors. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">sum</td><td>Pointer to an output array of length <code>num</code>, containing the sums for each target vector. This should be zeroed on input. Once <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningSparse.html#a6198a3a80019e1be634ebba9f42e30fc">finish()</a></code> is called, this array will contain the sums for each target vector. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">sum</td><td>Pointer to an output array of length <code>num</code>. This should be zeroed on input, and will store the running sums after each <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningSparse.html#a23ddf9ff9b542217444eee7849c077dc">add()</a></code>. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">subtract</td><td>Offset to subtract from each element of <code>index</code> before using it to index into <code>mean</code> and friends. Only relevant if <code>mean</code> and friends hold statistics for a contiguous subset of target vectors, e.g., during task allocation for parallelization. </td></tr>
   </table>
   </dd>
@@ -206,7 +204,7 @@ template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Add the next observed vector to the sum. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+<p>Add the next observed vector to the running sums. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Value_</td><td>Type of the input value. </td></tr>
   </table>
@@ -215,39 +213,11 @@ template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Value of structural non-zero elements. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Index of structural non-zero elements. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Index of structural non-zero elements. This does not have to be sorted. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">number</td><td>Number of non-zero elements in <code>value</code> and <code>index</code>. </td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a6198a3a80019e1be634ebba9f42e30fc" name="a6198a3a80019e1be634ebba9f42e30fc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6198a3a80019e1be634ebba9f42e30fc">&#9670;&#160;</a></span>finish()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">bool</a> skip_nan_ = false, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Output_</a>  = double, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Index_</a>  = int&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">void</a> <a class="el" href="structtatami__stats_1_1sum_1_1RunningSparse.html">tatami_stats::sum::RunningSparse</a>&lt; <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">skip_nan_</a>, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Output_</a>, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Index_</a> &gt;::finish </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Finish the compensated sum calculation once all observed vectors have been passed to <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningSparse.html#a23ddf9ff9b542217444eee7849c077dc">add()</a></code>. Sums are stored in the <code>sum</code> array passed to the <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningSparse.html" title="Running sums from sparse data.">RunningSparse</a></code> constructor. </p>
 
 </div>
 </div>

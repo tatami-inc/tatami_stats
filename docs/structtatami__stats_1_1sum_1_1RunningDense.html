@@ -94,13 +94,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9e972c1b1f73d8896fc5c87907c7ca37" id="r_a9e972c1b1f73d8896fc5c87907c7ca37"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Value_</a> &gt; </td></tr>
 <tr class="memitem:a9e972c1b1f73d8896fc5c87907c7ca37"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html#a9e972c1b1f73d8896fc5c87907c7ca37">add</a> (<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">const</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Value_</a> *<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">ptr</a>)</td></tr>
 <tr class="separator:a9e972c1b1f73d8896fc5c87907c7ca37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b2dd1ad5d36d78bcac94907c8b9acad" id="r_a9b2dd1ad5d36d78bcac94907c8b9acad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html#a9b2dd1ad5d36d78bcac94907c8b9acad">finish</a> ()</td></tr>
-<tr class="separator:a9b2dd1ad5d36d78bcac94907c8b9acad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">bool</a> skip_nan_ = false, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Output_</a> = double, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Index_</a> = int&gt;<br />
 struct tatami_stats::sum::RunningDense&lt; skip_nan_, Output_, Index_ &gt;</div><p>Running sums from dense data. </p>
-<p>Compute running sums from dense data using Neumaier summation. This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn], but data are only available for "observed" vectors [P1, P2, P3, ..., Pm], where Pi[j] contains the i-th element of target vector Vj. The idea is to repeatedly call <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html#a9e972c1b1f73d8896fc5c87907c7ca37">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to m - 1, and then finally call <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html#a9b2dd1ad5d36d78bcac94907c8b9acad">finish()</a></code> to obtain the sum for each target vector.</p>
+<p>This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn], but data are only available for "observed" vectors [P1, P2, P3, ..., Pm], where Pi[j] contains the i-th element of target vector Vj. The idea is to repeatedly call <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html#a9e972c1b1f73d8896fc5c87907c7ca37">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to m - 1, and then finally call <code><a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">finish()</a></code> to obtain the sum for each target vector.</p>
+<p>This class uses naive accumulation to obtain the sum for each target vector. Callers should use a sufficiently high-precision <code>Output_</code> such as <code>double</code> to mitigate round-off errors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
@@ -148,7 +147,7 @@ template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of target vectors, i.e., n. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">sum</td><td>Pointer to an output array of length <code>num</code>. This should be zeroed on input. Once <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html#a9b2dd1ad5d36d78bcac94907c8b9acad">finish()</a></code> is called, this array will contain the sums for each target vector. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">sum</td><td>Pointer to an output array of length <code>num</code>. This should be zeroed on input, and will store the running sums after each <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html#a9e972c1b1f73d8896fc5c87907c7ca37">add()</a></code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -183,7 +182,7 @@ template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Add the next observed vector to the sum calculation. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+<p>Add the next observed vector to the running sums. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
   </table>
@@ -195,34 +194,6 @@ template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a9b2dd1ad5d36d78bcac94907c8b9acad" name="a9b2dd1ad5d36d78bcac94907c8b9acad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9b2dd1ad5d36d78bcac94907c8b9acad">&#9670;&#160;</a></span>finish()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;<a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">bool</a> skip_nan_ = false, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Output_</a>  = double, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">typename</a> <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Index_</a>  = int&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">void</a> <a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html">tatami_stats::sum::RunningDense</a>&lt; <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">skip_nan_</a>, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Output_</a>, <a class="el" href="medians_8hpp.html#af549d23598ddd855c1acba2042db6937">Index_</a> &gt;::finish </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Finish the compensated sum calculation once all observed vectors have been passed to <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html#a9e972c1b1f73d8896fc5c87907c7ca37">add()</a></code>. Sums are stored in the <code>sum</code> array passed to the <code><a class="el" href="structtatami__stats_1_1sum_1_1RunningDense.html" title="Running sums from dense data.">RunningDense</a></code> constructor. </p>
 
 </div>
 </div>
