@@ -31,7 +31,7 @@ namespace internal {
 template<typename Value_, typename Index_>
 Index_ translocate_nans(Value_* ptr, Index_& num) {
     Index_ pos = 0;
-    for (Index_ i = 1; i < num; ++i) {
+    for (Index_ i = 0; i < num; ++i) {
         if (std::isnan(ptr[i])) {
             std::swap(ptr[i], ptr[pos]);
             ++pos;
@@ -62,7 +62,7 @@ Index_ translocate_nans(Value_* ptr, Index_& num) {
 template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
 Output_ compute(Value_* ptr, Index_ num) {
     if constexpr(skip_nan_) {
-        auto lost = translocate_nans(ptr, num);
+        auto lost = internal::translocate_nans(ptr, num);
         ptr += lost;
         num -= lost;
     }
@@ -104,7 +104,7 @@ Output_ compute(Value_* ptr, Index_ num) {
 template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
 Output_ compute(Value_* value, Index_ num_nonzero, Index_ num_all) {
     if constexpr(skip_nan_) {
-        auto lost = translocate_nans(value, num_nonzero);
+        auto lost = internal::translocate_nans(value, num_nonzero);
         value += lost;
         num_nonzero -= lost;
         num_all -= lost;
