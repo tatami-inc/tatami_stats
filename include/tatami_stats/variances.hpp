@@ -65,6 +65,7 @@ std::pair<Output_, Output_> finalize_compute(Output_ mean, Output_ var, Index_ c
  * thus, it is best used with a sufficiently high-precision `Output_` like `double`.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output data.
  * @tparam Value_ Type of the input data.
  *
@@ -113,6 +114,7 @@ std::pair<Output_, Output_> compute(const Value_* ptr, Index_ num) {
  * thus, it is best used with a sufficiently high-precision `Output_` like `double`.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output data.
  * @tparam Value_ Type of the input data.
  *
@@ -172,6 +174,7 @@ std::pair<Output_, Output_> compute(const Value_* value, Index_ num_nonzero, Ind
  * and then finally call `finish()` to obtain the mean and variance for each target vector.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output data.
  * @tparam Index_ Type of the row/column indices.
  */
@@ -254,6 +257,7 @@ private:
  * This does the same as its dense overload for sparse observed vectors.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output data.
  * @tparam Index_ Type of the row/column indices.
  */
@@ -359,6 +363,7 @@ private:
  * depending on the dimension in `row` and the preferred access dimension of `p`.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
@@ -433,6 +438,7 @@ void variances(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* outpu
 
 /**
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
@@ -450,6 +456,7 @@ void column_variances(const tatami::Matrix<Value_, Index_>* p, Output_* output, 
 
 /**
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
@@ -468,6 +475,7 @@ std::vector<Output_> column_variances(const tatami::Matrix<Value_, Index_>* p, i
 
 /**
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
@@ -485,6 +493,7 @@ void row_variances(const tatami::Matrix<Value_, Index_>* p, Output_* output, int
 
 /**
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.

@@ -26,6 +26,7 @@ namespace sum {
  * This is best used with a sufficiently high-precision `Output_`, hence the default of `double`.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output data.
  * @tparam Value_ Type of the input data.
  * @tparam Index_ Type of the row/column index.
@@ -64,6 +65,7 @@ Output_ compute(const Value_* ptr, Index_ num) {
  * Callers should use a sufficiently high-precision `Output_` such as `double` to mitigate round-off errors.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output data.
  * @tparam Index_ Type of the row/column indices.
  */
@@ -107,6 +109,7 @@ private:
  * This is the counterpart to `RunningDense`, but for sparse observed vectors.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output data.
  * @tparam Index_ Type of the row/column indices.
  */
@@ -159,6 +162,7 @@ private:
  * so it is best to use a sufficiently high-precision `Output_` to mitigate round-off errors.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
@@ -238,6 +242,8 @@ void sums(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, in
 }
 
 /**
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
@@ -254,6 +260,8 @@ void column_sums(const tatami::Matrix<Value_, Index_>* p, Output_* output, int t
 }
 
 /**
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
@@ -271,6 +279,8 @@ std::vector<Output_> column_sums(const tatami::Matrix<Value_, Index_>* p, int th
 }
 
 /**
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
@@ -287,6 +297,8 @@ void row_sums(const tatami::Matrix<Value_, Index_>* p, Output_* output, int thre
 }
 
 /**
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.

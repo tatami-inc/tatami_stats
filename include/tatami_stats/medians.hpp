@@ -53,8 +53,9 @@ Index_ translocate_nans(Value_* ptr, Index_& num) {
  * @param n Length of the array.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
- * This should be a floating-point value for possible averaging.
+ * This should be floating-point to store potential averages.
  * @tparam Value_ Type of the input values.
  *
  * @return The median of values in `[ptr, ptr + n)`.
@@ -95,8 +96,9 @@ Output_ compute(Value_* ptr, Index_ num) {
  * i.e., `num_all - num_nonzero` is the number of zeros.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
- * This should be a floating-point value for possible averaging.
+ * This should be floating-point to store potential averages.
  * @tparam Value_ Type of the input values.
  *
  * @return The median of values in the sparse vector.
@@ -159,9 +161,11 @@ Output_ compute(Value_* value, Index_ num_nonzero, Index_ num_all) {
  * Compute medians for each element of a chosen dimension of a `tatami::Matrix`.
  *
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
+ * This should be floating-point to store potential averages.
  *
  * @param row Whether to compute medians for the rows.
  * @param p Pointer to a `tatami::Matrix`.
@@ -205,6 +209,7 @@ void medians(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output,
 
 /**
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output.
@@ -221,7 +226,9 @@ void column_medians(const tatami::Matrix<Value_, Index_>* p, Output_* output, in
 
 /**
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output.
+ * This should be floating-point to store potential averages.
  * @tparam Value_ Type of the matrix value.
  * @tparam Index_ Type of the row/column indices.
  *
@@ -239,9 +246,11 @@ std::vector<Output_> column_medians(const tatami::Matrix<Value_, Index_>* p, int
 
 /**
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output.
+ * This should be floating-point to store potential averages.
  *
  * @param p Shared pointer to a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows.
@@ -255,7 +264,9 @@ void row_medians(const tatami::Matrix<Value_, Index_>* p, Output_* output, int t
 
 /**
  * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output.
+ * This should be floating-point to store potential averages.
  * @tparam Value_ Type of the matrix value.
  * @tparam Index_ Type of the row/column indices.
  *

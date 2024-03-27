@@ -22,6 +22,7 @@ namespace tatami_stats {
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
+ * This should be at least large enough to hold the dimensions of `p`.
  *
  * @param row Whether to count in each row.
  * @param p Pointer to a `tatami::Matrix`.
@@ -143,6 +144,7 @@ void counts(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, 
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
+ * This should be at least large enough to hold the dimensions of `p`.
  *
  * @param p Pointer to a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows.
@@ -175,6 +177,7 @@ std::vector<Output_> row_nan_counts(const tatami::Matrix<Value_, Index_>* p, int
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
+ * This should be at least large enough to hold the dimensions of `p`.
  *
  * @param p Pointer to a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of columns.
@@ -188,6 +191,7 @@ void column_nan_counts(const tatami::Matrix<Value_, Index_>* p, Output_* output,
 
 /**
  * @tparam Output_ Type of the output value.
+ * This should be at least large enough to hold the dimensions of `p`.
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
@@ -207,6 +211,7 @@ std::vector<Output_> column_nan_counts(const tatami::Matrix<Value_, Index_>* p, 
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
+ * This should be at least large enough to hold the dimensions of `p`.
  *
  * @param p Pointer to a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows.
@@ -220,6 +225,7 @@ void row_zero_counts(const tatami::Matrix<Value_, Index_>* p, Output_* output, i
 
 /**
  * @tparam Output_ Type of the output value.
+ * This should be at least large enough to hold the dimensions of `p`.
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
@@ -239,6 +245,7 @@ std::vector<Output_> row_zero_counts(const tatami::Matrix<Value_, Index_>* p, in
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
+ * This should be at least large enough to hold the dimensions of `p`.
  *
  * @param p Pointer to a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of columns.
@@ -252,6 +259,7 @@ void column_zero_counts(const tatami::Matrix<Value_, Index_>* p, Output_* output
 
 /**
  * @tparam Output_ Type of the output value.
+ * This should be at least large enough to hold the dimensions of `p`.
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
