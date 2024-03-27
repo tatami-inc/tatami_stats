@@ -51,7 +51,7 @@ void grouped_medians(const tatami::Matrix<Value_, Index_>* p, const Group_* grou
 
                 for (size_t g = 0; g < ngroups; ++g, ++curoutput) {
                     auto& w = workspace[g];
-                    *curoutput = compute_median(w.data(), w.size(), group_sizes[g]);
+                    *curoutput = median::compute(w.data(), w.size(), static_cast<size_t>(group_sizes[g]));
                     w.clear();
                 }
             }
@@ -65,7 +65,7 @@ void grouped_medians(const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                 }
 
                 for (auto& w : workspace) {
-                    *curoutput = compute_median(w.data(), w.size());
+                    *curoutput = median::compute(w.data(), w.size());
                     ++curoutput;
                     w.clear();
                 }

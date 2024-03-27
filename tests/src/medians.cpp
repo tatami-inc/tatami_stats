@@ -11,50 +11,74 @@
 #include "tatami_test/tatami_test.hpp"
 
 TEST(ComputeMedians, Dense) {
-    std::vector<int> vec { 2, 1, 4, 5, 3 };
-    EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size()), 3);
-    EXPECT_EQ(tatami_stats::compute_median(vec.data() + 1, vec.size() - 1), 3.5);
+    {
+        std::vector<int> vec { 2, 1, 4, 5, 3 };
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize), 3);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data() + 1, vsize - 1), 3.5);
+    }
+
+    {
+        std::vector<double> vec { 2, 1, std::numeric_limits<double>::quiet_NaN(), 5, 3 };
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute<true>(vec.data(), vsize), 2.5);
+    }
+
+    EXPECT_TRUE(std::isnan(tatami_stats::median::compute(static_cast<double*>(NULL), 0)));
 }
 
 TEST(ComputeMedians, Sparse) {
     {
         std::vector<int> vec { 2, 1, 4, 5, 3 };
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 5), 3);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 11), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 10), 0.5);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 9), 1);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 8), 1.5);
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 5), 3);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 11), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 10), 0.5);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 9), 1);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 8), 1.5);
     }
 
     {
         std::vector<int> vec { -2, -1, -4, -5, -3 };
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 5), -3);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 11), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 10), -0.5);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 9), -1);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 8), -1.5);
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 5), -3);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 11), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 10), -0.5);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 9), -1);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 8), -1.5);
     }
 
     // Various mixed flavors.
     {
         std::vector<double> vec { 2.5, -1, 4, -5, 3 };
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 5), 2.5);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 11), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 10), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 6), 1.25);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 7), 0);
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 5), 2.5);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 11), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 10), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 6), 1.25);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 7), 0);
     }
 
     {
         std::vector<double> vec { -2.5, 1, -4, 5, -3 };
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 5), -2.5);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 11), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 10), 0);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 6), -1.25);
-        EXPECT_EQ(tatami_stats::compute_median(vec.data(), vec.size(), 7), 0);
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 5), -2.5);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 11), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 10), 0);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 6), -1.25);
+        EXPECT_EQ(tatami_stats::median::compute(vec.data(), vsize, 7), 0);
     }
-}
 
+    // Plus missing values.
+    {
+        std::vector<double> vec { 2, 1, std::numeric_limits<double>::quiet_NaN(), 5, 3 };
+        int vsize = vec.size();
+        EXPECT_EQ(tatami_stats::median::compute<true>(vec.data(), vsize, 8), 1);
+        EXPECT_EQ(tatami_stats::median::compute<true>(vec.data(), vsize, 9), 0.5);
+    }
+
+    EXPECT_TRUE(std::isnan(tatami_stats::median::compute(static_cast<double*>(NULL), 0, 0)));
+}
 
 TEST(ComputingDimMedians, SparseMedians) {
     size_t NR = 111, NC = 222;
@@ -98,6 +122,57 @@ TEST(ComputingDimMedians, SparseMedians) {
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
     EXPECT_EQ(rref, tatami_stats::row_medians(unsorted_column.get()));
     EXPECT_EQ(cref, tatami_stats::column_medians(unsorted_column.get()));
+}
+
+TEST(ComputingMedians, WithNan) {
+    size_t NR = 152, NC = 183;
+
+    {
+        auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5);
+        for (size_t c = 0; c < NC; ++c) { // Injecting an NaN at the start of each column.
+            dump[c] = std::numeric_limits<double>::quiet_NaN();
+        }
+
+        auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
+        auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
+        auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
+        auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+
+        std::vector<double> skip(dump.begin() + NC, dump.end());
+        auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR - 1, NC, std::move(skip)));
+
+        auto cref = tatami::column_medians(ref.get());
+        EXPECT_EQ(cref, tatami_stats::column_medians<true>(dense_row.get()));
+        EXPECT_EQ(cref, tatami_stats::column_medians<true>(dense_column.get()));
+        EXPECT_EQ(cref, tatami_stats::column_medians<true>(sparse_row.get()));
+        EXPECT_EQ(cref, tatami_stats::column_medians<true>(sparse_column.get()));
+    }
+
+    {
+        auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5);
+        for (size_t r = 0; r < NR; ++r) { // Injecting an NaN at the start of each row.
+            dump[r * NC] = std::numeric_limits<double>::quiet_NaN();
+        }
+
+        auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
+        auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
+        auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
+        auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+
+        std::vector<double> skip;
+        skip.reserve(NR * (NC - 1));
+        for (size_t r = 0; r < NR; ++r) {
+            auto start = dump.begin() + r * NC;
+            skip.insert(skip.end(), start + 1, start + NC);
+        }
+        auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC - 1, std::move(skip)));
+
+        auto rref = tatami::row_medians(ref.get());
+        EXPECT_EQ(rref, tatami_stats::row_medians<true>(dense_row.get()));
+        EXPECT_EQ(rref, tatami_stats::row_medians<true>(dense_column.get()));
+        EXPECT_EQ(rref, tatami_stats::row_medians<true>(sparse_row.get()));
+        EXPECT_EQ(rref, tatami_stats::row_medians<true>(sparse_column.get()));
+    }
 }
 
 TEST(ComputingDimMedians, AllZero) {
