@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <type_traits>
 
 /**
  * @file counts.hpp
@@ -16,46 +17,60 @@
 namespace tatami_stats {
 
 /**
- * @cond
+ * Count the number of values in each dimension element that satisfy the `condition`.
+ *
+ * @tparam Value_ Type of the matrix value, should be numeric.
+ * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Type of the output value.
+ *
+ * @param row Whether to count in each row.
+ * @param p Pointer to a `tatami::Matrix`.
+ * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
+ * On output, this will contain the row/column variances.
+ * @param threads Number of threads to use.
+ * @param condition Function that accepts a `Value_` and returns a boolean.
+ * If NaNs might be present in `p`, this should be handled by `condition`.
  */
-namespace count_internal {
-
-template<bool row_, typename Output_, typename Value_, typename Index_, class Function_>
-void dimension_counts(const tatami::Matrix<Value_, Index_>* p, int threads, Output_* output, Function_ fun) {
-    auto dim = (row_ ? p->nrow() : p->ncol());
-    auto otherdim = (row_ ? p->ncol() : p->nrow());
+template<typename Value_, typename Index_, typename Output_, class Condition_>
+void counts(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads, Condition_ condition) {
+    auto dim = (row ? p->nrow() : p->ncol());
+    auto otherdim = (row ? p->ncol() : p->nrow());
     std::fill(output, output + dim, 0);
 
-    if (p->prefer_rows() == row_) {
+    if (p->prefer_rows() == row) {
         if (p->sparse()) {
             tatami::Options opt;
             opt.sparse_ordered_index = false;
-            Output_ zerocount = fun(0);
+            bool count_zero = condition(0);
 
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(otherdim);
                 std::vector<Index_> ibuffer(otherdim);
-                auto ext = tatami::consecutive_extractor<true>(p, row_, start, len, opt);
+                auto ext = tatami::consecutive_extractor<true>(p, row, start, len, opt);
+
                 for (Index_ x = 0; x < len; ++x) {
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
                     Output_ target = 0;
                     for (Index_ j = 0; j < range.number; ++j) {
-                        target += fun(range.value[j]);
+                        target += condition(range.value[j]);
                     }
-                    output[x + start] = target + zerocount * (otherdim - range.number);
+                    if (count_zero) {
+                        target += otherdim - range.number;
+                    }
+                    output[x + start] = target;
                 }
             }, dim, threads);
 
         } else {
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(otherdim);
-                auto ext = tatami::consecutive_extractor<false>(p, row_, start, len);
+                auto ext = tatami::consecutive_extractor<false>(p, row, start, len);
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto ptr = ext->fetch(xbuffer.data());
                     Output_ target = 0;
                     for (Index_ j = 0; j < otherdim; ++j) {
-                        target += fun(ptr[j]);
+                        target += condition(ptr[j]);
                     }
                     output[x + start] = target;
                 }
@@ -74,37 +89,42 @@ void dimension_counts(const tatami::Matrix<Value_, Index_>* p, int threads, Outp
         if (p->sparse()) {
             tatami::Options opt;
             opt.sparse_ordered_index = false;
-            Output_ zerocount = fun(0);
+            bool count_zero = condition(0);
 
             tatami::parallelize([&](int t, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(dim);
                 std::vector<Index_> ibuffer(dim);
-                auto ext = tatami::consecutive_extractor<true>(p, !row_, start, len, opt);
+                auto ext = tatami::consecutive_extractor<true>(p, !row, start, len, opt);
 
                 auto curoutput = threaded_output_ptrs[t];
                 std::vector<Index_> nonzeros(dim);
+
                 for (Index_ x = 0; x < len; ++x) {
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
                     for (Index_ j = 0; j < range.number; ++j) {
-                        curoutput[range.index[j]] += fun(range.value[j]);
-                        ++(nonzeros[range.index[j]]);
+                        auto idx = range.index[j];
+                        curoutput[idx] += condition(range.value[j]);
+                        ++(nonzeros[idx]);
                     }
                 }
 
-                for (int d = 0; d < dim; ++d) {
-                    curoutput[d] += zerocount * (len - nonzeros[d]);
+                if (count_zero) {
+                    for (int d = 0; d < dim; ++d) {
+                        curoutput[d] += len - nonzeros[d];
+                    }
                 }
             }, otherdim, threads);
 
         } else {
             tatami::parallelize([&](int t, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(dim);
-                auto ext = tatami::consecutive_extractor<false>(p, !row_, start, len);
+                auto ext = tatami::consecutive_extractor<false>(p, !row, start, len);
                 auto curoutput = threaded_output_ptrs[t];
+
                 for (Index_ x = 0; x < len; ++x) {
                     auto ptr = ext->fetch(xbuffer.data());
                     for (Index_ j = 0; j < dim; ++j) {
-                        curoutput[j] += fun(ptr[j]);
+                        curoutput[j] += condition(ptr[j]);
                     }
                 }
             }, otherdim, threads);
@@ -119,11 +139,6 @@ void dimension_counts(const tatami::Matrix<Value_, Index_>* p, int threads, Outp
     }
 }
 
-}
-/**
- * @endcond
- */
-
 /**
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
@@ -136,7 +151,7 @@ void dimension_counts(const tatami::Matrix<Value_, Index_>* p, int threads, Outp
  */
 template<typename Value_, typename Index_, typename Output_>
 void row_nan_counts(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    count_internal::dimension_counts<true>(p, threads, output, [](Value_ x) -> bool { return std::isnan(x); });
+    counts(true, p, output, threads, [](Value_ x) -> bool { return std::isnan(x); });
 }
 
 /**
@@ -168,7 +183,7 @@ std::vector<Output_> row_nan_counts(const tatami::Matrix<Value_, Index_>* p, int
  */
 template<typename Value_, typename Index_, typename Output_>
 void column_nan_counts(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    count_internal::dimension_counts<false>(p, threads, output, [](Value_ x) -> bool { return std::isnan(x); });
+    counts(false, p, output, threads, [](Value_ x) -> bool { return std::isnan(x); });
 }
 
 /**
@@ -200,7 +215,7 @@ std::vector<Output_> column_nan_counts(const tatami::Matrix<Value_, Index_>* p, 
  */
 template<typename Value_, typename Index_, typename Output_>
 void row_zero_counts(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    count_internal::dimension_counts<true>(p, threads, output, [](Value_ x) -> bool { return x == 0; });
+    counts(true, p, output, threads, [](Value_ x) -> bool { return x == 0; });
 }
 
 /**
@@ -232,7 +247,7 @@ std::vector<Output_> row_zero_counts(const tatami::Matrix<Value_, Index_>* p, in
  */
 template<typename Value_, typename Index_, typename Output_>
 void column_zero_counts(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    count_internal::dimension_counts<false>(p, threads, output, [](Value_ x) -> bool { return x == 0; });
+    counts(false, p, output, threads, [](Value_ x) -> bool { return x == 0; });
 }
 
 /**

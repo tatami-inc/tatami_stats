@@ -122,7 +122,32 @@ TEST(ComputingDimCounts, RowZeroCounts) {
     EXPECT_EQ(ref, tatami_stats::row_zero_counts(unsorted_column.get()));
 }
 
-TEST(ComputingDimCounts, ColumZeroCount) {
+TEST(ComputingDimVariances, RowZeroCountsWithNan) {
+    size_t NR = 52, NC = 83;
+    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    for (size_t r = 0; r < NR; ++r) { // Injecting an NaN at the start.
+        dump[r * NC] = std::numeric_limits<double>::quiet_NaN();
+    }
+
+    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
+    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
+    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
+    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+
+    std::vector<int> ref(NR); 
+    for (size_t r = 0; r < NR; ++r) {
+        for (size_t c = 1; c < NC; ++c) { // skipping the first element.
+            ref[r] += (dump[c + r * NC] == 0);
+        }
+    }
+
+    EXPECT_EQ(ref, tatami_stats::row_zero_counts(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::row_zero_counts(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::row_zero_counts(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::row_zero_counts(sparse_column.get()));
+}
+
+TEST(ComputingDimCounts, ColumnZeroCounts) {
     size_t NR = 79, NC = 62;
     auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
 
@@ -154,4 +179,29 @@ TEST(ComputingDimCounts, ColumZeroCount) {
     EXPECT_EQ(ref, tatami_stats::column_zero_counts(unsorted_row.get()));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
     EXPECT_EQ(ref, tatami_stats::column_zero_counts(unsorted_column.get()));
+}
+
+TEST(ComputingDimVariances, ColumnZeroCountsWithNan) {
+    size_t NR = 82, NC = 33;
+    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    for (size_t c = 0; c < NC; ++c) { // Injecting an NaN at the start.
+        dump[c] = std::numeric_limits<double>::quiet_NaN();
+    }
+
+    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
+    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
+    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
+    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+
+    std::vector<int> ref(NC);
+    for (size_t c = 0; c < NC; ++c) {
+        for (size_t r = 1; r < NR; ++r) { // skipping the first row.
+            ref[c] += dump[c + r * NC] == 0;
+        }
+    }
+
+    EXPECT_EQ(ref, tatami_stats::column_zero_counts(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::column_zero_counts(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::column_zero_counts(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::column_zero_counts(sparse_column.get()));
 }
