@@ -127,7 +127,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> g = 0; g &lt; ngroups; ++g, ++curoutput) {</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                    <span class="keyword">auto</span>&amp; w = workspace[g];</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    *curoutput = median::compute(w.data(), w.size(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(group_sizes[g]));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    *curoutput = medians::direct(w.data(), w.size(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(group_sizes[g]), <span class="keyword">false</span>);</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                    w.clear();</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                }</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            }</div>
@@ -141,7 +141,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                }</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; w : workspace) {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                    *curoutput = median::compute(w.data(), w.size());</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                    *curoutput = medians::direct(w.data(), w.size(), <span class="keyword">false</span>);</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                    ++curoutput;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                    w.clear();</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                }</div>

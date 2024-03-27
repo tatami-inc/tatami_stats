@@ -76,6 +76,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">medians.hpp File Reference</div></div>
@@ -87,301 +88,45 @@ $(function() {
 
 <p><a href="medians_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1medians_1_1Options.html">tatami_stats::medians::Options</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Median calculation options.  <a href="structtatami__stats_1_1medians_1_1Options.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacetatami__stats_1_1median" id="r_namespacetatami__stats_1_1median"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1median.html">tatami_stats::median</a></td></tr>
-<tr class="memdesc:namespacetatami__stats_1_1median"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions for computing dimension-wise medians. <br /></td></tr>
+<tr class="memitem:namespacetatami__stats_1_1medians" id="r_namespacetatami__stats_1_1medians"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html">tatami_stats::medians</a></td></tr>
+<tr class="memdesc:namespacetatami__stats_1_1medians"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions for computing dimension-wise medians. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9747d128e5ffc02215e8d9b13dcff91e" id="r_a9747d128e5ffc02215e8d9b13dcff91e"><td class="memTemplParams" colspan="2">template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a9747d128e5ffc02215e8d9b13dcff91e"><td class="memTemplItemLeft" align="right" valign="top">Output_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1median.html#a9747d128e5ffc02215e8d9b13dcff91e">tatami_stats::median::compute</a> (Value_ *ptr, Index_ num)</td></tr>
-<tr class="separator:a9747d128e5ffc02215e8d9b13dcff91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c45e9e0ec266e59d9f5fba9d02244a1" id="r_a7c45e9e0ec266e59d9f5fba9d02244a1"><td class="memTemplParams" colspan="2">template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a7c45e9e0ec266e59d9f5fba9d02244a1"><td class="memTemplItemLeft" align="right" valign="top">Output_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1median.html#a7c45e9e0ec266e59d9f5fba9d02244a1">tatami_stats::median::compute</a> (Value_ *value, Index_ num_nonzero, Index_ num_all)</td></tr>
-<tr class="separator:a7c45e9e0ec266e59d9f5fba9d02244a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4003adec6817a287d2a74c4022c13d5b" id="r_a4003adec6817a287d2a74c4022c13d5b"><td class="memTemplParams" colspan="2">template&lt;bool skip_nan_, typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:a4003adec6817a287d2a74c4022c13d5b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="medians_8hpp.html#a4003adec6817a287d2a74c4022c13d5b">tatami_stats::medians</a> (bool row, const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, int threads)</td></tr>
-<tr class="separator:a4003adec6817a287d2a74c4022c13d5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee88a4c52a9bb3cae08ae3113f0a8458" id="r_aee88a4c52a9bb3cae08ae3113f0a8458"><td class="memTemplParams" colspan="2">template&lt;bool skip_nan_, typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:aee88a4c52a9bb3cae08ae3113f0a8458"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="medians_8hpp.html#aee88a4c52a9bb3cae08ae3113f0a8458">tatami_stats::column_medians</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, int threads=1)</td></tr>
-<tr class="separator:aee88a4c52a9bb3cae08ae3113f0a8458"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07abc7ef77e48ed0503318e699e819bf" id="r_a07abc7ef77e48ed0503318e699e819bf"><td class="memTemplParams" colspan="2">template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a07abc7ef77e48ed0503318e699e819bf"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="medians_8hpp.html#a07abc7ef77e48ed0503318e699e819bf">tatami_stats::column_medians</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, int threads=1)</td></tr>
-<tr class="separator:a07abc7ef77e48ed0503318e699e819bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afdabba8d8806d44ea2970b7c8888a51e" id="r_afdabba8d8806d44ea2970b7c8888a51e"><td class="memTemplParams" colspan="2">template&lt;bool skip_nan_ = false, typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:afdabba8d8806d44ea2970b7c8888a51e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="medians_8hpp.html#afdabba8d8806d44ea2970b7c8888a51e">tatami_stats::row_medians</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, int threads=1)</td></tr>
-<tr class="separator:afdabba8d8806d44ea2970b7c8888a51e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac321c01f9afd1161a611bea1ed8e0802" id="r_ac321c01f9afd1161a611bea1ed8e0802"><td class="memTemplParams" colspan="2">template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:ac321c01f9afd1161a611bea1ed8e0802"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="medians_8hpp.html#ac321c01f9afd1161a611bea1ed8e0802">tatami_stats::row_medians</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, int threads=1)</td></tr>
-<tr class="separator:ac321c01f9afd1161a611bea1ed8e0802"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad805e96ccca9615107f7360788f24a44" id="r_ad805e96ccca9615107f7360788f24a44"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:ad805e96ccca9615107f7360788f24a44"><td class="memTemplItemLeft" align="right" valign="top">Output_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">tatami_stats::medians::direct</a> (Value_ *ptr, Index_ num, bool skip_nan)</td></tr>
+<tr class="separator:ad805e96ccca9615107f7360788f24a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a646feafa77f4f32dbcb2d58f76e6bd6a" id="r_a646feafa77f4f32dbcb2d58f76e6bd6a"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:a646feafa77f4f32dbcb2d58f76e6bd6a"><td class="memTemplItemLeft" align="right" valign="top">Output_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html#a646feafa77f4f32dbcb2d58f76e6bd6a">tatami_stats::medians::direct</a> (Value_ *value, Index_ num_nonzero, Index_ num_all, bool skip_nan)</td></tr>
+<tr class="separator:a646feafa77f4f32dbcb2d58f76e6bd6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8b353fbe53c1168d241ac90d392ab67" id="r_ad8b353fbe53c1168d241ac90d392ab67"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a> , <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> , <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a> &gt; </td></tr>
+<tr class="memitem:ad8b353fbe53c1168d241ac90d392ab67"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html#ad8b353fbe53c1168d241ac90d392ab67">tatami_stats::medians::apply</a> (<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">bool</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">row</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">const</a> tatami::Matrix&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; *<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">p</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a> *<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">output</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">const</a> <a class="el" href="structtatami__stats_1_1medians_1_1Options.html">medians::Options</a> &amp;<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">mopt</a>)</td></tr>
+<tr class="separator:ad8b353fbe53c1168d241ac90d392ab67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe65c01afef3d0dc617a600b4918ae60" id="r_afe65c01afef3d0dc617a600b4918ae60"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a>  = double, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a> , <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; </td></tr>
+<tr class="memitem:afe65c01afef3d0dc617a600b4918ae60"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html#afe65c01afef3d0dc617a600b4918ae60">tatami_stats::medians::by_column</a> (<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">const</a> tatami::Matrix&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; *<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">p</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">const</a> <a class="el" href="structtatami__stats_1_1medians_1_1Options.html">Options</a> &amp;<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">mopt</a>)</td></tr>
+<tr class="separator:afe65c01afef3d0dc617a600b4918ae60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0381078ef476435ed35322b668d35a55" id="r_a0381078ef476435ed35322b668d35a55"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a>  = double, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a> , <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; </td></tr>
+<tr class="memitem:a0381078ef476435ed35322b668d35a55"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html#a0381078ef476435ed35322b668d35a55">tatami_stats::medians::by_column</a> (<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">const</a> tatami::Matrix&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; *<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">p</a>)</td></tr>
+<tr class="separator:a0381078ef476435ed35322b668d35a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec4803eb6b9ba02620a0dd349ea06119" id="r_aec4803eb6b9ba02620a0dd349ea06119"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a>  = double, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a> , <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; </td></tr>
+<tr class="memitem:aec4803eb6b9ba02620a0dd349ea06119"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html#aec4803eb6b9ba02620a0dd349ea06119">tatami_stats::medians::by_row</a> (<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">const</a> tatami::Matrix&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; *<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">p</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">const</a> <a class="el" href="structtatami__stats_1_1medians_1_1Options.html">Options</a> &amp;<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">mopt</a>)</td></tr>
+<tr class="separator:aec4803eb6b9ba02620a0dd349ea06119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfe0becd48434812a3f156af66d1aac1" id="r_abfe0becd48434812a3f156af66d1aac1"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a>  = double, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a> , <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">typename</a> <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; </td></tr>
+<tr class="memitem:abfe0becd48434812a3f156af66d1aac1"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Output_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html#abfe0becd48434812a3f156af66d1aac1">tatami_stats::medians::by_row</a> (<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">const</a> tatami::Matrix&lt; <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Value_</a>, <a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">Index_</a> &gt; *<a class="el" href="namespacetatami__stats_1_1medians.html#ad805e96ccca9615107f7360788f24a44">p</a>)</td></tr>
+<tr class="separator:abfe0becd48434812a3f156af66d1aac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Compute row and column medians from a <code>tatami::Matrix</code>. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a4003adec6817a287d2a74c4022c13d5b" name="a4003adec6817a287d2a74c4022c13d5b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4003adec6817a287d2a74c4022c13d5b">&#9670;&#160;</a></span>medians()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;bool skip_nan_, typename Value_ , typename Index_ , typename Output_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void tatami_stats::medians </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>row</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
-          <td class="paramname"><em>p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Output_ *&#160;</td>
-          <td class="paramname"><em>output</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>threads</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Compute medians for each element of a chosen dimension of a <code>tatami::Matrix</code>.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be numeric. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be floating-point to store potential averages.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute medians for the rows. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code>tatami::Matrix</code>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise). On output, this will contain the row/column medians. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">threads</td><td>Number of threads to use. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="aee88a4c52a9bb3cae08ae3113f0a8458" name="aee88a4c52a9bb3cae08ae3113f0a8458"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee88a4c52a9bb3cae08ae3113f0a8458">&#9670;&#160;</a></span>column_medians() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;bool skip_nan_, typename Value_ , typename Index_ , typename Output_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void tatami_stats::column_medians </td>
-          <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
-          <td class="paramname"><em>p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Output_ *&#160;</td>
-          <td class="paramname"><em>output</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Shared pointer to a <code>tatami::Matrix</code>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of length equal to the number of columns. On output, this will contain the column medians. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">threads</td><td>Number of threads to use. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a07abc7ef77e48ed0503318e699e819bf" name="a07abc7ef77e48ed0503318e699e819bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07abc7ef77e48ed0503318e699e819bf">&#9670;&#160;</a></span>column_medians() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ , typename Index_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; Output_ &gt; tatami_stats::column_medians </td>
-          <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
-          <td class="paramname"><em>p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output. This should be floating-point to store potential averages. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">p</td><td>Shared pointer to a <code>tatami::Matrix</code>. </td></tr>
-    <tr><td class="paramname">threads</td><td>Number of threads to use.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A vector of length equal to the number of columns, containing the column medians. </dd></dl>
-
-</div>
-</div>
-<a id="afdabba8d8806d44ea2970b7c8888a51e" name="afdabba8d8806d44ea2970b7c8888a51e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afdabba8d8806d44ea2970b7c8888a51e">&#9670;&#160;</a></span>row_medians() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;bool skip_nan_ = false, typename Value_ , typename Index_ , typename Output_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void tatami_stats::row_medians </td>
-          <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
-          <td class="paramname"><em>p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Output_ *&#160;</td>
-          <td class="paramname"><em>output</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output. This should be floating-point to store potential averages.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Shared pointer to a <code>tatami::Matrix</code>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of length equal to the number of rows. On output, this will contain the row medians. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">threads</td><td>Number of threads to use. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac321c01f9afd1161a611bea1ed8e0802" name="ac321c01f9afd1161a611bea1ed8e0802"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac321c01f9afd1161a611bea1ed8e0802">&#9670;&#160;</a></span>row_medians() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ , typename Index_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; Output_ &gt; tatami_stats::row_medians </td>
-          <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
-          <td class="paramname"><em>p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output. This should be floating-point to store potential averages. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">p</td><td>Shared pointer to a <code>tatami::Matrix</code>. </td></tr>
-    <tr><td class="paramname">threads</td><td>Number of threads to use.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A vector of length equal to the number of rows, containing the row medians. </dd></dl>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
