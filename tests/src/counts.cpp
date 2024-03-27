@@ -31,22 +31,24 @@ TEST(ComputingDimCounts, RowNaNCounts) {
         }
     }
 
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(sparse_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(sparse_column.get()));
 
     // Checking same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(dense_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(sparse_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(sparse_column.get(), 3));
+    tatami_stats::counts::nan::Options nopt;
+    nopt.num_threads = 3;
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(dense_row.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(dense_column.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(sparse_row.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(sparse_column.get(), nopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(unsorted_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(unsorted_row.get()));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::row_nan_counts(unsorted_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(unsorted_column.get()));
 }
 
 TEST(ComputingDimCounts, ColumNaNCount) {
@@ -70,22 +72,24 @@ TEST(ComputingDimCounts, ColumNaNCount) {
         }
     }
 
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(sparse_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(sparse_column.get()));
 
     // Checking same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(sparse_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(sparse_column.get(), 3));
+    tatami_stats::counts::nan::Options nopt;
+    nopt.num_threads = 3;
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(dense_column.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(dense_column.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(sparse_column.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(sparse_column.get(), nopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(unsorted_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(unsorted_row.get()));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::column_nan_counts(unsorted_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::nan::by_column(unsorted_column.get()));
 }
 
 TEST(ComputingDimCounts, RowZeroCounts) {
@@ -104,22 +108,24 @@ TEST(ComputingDimCounts, RowZeroCounts) {
         }
     }
 
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(sparse_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(sparse_column.get()));
 
     // Checking same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(dense_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(sparse_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(sparse_column.get(), 3));
+    tatami_stats::counts::zero::Options nopt;
+    nopt.num_threads = 3;
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(dense_row.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(dense_column.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(sparse_row.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(sparse_column.get(), nopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(unsorted_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(unsorted_row.get()));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(unsorted_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(unsorted_column.get()));
 }
 
 TEST(ComputingDimVariances, RowZeroCountsWithNan) {
@@ -141,10 +147,10 @@ TEST(ComputingDimVariances, RowZeroCountsWithNan) {
         }
     }
 
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_zero_counts(sparse_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(sparse_column.get()));
 }
 
 TEST(ComputingDimCounts, ColumnZeroCounts) {
@@ -163,22 +169,24 @@ TEST(ComputingDimCounts, ColumnZeroCounts) {
         }
     }
 
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(sparse_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(sparse_column.get()));
 
     // Checking same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(sparse_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(sparse_column.get(), 3));
+    tatami_stats::counts::zero::Options nopt;
+    nopt.num_threads = 3;
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(dense_column.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(dense_column.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(sparse_column.get(), nopt));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(sparse_column.get(), nopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(unsorted_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(unsorted_row.get()));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(unsorted_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(unsorted_column.get()));
 }
 
 TEST(ComputingDimVariances, ColumnZeroCountsWithNan) {
@@ -200,8 +208,8 @@ TEST(ComputingDimVariances, ColumnZeroCountsWithNan) {
         }
     }
 
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_zero_counts(sparse_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(sparse_column.get()));
 }

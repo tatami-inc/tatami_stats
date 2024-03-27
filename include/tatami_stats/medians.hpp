@@ -19,9 +19,25 @@ namespace tatami_stats {
 
 /**
  * @brief Functions for computing dimension-wise medians.
- * @namespace tatami_stats::median
+ * @namespace tatami_stats::medians
  */
-namespace median {
+namespace medians {
+
+/**
+ * @brief Median calculation options.
+ */
+struct Options {
+    /**
+     * Whether to check for NaNs in the input, and skip them.
+     * If false, NaNs are assumed to be absent, and the behavior of the median calculation in the presence of NaNs is undefined.
+     */
+    bool skip_nan = false;
+
+    /**
+     * Number of threads to use when computing medians across a `tatami::Matrix`.
+     */
+    int num_threads = 1;
+};
 
 /**
  * @cond
@@ -46,23 +62,23 @@ Index_ translocate_nans(Value_* ptr, Index_& num) {
  */
 
 /**
- * Compute the median from a dense vector.
+ * Directly compute the median from a dense vector.
  *
  * @param[in] ptr Pointer to an array of values.
  * This may be modified on output.
- * @param n Length of the array.
+ * @param num Length of the array.
+ * @param skip_nan See `Options::skip_nan` for details.
  *
- * @tparam skip_nan_ Whether to check for (and skip) NaNs.
- * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
  * This should be floating-point to store potential averages.
  * @tparam Value_ Type of the input values.
+ * @tparam Index_ Type of the row/column indices.
  *
  * @return The median of values in `[ptr, ptr + n)`.
  */
-template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
-Output_ compute(Value_* ptr, Index_ num) {
-    if constexpr(skip_nan_) {
+template<typename Output_ = double, typename Value_, typename Index_>
+Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
+    if (skip_nan) {
         auto lost = internal::translocate_nans(ptr, num);
         ptr += lost;
         num -= lost;
@@ -87,33 +103,33 @@ Output_ compute(Value_* ptr, Index_ num) {
 }
 
 /**
- * Compute the median from a sparse vector.
+ * Directly compute the median from a sparse vector.
  *
  * @param[in] value Pointer to an array of structural non-zero values.
  * This may be modified on output.
  * @param num_nonzero Number of non-zero elements, i.e., the length of the array referenced by `ptr`.
  * @param num_all Total number of elements in the set,
  * i.e., `num_all - num_nonzero` is the number of zeros.
+ * @param skip_nan See `Options::skip_nan` for details.
  *
- * @tparam skip_nan_ Whether to check for (and skip) NaNs.
- * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output value.
  * This should be floating-point to store potential averages.
  * @tparam Value_ Type of the input values.
+ * @tparam Index_ Type of the row/column indices.
  *
  * @return The median of values in the sparse vector.
  */
-template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
-Output_ compute(Value_* value, Index_ num_nonzero, Index_ num_all) {
-    if constexpr(skip_nan_) {
+template<typename Output_ = double, typename Value_, typename Index_>
+Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan) {
+    if (num_nonzero == num_all) {
+        return direct<Output_>(value, num_all, skip_nan);
+    }
+
+    if (skip_nan) {
         auto lost = internal::translocate_nans(value, num_nonzero);
         value += lost;
         num_nonzero -= lost;
         num_all -= lost;
-    }
-
-    if (num_nonzero == num_all) {
-        return compute<skip_nan_, Output_>(value, num_all);
     }
 
     if (num_nonzero * 2 < num_all) {
@@ -155,13 +171,9 @@ Output_ compute(Value_* value, Index_ num_nonzero, Index_ num_all) {
     return tmp / 2;
 }
 
-}
-
 /**
  * Compute medians for each element of a chosen dimension of a `tatami::Matrix`.
  *
- * @tparam skip_nan_ Whether to check for (and skip) NaNs.
- * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
@@ -171,10 +183,10 @@ Output_ compute(Value_* value, Index_ num_nonzero, Index_ num_all) {
  * @param p Pointer to a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column medians.
- * @param threads Number of threads to use.
+ * @param mopt Median calculation options.
  */
-template<bool skip_nan_, typename Value_, typename Index_, typename Output_>
-void medians(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads) {
+template<typename Value_, typename Index_, typename Output_>
+void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const medians::Options& mopt) {
     auto dim = (row ? p->nrow() : p->ncol());
     auto otherdim = (row ? p->ncol() : p->nrow());
 
@@ -190,9 +202,9 @@ void medians(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output,
             for (Index_ x = 0; x < l; ++x) {
                 auto range = ext->fetch(vbuffer, NULL);
                 tatami::copy_n(range.value, range.number, vbuffer);
-                output[x + s] = median::compute<skip_nan_, Output_>(vbuffer, range.number, otherdim);
+                output[x + s] = medians::direct<Output_>(vbuffer, range.number, otherdim, mopt.skip_nan);
             }
-        }, dim, threads);
+        }, dim, mopt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -201,85 +213,86 @@ void medians(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output,
             for (Index_ x = 0; x < l; ++x) {
                 auto ptr = ext->fetch(buffer.data());
                 tatami::copy_n(ptr, otherdim, buffer.data());
-                output[x + s] = median::compute<skip_nan_, Output_>(buffer.data(), otherdim);
+                output[x + s] = medians::direct<Output_>(buffer.data(), otherdim, mopt.skip_nan);
             }
-        }, dim, threads);
+        }, dim, mopt.num_threads);
     }
 }
 
 /**
- * @tparam skip_nan_ Whether to check for (and skip) NaNs.
- * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
- * @tparam Value_ Type of the matrix value.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Output_ Type of the output.
+ * Wrapper around `apply()` for column medians.
  *
- * @param p Shared pointer to a `tatami::Matrix`.
- * @param[out] output Pointer to an array of length equal to the number of columns.
- * On output, this will contain the column medians.
- * @param threads Number of threads to use.
- */
-template<bool skip_nan_, typename Value_, typename Index_, typename Output_>
-void column_medians(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    medians<skip_nan_>(false, p, output, threads);
-}
-
-/**
- * @tparam skip_nan_ Whether to check for (and skip) NaNs.
- * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
  * @tparam Output_ Type of the output.
  * This should be floating-point to store potential averages.
  * @tparam Value_ Type of the matrix value.
  * @tparam Index_ Type of the row/column indices.
  *
  * @param p Shared pointer to a `tatami::Matrix`.
- * @param threads Number of threads to use.
+ * @param mopt Median calculation options.
  *
  * @return A vector of length equal to the number of columns, containing the column medians.
  */
-template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> column_medians(const tatami::Matrix<Value_, Index_>* p, int threads = 1) {
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& mopt) {
     std::vector<Output_> output(p->ncol());
-    tatami_stats::column_medians<skip_nan_>(p, output.data(), threads);
+    apply(false, p, output.data(), mopt);
     return output;
 }
 
 /**
- * @tparam skip_nan_ Whether to check for (and skip) NaNs.
- * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
- * @tparam Value_ Type of the matrix value.
- * @tparam Index_ Type of the row/column indices.
+ * Overload with default options.
+ *
  * @tparam Output_ Type of the output.
  * This should be floating-point to store potential averages.
+ * @tparam Value_ Type of the matrix value.
+ * @tparam Index_ Type of the row/column indices.
  *
  * @param p Shared pointer to a `tatami::Matrix`.
- * @param[out] output Pointer to an array of length equal to the number of rows.
- * On output, this will contain the row medians.
- * @param threads Number of threads to use.
+ *
+ * @return A vector of length equal to the number of columns, containing the column medians.
  */
-template<bool skip_nan_ = false, typename Value_, typename Index_, typename Output_>
-void row_medians(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    medians<skip_nan_>(true, p, output, threads);
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
+    return by_column(p, Options());
 }
 
 /**
- * @tparam skip_nan_ Whether to check for (and skip) NaNs.
- * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
+ * Wrapper around `apply()` for row medians.
+ *
  * @tparam Output_ Type of the output.
  * This should be floating-point to store potential averages.
  * @tparam Value_ Type of the matrix value.
  * @tparam Index_ Type of the row/column indices.
  *
  * @param p Shared pointer to a `tatami::Matrix`.
- * @param threads Number of threads to use.
+ * @param mopt Median calculation options.
  *
  * @return A vector of length equal to the number of rows, containing the row medians.
  */
-template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> row_medians(const tatami::Matrix<Value_, Index_>* p, int threads = 1) {
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& mopt) {
     std::vector<Output_> output(p->nrow());
-    tatami_stats::row_medians<skip_nan_>(p, output.data(), threads);
+    apply(true, p, output.data(), mopt);
     return output;
+}
+
+/**
+ * Overload with default options.
+ *
+ * @tparam Output_ Type of the output.
+ * This should be floating-point to store potential averages.
+ * @tparam Value_ Type of the matrix value.
+ * @tparam Index_ Type of the row/column indices.
+ *
+ * @param p Shared pointer to a `tatami::Matrix`.
+ *
+ * @return A vector of length equal to the number of rows, containing the row medians.
+ */
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
+    return by_row(p, Options());
+}
+
 }
 
 }

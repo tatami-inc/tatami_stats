@@ -37,7 +37,7 @@ TEST(GroupedMedians, ByRow) {
     std::vector<double> expected(rref.size());
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        auto per_group = tatami_stats::row_medians(sub.get());
+        auto per_group = tatami_stats::medians::by_row(sub.get());
         for (size_t r = 0; r < NR; ++r) {
             expected[g + r * ngroup] = per_group[r];
         }
@@ -84,7 +84,7 @@ TEST(GroupedMedians, ByColumn) {
     std::vector<double> expected(cref.size());
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        auto per_group = tatami_stats::column_medians(sub.get());
+        auto per_group = tatami_stats::medians::by_column(sub.get());
         for (size_t c = 0; c < NC; ++c) {
             expected[g + c * ngroup] = per_group[c];
         }

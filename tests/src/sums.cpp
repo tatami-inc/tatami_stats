@@ -27,16 +27,18 @@ TEST(ComputingDimSums, RowSums) {
         }
     }
 
-    compare_double_vectors(ref, tatami_stats::row_sums(dense_row.get()));
-    compare_double_vectors(ref, tatami_stats::row_sums(dense_column.get()));
-    compare_double_vectors(ref, tatami_stats::row_sums(sparse_row.get()));
-    compare_double_vectors(ref, tatami_stats::row_sums(sparse_column.get()));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(dense_row.get()));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(dense_column.get()));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(sparse_row.get()));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(sparse_column.get()));
 
     // Checking same results from parallel code.
-    compare_double_vectors(ref, tatami_stats::row_sums(dense_row.get(), 3));
-    compare_double_vectors(ref, tatami_stats::row_sums(dense_column.get(), 3));
-    compare_double_vectors(ref, tatami_stats::row_sums(sparse_row.get(), 3));
-    compare_double_vectors(ref, tatami_stats::row_sums(sparse_column.get(), 3));
+    tatami_stats::sums::Options sopt;
+    sopt.num_threads = 3;
+    compare_double_vectors(ref, tatami_stats::sums::by_row(dense_row.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(dense_column.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(sparse_row.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(sparse_column.get(), sopt));
 }
 
 TEST(ComputingDimSums, RowSumsWithNan) {
@@ -58,15 +60,17 @@ TEST(ComputingDimSums, RowSumsWithNan) {
         }
     }
 
-    compare_double_vectors(ref, tatami_stats::row_sums<true>(dense_row.get()));
-    compare_double_vectors(ref, tatami_stats::row_sums<true>(dense_column.get()));
-    compare_double_vectors(ref, tatami_stats::row_sums<true>(sparse_row.get()));
-    compare_double_vectors(ref, tatami_stats::row_sums<true>(sparse_column.get()));
+    tatami_stats::sums::Options sopt;
+    sopt.skip_nan = true;
+    compare_double_vectors(ref, tatami_stats::sums::by_row(dense_row.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(dense_column.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(sparse_row.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_row(sparse_column.get(), sopt));
 
-    EXPECT_TRUE(is_all_nan(tatami_stats::row_sums<false>(dense_row.get())));
-    EXPECT_TRUE(is_all_nan(tatami_stats::row_sums<false>(dense_column.get())));
-    EXPECT_TRUE(is_all_nan(tatami_stats::row_sums<false>(sparse_row.get())));
-    EXPECT_TRUE(is_all_nan(tatami_stats::row_sums<false>(sparse_column.get())));
+    EXPECT_TRUE(is_all_nan(tatami_stats::sums::by_row(dense_row.get())));
+    EXPECT_TRUE(is_all_nan(tatami_stats::sums::by_row(dense_column.get())));
+    EXPECT_TRUE(is_all_nan(tatami_stats::sums::by_row(sparse_row.get())));
+    EXPECT_TRUE(is_all_nan(tatami_stats::sums::by_row(sparse_column.get())));
 }
 
 
@@ -85,16 +89,18 @@ TEST(ComputingDimSums, ColumnSums) {
         }
     }
 
-    compare_double_vectors(ref, tatami_stats::column_sums(dense_row.get()));
-    compare_double_vectors(ref, tatami_stats::column_sums(dense_column.get()));
-    compare_double_vectors(ref, tatami_stats::column_sums(sparse_row.get()));
-    compare_double_vectors(ref, tatami_stats::column_sums(sparse_column.get()));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(dense_row.get()));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(dense_column.get()));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(sparse_row.get()));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(sparse_column.get()));
 
     // Checking same results from parallel code.
-    compare_double_vectors(ref, tatami_stats::column_sums(dense_column.get(), 3));
-    compare_double_vectors(ref, tatami_stats::column_sums(dense_column.get(), 3));
-    compare_double_vectors(ref, tatami_stats::column_sums(sparse_column.get(), 3));
-    compare_double_vectors(ref, tatami_stats::column_sums(sparse_column.get(), 3));
+    tatami_stats::sums::Options sopt;
+    sopt.num_threads = 3;
+    compare_double_vectors(ref, tatami_stats::sums::by_column(dense_column.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(dense_column.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(sparse_column.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(sparse_column.get(), sopt));
 }
 
 TEST(ComputingDimSums, ColumnSumsWithNan) {
@@ -116,15 +122,17 @@ TEST(ComputingDimSums, ColumnSumsWithNan) {
         }
     }
 
-    compare_double_vectors(ref, tatami_stats::column_sums<true>(dense_row.get()));
-    compare_double_vectors(ref, tatami_stats::column_sums<true>(dense_column.get()));
-    compare_double_vectors(ref, tatami_stats::column_sums<true>(sparse_row.get()));
-    compare_double_vectors(ref, tatami_stats::column_sums<true>(sparse_column.get()));
+    tatami_stats::sums::Options sopt;
+    sopt.skip_nan = true;
+    compare_double_vectors(ref, tatami_stats::sums::by_column(dense_row.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(dense_column.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(sparse_row.get(), sopt));
+    compare_double_vectors(ref, tatami_stats::sums::by_column(sparse_column.get(), sopt));
 
-    EXPECT_TRUE(is_all_nan(tatami_stats::column_sums<false>(dense_row.get())));
-    EXPECT_TRUE(is_all_nan(tatami_stats::column_sums<false>(dense_column.get())));
-    EXPECT_TRUE(is_all_nan(tatami_stats::column_sums<false>(sparse_row.get())));
-    EXPECT_TRUE(is_all_nan(tatami_stats::column_sums<false>(sparse_column.get())));
+    EXPECT_TRUE(is_all_nan(tatami_stats::sums::by_column(dense_row.get())));
+    EXPECT_TRUE(is_all_nan(tatami_stats::sums::by_column(dense_column.get())));
+    EXPECT_TRUE(is_all_nan(tatami_stats::sums::by_column(sparse_row.get())));
+    EXPECT_TRUE(is_all_nan(tatami_stats::sums::by_column(sparse_column.get())));
 }
 
 TEST(ComputingDimSums, DirtyOutput) {
@@ -135,22 +143,24 @@ TEST(ComputingDimSums, DirtyOutput) {
     auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
     auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
 
-    auto ref = tatami_stats::row_sums(dense_row.get());
+    auto ref = tatami_stats::sums::by_row(dense_row.get());
+
+    tatami_stats::sums::Options sopt;
 
     // Works when the input vector is a bit dirty.
     std::vector<double> dirty(NR, -1);
-    tatami_stats::row_sums(dense_row.get(), dirty.data());
+    tatami_stats::sums::apply(true, dense_row.get(), dirty.data(), sopt);
     compare_double_vectors(ref, dirty);
 
     std::fill(dirty.begin(), dirty.end(), -1);
-    tatami_stats::row_sums(dense_column.get(), dirty.data());
+    tatami_stats::sums::apply(true, dense_column.get(), dirty.data(), sopt);
     compare_double_vectors(ref, dirty);
 
     std::fill(dirty.begin(), dirty.end(), -1);
-    tatami_stats::row_sums(sparse_row.get(), dirty.data());
+    tatami_stats::sums::apply(true, sparse_row.get(), dirty.data(), sopt);
     compare_double_vectors(ref, dirty);
 
     std::fill(dirty.begin(), dirty.end(), -1);
-    tatami_stats::row_sums(sparse_column.get(), dirty.data());
+    tatami_stats::sums::apply(true, sparse_column.get(), dirty.data(), sopt);
     compare_double_vectors(ref, dirty);
 }

@@ -17,144 +17,6 @@ protected:
     }
 };
 
-TEST_P(ComputingDimExtremesTest, RowMins) {
-    size_t NR = 39, NC = 42;
-    auto dump = simulate(NR, NC, GetParam());
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
-
-    std::vector<double> ref(NR);
-    for (size_t r = 0; r < NR; ++r) {
-        ref[r] = dump[r * NC];
-        for (size_t c = 1; c < NC; ++c) {
-            ref[r] = std::min(ref[r], dump[c + r * NC]);
-        }
-    }
-
-    EXPECT_EQ(ref, tatami_stats::row_mins(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_mins(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::row_mins(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_mins(sparse_column.get()));
-
-    // Same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::row_mins(dense_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_mins(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_mins(sparse_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_mins(sparse_column.get(), 3));
-
-    // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::row_mins(unsorted_row.get()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::row_mins(unsorted_column.get()));
-}
-
-TEST_P(ComputingDimExtremesTest, ColumnMins) {
-    size_t NR = 55, NC = 122;
-    auto dump = simulate(NR, NC, GetParam());
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
-
-    std::vector<double> ref(NC);
-    for (size_t c = 0; c < NC; ++c) {
-        ref[c] = dump[c];
-        for (size_t r = 1; r < NR; ++r) {
-            ref[c] = std::min(ref[c], dump[c + r * NC]);
-        }
-    }
-
-    EXPECT_EQ(ref, tatami_stats::column_mins(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_mins(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::column_mins(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_mins(sparse_column.get()));
-
-    // Same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::column_mins(dense_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_mins(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_mins(sparse_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_mins(sparse_column.get(), 3));
-
-    // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::column_mins(unsorted_row.get()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::column_mins(unsorted_column.get()));
-}
-
-/********************************************/
-
-TEST_P(ComputingDimExtremesTest, RowMaxs) {
-    size_t NR = 125, NC = 32;
-    auto dump = simulate(NR, NC, GetParam());
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
-
-    std::vector<double> ref(NR);
-    for (size_t r = 0; r < NR; ++r) {
-        ref[r] = dump[r * NC];
-        for (size_t c = 1; c < NC; ++c) {
-            ref[r] = std::max(ref[r], dump[c + r * NC]);
-        }
-    }
-
-    EXPECT_EQ(ref, tatami_stats::row_maxs(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_maxs(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::row_maxs(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_maxs(sparse_column.get()));
-
-    // Same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::row_maxs(dense_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_maxs(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_maxs(sparse_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_maxs(sparse_column.get(), 3));
-
-    // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::row_maxs(unsorted_row.get()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::row_maxs(unsorted_column.get()));
-}
-
-TEST_P(ComputingDimExtremesTest, ColumnMaxs) {
-    size_t NR = 115, NC = 42;
-    auto dump = simulate(NR, NC, GetParam());
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
-
-    std::vector<double> ref(NC);
-    for (size_t c = 0; c < NC; ++c) {
-        ref[c] = dump[c];
-        for (size_t r = 1; r < NR; ++r) {
-            ref[c] = std::max(ref[c], dump[c + r * NC]);
-        }
-    }
-
-    EXPECT_EQ(ref, tatami_stats::column_maxs(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_maxs(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::column_maxs(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_maxs(sparse_column.get()));
-
-    // Same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::column_maxs(dense_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_maxs(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_maxs(sparse_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_maxs(sparse_column.get(), 3));
-
-    // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::column_maxs(unsorted_row.get()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::column_maxs(unsorted_column.get()));
-}
-
 /********************************************/
 
 TEST_P(ComputingDimExtremesTest, RowRanges) {
@@ -165,48 +27,67 @@ TEST_P(ComputingDimExtremesTest, RowRanges) {
     auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
     auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
 
-    auto ref = tatami_stats::row_ranges(dense_row.get());
-    EXPECT_EQ(ref.first, tatami_stats::row_mins(dense_row.get()));
-    EXPECT_EQ(ref.second, tatami_stats::row_maxs(dense_row.get()));
+    std::vector<double> refmin(NR), refmax(NR);
+    for (size_t r = 0; r < NR; ++r) {
+        auto x = dump[r * NC];
+        refmin[r] = x;
+        refmax[r] = x;
+        for (size_t c = 1; c < NC; ++c) {
+            auto x = dump[c + r * NC];
+            refmin[r] = std::min(refmin[r], x);
+            refmax[r] = std::max(refmax[r], x);
+        }
+    }
+    std::pair<std::vector<double>, std::vector<double> > ref(std::move(refmin), std::move(refmax));
 
-    EXPECT_EQ(ref, tatami_stats::row_ranges(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::row_ranges(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_ranges(sparse_column.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(sparse_column.get()));
 
     // Same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::row_ranges(dense_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_ranges(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_ranges(sparse_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::row_ranges(sparse_column.get(), 3));
+    tatami_stats::ranges::Options ropt;
+    ropt.num_threads = 3;
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(dense_row.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(dense_column.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(sparse_row.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(sparse_column.get(), ropt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::row_ranges(unsorted_row.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(unsorted_row.get()));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::row_ranges(unsorted_column.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(unsorted_column.get()));
 
-    // Checking correct behavior with dirty output buffers.
+    // Checking correct behavior with dirty output buffers, and sometimes
+    // NULL pointers (so only one of the min/max is being computed).
     {
+        tatami_stats::ranges::Options opt;
+
         std::vector<double> row_mins(NR, -1), row_maxs(NR, -1);
-        tatami_stats::row_ranges(dense_row.get(), row_mins.data(), row_maxs.data());
+        tatami_stats::ranges::apply(true, dense_row.get(), row_mins.data(), static_cast<double*>(NULL), opt);
+        tatami_stats::ranges::apply(true, dense_row.get(), static_cast<double*>(NULL), row_maxs.data(), opt);
         EXPECT_EQ(ref.first, row_mins);
         EXPECT_EQ(ref.second, row_maxs);
 
         std::fill(row_mins.begin(), row_mins.end(), -1);
         std::fill(row_maxs.begin(), row_maxs.end(), -1);
-        tatami_stats::row_ranges(dense_row.get(), row_mins.data(), row_maxs.data());
+        tatami_stats::ranges::apply(true, dense_row.get(), row_mins.data(), static_cast<double*>(NULL), opt);
+        tatami_stats::ranges::apply(true, dense_row.get(), static_cast<double*>(NULL), row_maxs.data(), opt);
         EXPECT_EQ(ref.first, row_mins);
         EXPECT_EQ(ref.second, row_maxs);
 
         std::fill(row_mins.begin(), row_mins.end(), -1);
         std::fill(row_maxs.begin(), row_maxs.end(), -1);
-        tatami_stats::row_ranges(sparse_row.get(), row_mins.data(), row_maxs.data());
+        tatami_stats::ranges::apply(true, sparse_row.get(), row_mins.data(), static_cast<double*>(NULL), opt);
+        tatami_stats::ranges::apply(true, sparse_row.get(), static_cast<double*>(NULL), row_maxs.data(), opt);
         EXPECT_EQ(ref.first, row_mins);
         EXPECT_EQ(ref.second, row_maxs);
 
         std::fill(row_mins.begin(), row_mins.end(), -1);
         std::fill(row_maxs.begin(), row_maxs.end(), -1);
-        tatami_stats::row_ranges(sparse_row.get(), row_mins.data(), row_maxs.data());
+        tatami_stats::ranges::apply(true, sparse_row.get(), row_mins.data(), static_cast<double*>(NULL), opt);
+        tatami_stats::ranges::apply(true, sparse_row.get(), static_cast<double*>(NULL), row_maxs.data(), opt);
         EXPECT_EQ(ref.first, row_mins);
         EXPECT_EQ(ref.second, row_maxs);
     }
@@ -238,10 +119,12 @@ TEST_P(ComputingDimExtremesTest, RowRangesWithNan) {
         }
     }
 
-    EXPECT_EQ(ref, tatami_stats::row_ranges<true>(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_ranges<true>(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::row_ranges<true>(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::row_ranges<true>(sparse_column.get()));
+    tatami_stats::ranges::Options ropt;
+    ropt.skip_nan = true;
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(dense_row.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(dense_column.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(sparse_row.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_row(sparse_column.get(), ropt));
 }
 
 TEST_P(ComputingDimExtremesTest, ColumnRanges) {
@@ -252,25 +135,37 @@ TEST_P(ComputingDimExtremesTest, ColumnRanges) {
     auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
     auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
 
-    auto ref = tatami_stats::column_ranges(dense_row.get());
-    EXPECT_EQ(ref.first, tatami_stats::column_mins(dense_row.get()));
-    EXPECT_EQ(ref.second, tatami_stats::column_maxs(dense_row.get()));
+    std::vector<double> refmin(NC), refmax(NC);
+    for (size_t c = 0; c < NC; ++c) {
+        auto x = dump[c];
+        refmin[c] = x;
+        refmax[c] = x;
+        for (size_t r = 1; r < NR; ++r) {
+            auto x = dump[c + r * NC];
+            refmin[c] = std::min(refmin[c], x);
+            refmax[c] = std::max(refmax[c], x);
+        }
+    }
+    std::pair<std::vector<double>, std::vector<double> > ref(std::move(refmin), std::move(refmax));
 
-    EXPECT_EQ(ref, tatami_stats::column_ranges(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::column_ranges(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_ranges(sparse_column.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(sparse_column.get()));
 
     // Same results from parallel code.
-    EXPECT_EQ(ref, tatami_stats::column_ranges(dense_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_ranges(dense_column.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_ranges(sparse_row.get(), 3));
-    EXPECT_EQ(ref, tatami_stats::column_ranges(sparse_column.get(), 3));
+    tatami_stats::ranges::Options ropt;
+    ropt.num_threads = 3;
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(dense_row.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(dense_column.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(sparse_row.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(sparse_column.get(), ropt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
-    EXPECT_EQ(ref, tatami_stats::column_ranges(unsorted_row.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(unsorted_row.get()));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
-    EXPECT_EQ(ref, tatami_stats::column_ranges(unsorted_column.get()));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(unsorted_column.get()));
 }
 
 TEST_P(ComputingDimExtremesTest, ColumnRangesWithNan) {
@@ -299,10 +194,12 @@ TEST_P(ComputingDimExtremesTest, ColumnRangesWithNan) {
         }
     }
 
-    EXPECT_EQ(ref, tatami_stats::column_ranges<true>(dense_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_ranges<true>(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::column_ranges<true>(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::column_ranges<true>(sparse_column.get()));
+    tatami_stats::ranges::Options ropt;
+    ropt.skip_nan = true;
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(dense_row.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(dense_column.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(sparse_row.get(), ropt));
+    EXPECT_EQ(ref, tatami_stats::ranges::by_column(sparse_column.get(), ropt));
 }
 
 /********************************************/
@@ -327,39 +224,41 @@ TEST(ComputingDimExtremes, AllZeros) {
     auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
 
     auto cref = std::make_pair(std::vector<double>(20), std::vector<double>(20));
-    EXPECT_EQ(cref, tatami_stats::column_ranges(dense_row.get()));
-    EXPECT_EQ(cref, tatami_stats::column_ranges(dense_column.get()));
-    EXPECT_EQ(cref, tatami_stats::column_ranges(sparse_row.get()));
-    EXPECT_EQ(cref, tatami_stats::column_ranges(sparse_column.get()));
+    EXPECT_EQ(cref, tatami_stats::ranges::by_column(dense_row.get()));
+    EXPECT_EQ(cref, tatami_stats::ranges::by_column(dense_column.get()));
+    EXPECT_EQ(cref, tatami_stats::ranges::by_column(sparse_row.get()));
+    EXPECT_EQ(cref, tatami_stats::ranges::by_column(sparse_column.get()));
 
     auto rref = std::make_pair(std::vector<double>(10), std::vector<double>(10));
-    EXPECT_EQ(rref, tatami_stats::row_ranges(dense_row.get()));
-    EXPECT_EQ(rref, tatami_stats::row_ranges(dense_column.get()));
-    EXPECT_EQ(rref, tatami_stats::row_ranges(sparse_row.get()));
-    EXPECT_EQ(rref, tatami_stats::row_ranges(sparse_column.get()));
+    EXPECT_EQ(rref, tatami_stats::ranges::by_row(dense_row.get()));
+    EXPECT_EQ(rref, tatami_stats::ranges::by_row(dense_column.get()));
+    EXPECT_EQ(rref, tatami_stats::ranges::by_row(sparse_row.get()));
+    EXPECT_EQ(rref, tatami_stats::ranges::by_row(sparse_column.get()));
 
     // Checking correct behavior with dirty output buffers.
     {
+        tatami_stats::ranges::Options opt;
+
         std::vector<double> column_mins(20, -1), column_maxs(20, -1);
-        tatami_stats::column_ranges(dense_column.get(), column_mins.data(), column_maxs.data());
+        tatami_stats::ranges::apply(false, dense_column.get(), column_mins.data(), column_maxs.data(), opt);
         EXPECT_EQ(cref.first, column_mins);
         EXPECT_EQ(cref.second, column_maxs);
 
         std::fill(column_mins.begin(), column_mins.end(), -1);
         std::fill(column_maxs.begin(), column_maxs.end(), -1);
-        tatami_stats::column_ranges(dense_column.get(), column_mins.data(), column_maxs.data());
+        tatami_stats::ranges::apply(false, dense_column.get(), column_mins.data(), column_maxs.data(), opt);
         EXPECT_EQ(cref.first, column_mins);
         EXPECT_EQ(cref.second, column_maxs);
 
         std::fill(column_mins.begin(), column_mins.end(), -1);
         std::fill(column_maxs.begin(), column_maxs.end(), -1);
-        tatami_stats::column_ranges(sparse_column.get(), column_mins.data(), column_maxs.data());
+        tatami_stats::ranges::apply(false, sparse_column.get(), column_mins.data(), column_maxs.data(), opt);
         EXPECT_EQ(cref.first, column_mins);
         EXPECT_EQ(cref.second, column_maxs);
 
         std::fill(column_mins.begin(), column_mins.end(), -1);
         std::fill(column_maxs.begin(), column_maxs.end(), -1);
-        tatami_stats::column_ranges(sparse_column.get(), column_mins.data(), column_maxs.data());
+        tatami_stats::ranges::apply(false, sparse_column.get(), column_mins.data(), column_maxs.data(), opt);
         EXPECT_EQ(cref.first, column_mins);
         EXPECT_EQ(cref.second, column_maxs);
     }
@@ -377,47 +276,47 @@ TEST(ComputingDimExtremes, NoZeros) {
     auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
     auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
 
-    auto cref = tatami_stats::column_ranges(dense_row.get());
-    EXPECT_EQ(cref, tatami_stats::column_ranges(dense_column.get()));
-    EXPECT_EQ(cref, tatami_stats::column_ranges(sparse_row.get()));
-    EXPECT_EQ(cref, tatami_stats::column_ranges(sparse_column.get()));
+    auto cref = tatami_stats::ranges::by_column(dense_row.get());
+    EXPECT_EQ(cref, tatami_stats::ranges::by_column(dense_column.get()));
+    EXPECT_EQ(cref, tatami_stats::ranges::by_column(sparse_row.get()));
+    EXPECT_EQ(cref, tatami_stats::ranges::by_column(sparse_column.get()));
 
-    auto rref = tatami_stats::row_ranges(dense_row.get());
-    EXPECT_EQ(rref, tatami_stats::row_ranges(dense_column.get()));
-    EXPECT_EQ(rref, tatami_stats::row_ranges(sparse_row.get()));
-    EXPECT_EQ(rref, tatami_stats::row_ranges(sparse_column.get()));
+    auto rref = tatami_stats::ranges::by_row(dense_row.get());
+    EXPECT_EQ(rref, tatami_stats::ranges::by_row(dense_column.get()));
+    EXPECT_EQ(rref, tatami_stats::ranges::by_row(sparse_row.get()));
+    EXPECT_EQ(rref, tatami_stats::ranges::by_row(sparse_column.get()));
 }
 
 TEST(ComputingDimExtremes, Empty) {
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(10, 0, std::vector<double>()));
-    EXPECT_EQ(tatami_stats::column_mins(dense_row.get()).size(), 0);
-    EXPECT_EQ(tatami_stats::row_mins(dense_row.get()), std::vector<double>(10, std::numeric_limits<double>::infinity()));
-    EXPECT_EQ(tatami_stats::row_maxs(dense_row.get()), std::vector<double>(10, -std::numeric_limits<double>::infinity()));
+    auto cres = tatami_stats::ranges::by_column(dense_row.get());
+    EXPECT_EQ(cres.first.size(), 0);
+
+    auto rres = tatami_stats::ranges::by_row(dense_row.get());
+    EXPECT_EQ(rres.first, std::vector<double>(10, std::numeric_limits<double>::infinity()));
+    EXPECT_EQ(rres.second, std::vector<double>(10, -std::numeric_limits<double>::infinity()));
 
     // Early return will still sanitize dirty output buffers.
     {
+        tatami_stats::ranges::Options ropt;
         std::vector<double> row_mins(10, -1), row_maxs(10, -1);
-        tatami_stats::row_ranges(dense_row.get(), row_mins.data(), row_maxs.data());
+        tatami_stats::ranges::apply(true, dense_row.get(), row_mins.data(), row_maxs.data(), ropt);
         EXPECT_EQ(row_mins, std::vector<double>(10, std::numeric_limits<double>::infinity()));
         EXPECT_EQ(row_maxs, std::vector<double>(10, -std::numeric_limits<double>::infinity()));
     }
 
     // Trying with the integer types.
     {
-        auto dense_row = std::make_unique<tatami::DenseRowMatrix<uint8_t, int, std::vector<uint8_t> > >(10, 0, std::vector<uint8_t>());
-        auto minout = tatami_stats::row_mins<false, uint8_t>(dense_row.get());
-        EXPECT_EQ(minout, std::vector<uint8_t>(10, 255));
-        auto maxout = tatami_stats::row_maxs<false, uint8_t>(dense_row.get());
-        EXPECT_EQ(maxout, std::vector<uint8_t>(10, 0));
+        tatami::DenseRowMatrix<uint8_t, int, std::vector<uint8_t> > dense_row(10, 0, std::vector<uint8_t>());
+        auto out = tatami_stats::ranges::by_row<uint8_t, uint8_t, int>(&dense_row);
+        EXPECT_EQ(out.first, std::vector<uint8_t>(10, 255));
+        EXPECT_EQ(out.second, std::vector<uint8_t>(10, 0));
     }
 
     {
-        auto dense_row = std::make_unique<tatami::DenseRowMatrix<int8_t, int, std::vector<int8_t> > >(10, 0, std::vector<int8_t>());
-        auto minout = tatami_stats::row_mins<false, int8_t>(dense_row.get());
-        EXPECT_EQ(minout, std::vector<int8_t>(10, 127));
-        auto maxout = tatami_stats::row_maxs<false, int8_t>(dense_row.get());
-        EXPECT_EQ(maxout, std::vector<int8_t>(10, -128));
+        tatami::DenseRowMatrix<int8_t, int, std::vector<int8_t> > dense_row(0, 10, std::vector<int8_t>());
+        auto out = tatami_stats::ranges::by_column<int8_t, int8_t, int>(&dense_row);
+        EXPECT_EQ(out.first, std::vector<int8_t>(10, 127));
+        EXPECT_EQ(out.second, std::vector<int8_t>(10, -128));
     }
-
-
 }
