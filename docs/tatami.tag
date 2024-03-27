@@ -19,6 +19,7 @@
     <name>medians.hpp</name>
     <path>tatami_stats/</path>
     <filename>medians_8hpp.html</filename>
+    <namespace>tatami_stats::median</namespace>
   </compound>
   <compound kind="file">
     <name>ranges.hpp</name>
@@ -83,6 +84,24 @@
       <anchorfile>structtatami__stats_1_1sum_1_1RunningSparse.html</anchorfile>
       <anchor>a23ddf9ff9b542217444eee7849c077dc</anchor>
       <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
+    </member>
+  </compound>
+  <compound kind="namespace">
+    <name>tatami_stats::median</name>
+    <filename>namespacetatami__stats_1_1median.html</filename>
+    <member kind="function">
+      <type>Output_</type>
+      <name>compute</name>
+      <anchorfile>namespacetatami__stats_1_1median.html</anchorfile>
+      <anchor>a9747d128e5ffc02215e8d9b13dcff91e</anchor>
+      <arglist>(Value_ *ptr, Index_ num)</arglist>
+    </member>
+    <member kind="function">
+      <type>Output_</type>
+      <name>compute</name>
+      <anchorfile>namespacetatami__stats_1_1median.html</anchorfile>
+      <anchor>a7c45e9e0ec266e59d9f5fba9d02244a1</anchor>
+      <arglist>(Value_ *value, Index_ num_nonzero, Index_ num_all)</arglist>
     </member>
   </compound>
   <compound kind="namespace">
