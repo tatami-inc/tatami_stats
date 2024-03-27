@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <type_traits>
 
 /**
  * @file ranges.hpp
@@ -14,29 +15,172 @@
 
 namespace tatami_stats {
 
+namespace extreme {
+
 /**
  * @cond
  */
-namespace range_internal {
+namespace internal {
 
-template<bool row_, typename Output_, typename Value_, typename Index_, class StoreMinimum_, class StoreMaximum_>
-void dimension_extremes(const tatami::Matrix<Value_, Index_>* p, int threads, StoreMinimum_& min_out, StoreMaximum_& max_out) {
-    auto dim = (row_ ? p->nrow() : p->ncol());
-    auto otherdim = (row_ ? p->ncol() : p->nrow());
-    const bool direct = p->prefer_rows() == row_;
-
-    constexpr bool store_min = !std::is_same<StoreMinimum_, bool>::value;
-    constexpr bool store_max = !std::is_same<StoreMaximum_, bool>::value;
-
-    if (!otherdim) {
-        if constexpr(store_min) {
-            std::fill(min_out, min_out + dim, 0);
+template<bool get_minimum_, typename Value_>
+constexpr auto choose_placeholder() {
+    if constexpr(get_minimum_) {
+        // Placeholder value 'x' is such that 'x > y' is always true for any non-NaN 'y'.
+        if constexpr(std::numeric_limits<Value_>::has_infinity) {
+            return std::numeric_limits<Value_>::infinity();
+        } else {
+            return std::numeric_limits<Value_>::max();
         }
-        if constexpr(store_max) {
-            std::fill(max_out, max_out + dim, 0);
+    } else {
+        // Placeholder value 'x' is such that 'x < y' is always true for any non-NaN 'y'.
+        if constexpr(std::numeric_limits<Value_>::has_infinity) {
+            return -std::numeric_limits<Value_>::infinity();
+        } else {
+            return std::numeric_limits<Value_>::lowest();
         }
-        return;
     }
+}
+
+template<bool get_minimum_, typename Value_>
+bool is_better(Value_ best, Value_ alt) {
+    if constexpr(get_minimum_) {
+        return best > alt;
+    } else {
+        return best < alt;
+    }
+}
+
+}
+/**
+ * @endcond
+ */
+
+template<bool get_minimum_, bool skip_nan_ = false, typename Value_, typename Index_>
+Value_ compute(const Value_* ptr, Index_ num) {
+    if constexpr(skip_nan_) {
+        auto current = internal::choose_placeholder<get_minimum_, Value_>(); 
+        for (Index_ i = 0; i < num; ++i) {
+            auto val = ptr[i];
+            if (internal::is_better<get_minimum_>(current, val)) { // no need to explicitly handle NaNs, as any comparison with NaNs is always false.
+                current = val;
+            }
+        }
+        return current;
+
+    } else if (num) {
+        if constexpr(get_minimum_) {
+            return *std::min_element(ptr, ptr + num);
+        } else {
+            return *std::max_element(ptr, ptr + num);
+        }
+
+    } else {
+        return internal::choose_placeholder<get_minimum_, Value_>(); 
+    }
+}
+
+template<bool get_minimum_, bool skip_nan_ = false, typename Value_, typename Index_>
+Value_ compute(const Value_* value, Index_ num_nonzero, Index_ num_all) {
+    if (num_nonzero) {
+        auto candidate = compute<get_minimum_, skip_nan_>(value, num_nonzero);
+        if (num_nonzero < num_all && internal::is_better<get_minimum_>(candidate, static_cast<Value_>(0))) {
+            candidate = 0;
+        }
+        return candidate;
+    } else if (num_all) {
+        return 0;
+    } else {
+        return internal::choose_placeholder<get_minimum_, Value_>();
+    }
+}
+
+template<bool get_minimum_, bool skip_nan_ = false, typename Output_ = double, typename Index_ = int>
+struct RunningDense {
+    RunningDense(Index_ num, Output_* store) : num(num), store(store) {}
+
+    template<typename Value_>
+    void add(const Value_* ptr) {
+        if (init) {
+            init = false;
+            for (Index_ i = 0; i < num; ++i, ++ptr) {
+                auto val = *ptr;
+                if constexpr(skip_nan_) {
+                    if (std::isnan(val)) {
+                        val = internal::choose_placeholder<get_minimum_, Value_>();
+                    }
+                }
+                store[i] = val;
+            }
+
+        } else {
+            for (Index_ i = 0; i < num; ++i, ++ptr) {
+                auto val = *ptr;
+                if (internal::is_better<get_minimum_>(store[i], val)) { // this should implicitly skip NaNs, any NaN comparison will be false.
+                    store[i] = val;
+                }
+            }
+        }
+    }
+
+private:
+    bool init = true;
+    Index_ num;
+    Output_* store;
+};
+
+template<bool get_minimum_, bool skip_nan_ = false, typename Output_ = double, typename Index_ = int>
+struct RunningSparse {
+    RunningSparse(Index_ num, Output_* store, Index_ subtract = 0) : num(num), store(store), subtract(subtract) {}
+
+    template<typename Value_>
+    void add(const Value_* value, const Index_* index, Index_ number) {
+        if (count == 0) {
+            nonzero.resize(num);
+            std::fill_n(store, num, internal::choose_placeholder<get_minimum_, Value_>());
+        }
+
+        for (Index_ i = 0; i < number; ++i, ++value, ++index) {
+            auto val = *value;
+            auto idx = *index - subtract;
+            auto& current = store[idx];
+            if (internal::is_better<get_minimum_>(current, val)) { // this should implicitly skip NaNs, any NaN comparison will be false.
+                current = val;
+            }
+            ++nonzero[idx];
+        }
+
+        ++count;
+    }
+
+    void finish() {
+        for (Index_ i = 0; i < num; ++i) {
+            if (count > nonzero[i]) {
+                auto& current = store[i];
+                if (internal::is_better<get_minimum_>(current, static_cast<Output_>(0))) {
+                    current = 0;
+                }
+            }
+        }
+    }
+
+private:
+    Index_ num;
+    Output_* store;
+    Index_ subtract;
+    Index_ count = 0;
+    std::vector<Index_> nonzero;
+};
+
+}
+
+template<bool skip_nan_, typename Value_, typename Index_, typename Output_>
+void extremes(bool row, const tatami::Matrix<Value_, Index_>* p, int threads, Output_* min_out, Output_* max_out) {
+    auto dim = (row ? p->nrow() : p->ncol());
+    auto otherdim = (row ? p->ncol() : p->nrow());
+    const bool direct = p->prefer_rows() == row;
+
+    bool store_min = min_out != NULL;
+    bool store_max = max_out != NULL;
 
     if (p->sparse()) {
         tatami::Options opt;
@@ -45,88 +189,43 @@ void dimension_extremes(const tatami::Matrix<Value_, Index_>* p, int threads, St
         if (direct) {
             opt.sparse_extract_index = false;
             tatami::parallelize([&](size_t, Index_ s, Index_ l) {
-                auto ext = tatami::consecutive_extractor<true>(p, row_, s, l, opt);
+                auto ext = tatami::consecutive_extractor<true>(p, row, s, l, opt);
                 std::vector<Value_> vbuffer(otherdim);
-
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(vbuffer.data(), NULL);
-                    if (out.number) {
-                        if constexpr(store_min) {
-                            auto minned = *std::min_element(out.value, out.value + out.number);
-                            if (minned > 0 && out.number != otherdim) {
-                                minned = 0;
-                            }
-                            min_out[x + s] = minned;
-                        }
-                        if constexpr(store_max) {
-                            auto maxed = *std::max_element(out.value, out.value + out.number);
-                            if (maxed < 0 && out.number != otherdim) {
-                                maxed = 0;
-                            }
-                            max_out[x + s] = maxed;
-                        }
-                    } else {
-                        if constexpr(store_min) {
-                            min_out[x + s] = 0;
-                        }
-                        if constexpr(store_max) {
-                            max_out[x + s] = 0;
-                        }
+                    if (store_min) {
+                        min_out[x + s] = extreme::compute<true, skip_nan_>(out.value, out.number, otherdim);
+                    }
+                    if (store_max) {
+                        max_out[x + s] = extreme::compute<false, skip_nan_>(out.value, out.number, otherdim);
                     }
                 }
             }, dim, threads);
 
         } else {
             tatami::parallelize([&](size_t, Index_ s, Index_ l) {
-                auto ext = tatami::consecutive_extractor<true>(p, !row_, 0, otherdim, s, l, opt);
+                auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, s, l, opt);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
-                std::vector<Index_> counter(l);
+
+                extreme::RunningSparse<true, skip_nan_, Output_, Index_> runmin(l, (store_min ? min_out + s : NULL), s);
+                extreme::RunningSparse<false, skip_nan_, Output_, Index_> runmax(l, (store_max ? max_out + s : NULL), s);
 
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto out = ext->fetch(vbuffer.data(), ibuffer.data());
-                    for (Index_ j = 0; j < out.number; ++j) {
-                        auto idx = out.index[j];
-                        auto& c = counter[idx - s];
-                        auto val = static_cast<Output_>(out.value[j]);
-                        if constexpr(store_min) {
-                            auto& last = min_out[idx];
-                            if (c == 0 || last > val) {
-                                last = val;
-                            }
-                        } 
-                        if constexpr(store_max) {
-                            auto& last = max_out[idx];
-                            if (c == 0 || last < val) {
-                                last = val;
-                            }
-                        }
-                        ++c;
+                    if (store_min) {
+                        runmin.add(out.value, out.index, out.number);
+                    }
+                    if (store_max) {
+                        runmax.add(out.value, out.index, out.number);
                     }
                 }
 
-                // Handling the zeros.
-                for (Index_ i = s, e = s + l; i < e; ++i) {
-                    auto c = counter[i - s];
-                    if (c == 0) {
-                        if constexpr(store_min) {
-                            min_out[i] = 0;
-                        }
-                        if constexpr(store_max) {
-                            max_out[i] = 0;
-                        }
-                    } else if (c < otherdim) {
-                        if constexpr(store_min) {
-                            if (min_out[i] > 0) {
-                                min_out[i] = 0;
-                            }
-                        }
-                        if constexpr(store_max) {
-                            if (max_out[i] < 0) {
-                                max_out[i] = 0;
-                            }
-                        }
-                    }
+                if (store_min) {
+                    runmin.finish();
+                }
+                if (store_max) {
+                    runmax.finish();
                 }
             }, dim, threads);
         }
@@ -134,52 +233,34 @@ void dimension_extremes(const tatami::Matrix<Value_, Index_>* p, int threads, St
     } else {
         if (direct) {
             tatami::parallelize([&](size_t, Index_ s, Index_ l) {
-                auto ext = tatami::consecutive_extractor<false>(p, row_, s, l);
+                auto ext = tatami::consecutive_extractor<false>(p, row, s, l);
                 std::vector<Value_> buffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto ptr = ext->fetch(buffer.data());
-                    if constexpr(store_min) {
-                        min_out[x + s] = *std::min_element(ptr, ptr + otherdim);
+                    if (store_min) {
+                        min_out[x + s] = extreme::compute<true, skip_nan_>(ptr, otherdim);
                     }
-                    if constexpr(store_max) {
-                        max_out[x + s] = *std::max_element(ptr, ptr + otherdim);
-                    } 
+                    if (store_max) {
+                        max_out[x + s] = extreme::compute<false, skip_nan_>(ptr, otherdim);
+                    }
                 }
             }, dim, threads);
 
         } else {
             tatami::parallelize([&](size_t, Index_ s, Index_ l) {
-                auto ext = tatami::consecutive_extractor<false>(p, !row_, 0, otherdim, s, l);
+                auto ext = tatami::consecutive_extractor<false>(p, !row, 0, otherdim, s, l);
                 std::vector<Value_> buffer(l);
 
-                // We already have a otherdim > 0 check above.
-                {
-                    auto ptr = ext->fetch(buffer.data());
-                    if constexpr(store_min) {
-                        std::copy(ptr, ptr + l, min_out + s);
-                    }
-                    if constexpr(store_max) {
-                        std::copy(ptr, ptr + l, max_out + s);
-                    }
-                }
+                extreme::RunningDense<true, skip_nan_, Output_, Index_> runmin(l, (store_min ? min_out + s : NULL));
+                extreme::RunningDense<false, skip_nan_, Output_, Index_> runmax(l, (store_max ? max_out + s : NULL));
 
-                for (Index_ x = 1; x < otherdim; ++x) {
+                for (Index_ x = 0; x < otherdim; ++x) {
                     auto ptr = ext->fetch(buffer.data());
-                    for (Index_ d = 0; d < l; ++d) {
-                        auto idx = d + s;
-                        auto val = static_cast<Output_>(ptr[d]);
-                        if constexpr(store_min) {
-                            auto& last = min_out[idx];
-                            if (last > val) {
-                                last = val;
-                            }
-                        }
-                        if constexpr(store_max) {
-                            auto& last = max_out[idx];
-                            if (last < val) {
-                                last = val;
-                            }
-                        }
+                    if (store_min) {
+                        runmin.add(ptr);
+                    }
+                    if (store_max) {
+                        runmax.add(ptr);
                     }
                 }
             }, dim, threads);
@@ -188,11 +269,6 @@ void dimension_extremes(const tatami::Matrix<Value_, Index_>* p, int threads, St
 
     return;
 }
-
-}
-/**
- * @endcond
- */
 
 /**
  * @tparam Output Type of the output value.
@@ -204,10 +280,9 @@ void dimension_extremes(const tatami::Matrix<Value_, Index_>* p, int threads, St
  * On output, this contains the maximum value in each column.
  * @param threads Number of threads to use.
  */
-template<typename Value_, typename Index_, typename Output_>
+template<bool skip_nan_, typename Value_, typename Index_, typename Output_>
 void column_maxs(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    bool temp = false;
-    range_internal::dimension_extremes<false, Output_>(p, threads, temp, output);
+    extremes<skip_nan_>(false, p, threads, static_cast<Output_*>(NULL), output);
     return;
 }
 
@@ -221,10 +296,10 @@ void column_maxs(const tatami::Matrix<Value_, Index_>* p, Output_* output, int t
  *
  * @return A vector of length equal to the number of columns, containing the maximum value in each column.
  */
-template<typename Output_ = double, typename Value_, typename Index_>
+template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> column_maxs(const tatami::Matrix<Value_, Index_>* p, int threads = 1) {
     std::vector<Output_> output(p->ncol());
-    column_maxs(p, output.data(), threads);
+    column_maxs<skip_nan_>(p, output.data(), threads);
     return output;
 }
 
@@ -238,10 +313,9 @@ std::vector<Output_> column_maxs(const tatami::Matrix<Value_, Index_>* p, int th
  * On output, this contains the maximum value in each row.
  * @param threads Number of threads to use.
  */
-template<typename Value_, typename Index_, typename Output_>
+template<bool skip_nan_ = false, typename Value_, typename Index_, typename Output_>
 void row_maxs(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    bool temp = false;
-    range_internal::dimension_extremes<true, Output_>(p, threads, temp, output);
+    extremes<skip_nan_, Output_>(true, p, threads, static_cast<Output_*>(NULL), output);
     return;
 }
 
@@ -255,10 +329,10 @@ void row_maxs(const tatami::Matrix<Value_, Index_>* p, Output_* output, int thre
  *
  * @return A vector of length equal to the number of rows, containing the maximum value in each row.
  */
-template<typename Output_ = double, typename Value_, typename Index_>
+template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> row_maxs(const tatami::Matrix<Value_, Index_>* p, int threads = 1) {
     std::vector<Output_> output(p->nrow());
-    row_maxs(p, output.data(), threads);
+    row_maxs<skip_nan_>(p, output.data(), threads);
     return output;
 }
 
@@ -272,10 +346,9 @@ std::vector<Output_> row_maxs(const tatami::Matrix<Value_, Index_>* p, int threa
  * On output, this contains the minimum value in each column.
  * @param threads Number of threads to use.
  */
-template<typename Value_, typename Index_, typename Output_>
+template<bool skip_nan_ = false, typename Value_, typename Index_, typename Output_>
 void column_mins(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    bool temp = false;
-    range_internal::dimension_extremes<false, Output_>(p, threads, output, temp);
+    extremes<skip_nan_>(false, p, threads, output, static_cast<Output_*>(NULL));
     return; 
 }
 
@@ -289,10 +362,10 @@ void column_mins(const tatami::Matrix<Value_, Index_>* p, Output_* output, int t
  *
  * @return A vector of length equal to the number of columns, containing the minimum value in each column.
  */
-template<typename Output_ = double, typename Value_, typename Index_>
+template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> column_mins(const tatami::Matrix<Value_, Index_>* p, int threads = 1) {
     std::vector<Output_> output(p->ncol());
-    column_mins(p, output.data(), threads);
+    column_mins<skip_nan_>(p, output.data(), threads);
     return output;
 }
 
@@ -306,10 +379,9 @@ std::vector<Output_> column_mins(const tatami::Matrix<Value_, Index_>* p, int th
  * On output, this is filled with the minimum value in each row.
  * @param threads Number of threads to use.
  */
-template<typename Value_, typename Index_, typename Output_>
+template<bool skip_nan_ = false, typename Value_, typename Index_, typename Output_>
 void row_mins(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    bool temp = false;
-    range_internal::dimension_extremes<true, Output_>(p, threads, output, temp);
+    extremes<skip_nan_>(true, p, threads, output, static_cast<Output_*>(NULL));
     return;
 }
 
@@ -323,10 +395,10 @@ void row_mins(const tatami::Matrix<Value_, Index_>* p, Output_* output, int thre
  *
  * @return A vector of length equal to the number of rows, containing the minimum value in each row.
  */
-template<typename Output_ = double, typename Value_, typename Index_>
+template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> row_mins(const tatami::Matrix<Value_, Index_>* p, int threads = 1) {
     std::vector<Output_> output(p->nrow());
-    row_mins(p, output.data(), threads);
+    row_mins<skip_nan_>(p, output.data(), threads);
     return output;
 }
 
@@ -342,9 +414,9 @@ std::vector<Output_> row_mins(const tatami::Matrix<Value_, Index_>* p, int threa
  * On output, this contains the maximum value per row.
  * @param threads Number of threads to use.
  */
-template<typename Value_, typename Index_, typename Output_>
+template<bool skip_nan_ = false, typename Value_, typename Index_, typename Output_>
 void column_ranges(const tatami::Matrix<Value_, Index_>* p, Output_* min_output, Output_* max_output, int threads = 1) {
-    range_internal::dimension_extremes<false, Output_>(p, threads, min_output, max_output);
+    extremes<skip_nan_>(false, p, threads, min_output, max_output);
     return;
 }
 
@@ -359,10 +431,10 @@ void column_ranges(const tatami::Matrix<Value_, Index_>* p, Output_* min_output,
  * @return A pair of vectors, each of length equal to the number of columns.
  * The first and second vector contains the minimum and maximum value per column, respectively.
  */
-template<typename Output_ = double, typename Value_, typename Index_>
+template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
 std::pair<std::vector<Output_>, std::vector<Output_> > column_ranges(const tatami::Matrix<Value_, Index_>* p, int threads = 1) {
     std::vector<Output_> mins(p->ncol()), maxs(p->ncol());
-    column_ranges(p, mins.data(), maxs.data(), threads);
+    column_ranges<skip_nan_>(p, mins.data(), maxs.data(), threads);
     return std::make_pair(std::move(mins), std::move(maxs));
 }
 
@@ -378,9 +450,9 @@ std::pair<std::vector<Output_>, std::vector<Output_> > column_ranges(const tatam
  * On output, this contains the maximum value per row.
  * @param threads Number of threads to use.
  */
-template<typename Value_, typename Index_, typename Output_>
+template<bool skip_nan_ = false, typename Value_, typename Index_, typename Output_>
 void row_ranges(const tatami::Matrix<Value_, Index_>* p, Output_* min_output, Output_* max_output, int threads = 1) {
-    range_internal::dimension_extremes<true, Output_>(p, threads, min_output, max_output);
+    extremes<skip_nan_>(true, p, threads, min_output, max_output);
     return;
 }
 
@@ -395,10 +467,10 @@ void row_ranges(const tatami::Matrix<Value_, Index_>* p, Output_* min_output, Ou
  * @return A pair of vectors, each of length equal to the number of rows.
  * The first and second vector contains the minimum and maximum value per row, respectively.
  */
-template<typename Output_ = double, typename Value_, typename Index_>
+template<bool skip_nan_ = false, typename Output_ = double, typename Value_, typename Index_>
 std::pair<std::vector<Output_>, std::vector<Output_> > row_ranges(const tatami::Matrix<Value_, Index_>* p, int threads = 1) {
     std::vector<Output_> mins(p->nrow()), maxs(p->nrow());
-    row_ranges(p, mins.data(), maxs.data(), threads);
+    row_ranges<skip_nan_>(p, mins.data(), maxs.data(), threads);
     return std::make_pair(std::move(mins), std::move(maxs));
 }
 
