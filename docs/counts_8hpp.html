@@ -88,45 +88,54 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:abf648e2db19bf3b66b25901365a01cf8" id="r_abf648e2db19bf3b66b25901365a01cf8"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:abf648e2db19bf3b66b25901365a01cf8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#abf648e2db19bf3b66b25901365a01cf8">tatami_stats::row_nan_counts</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, int threads=1)</td></tr>
+<tr class="memitem:acfe23cc9476ae6d54a295d97b37b9872" id="r_acfe23cc9476ae6d54a295d97b37b9872"><td class="memTemplParams" colspan="2">template&lt;bool skip_nan_ = false, typename Value_ , typename Index_ , typename Output_ , class Condition_ &gt; </td></tr>
+<tr class="memitem:acfe23cc9476ae6d54a295d97b37b9872"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">tatami_stats::counts</a> (bool row, const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, int threads, Condition_ condition)</td></tr>
+<tr class="separator:acfe23cc9476ae6d54a295d97b37b9872"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf648e2db19bf3b66b25901365a01cf8" id="r_abf648e2db19bf3b66b25901365a01cf8"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> &gt; </td></tr>
+<tr class="memitem:abf648e2db19bf3b66b25901365a01cf8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#abf648e2db19bf3b66b25901365a01cf8">tatami_stats::row_nan_counts</a> (<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">p</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">output</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">threads</a>=1)</td></tr>
 <tr class="separator:abf648e2db19bf3b66b25901365a01cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a961329604b8231bcbd909925af7f0014" id="r_a961329604b8231bcbd909925af7f0014"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a961329604b8231bcbd909925af7f0014"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a961329604b8231bcbd909925af7f0014">tatami_stats::row_nan_counts</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, int threads=1)</td></tr>
+<tr class="memitem:a961329604b8231bcbd909925af7f0014" id="r_a961329604b8231bcbd909925af7f0014"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a>  = int, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; </td></tr>
+<tr class="memitem:a961329604b8231bcbd909925af7f0014"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a961329604b8231bcbd909925af7f0014">tatami_stats::row_nan_counts</a> (<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">p</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">threads</a>=1)</td></tr>
 <tr class="separator:a961329604b8231bcbd909925af7f0014"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bec560824c4bbf7d6ebaf99a7b6fed7" id="r_a2bec560824c4bbf7d6ebaf99a7b6fed7"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:a2bec560824c4bbf7d6ebaf99a7b6fed7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a2bec560824c4bbf7d6ebaf99a7b6fed7">tatami_stats::column_nan_counts</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, int threads=1)</td></tr>
+<tr class="memitem:a2bec560824c4bbf7d6ebaf99a7b6fed7" id="r_a2bec560824c4bbf7d6ebaf99a7b6fed7"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> &gt; </td></tr>
+<tr class="memitem:a2bec560824c4bbf7d6ebaf99a7b6fed7"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a2bec560824c4bbf7d6ebaf99a7b6fed7">tatami_stats::column_nan_counts</a> (<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">p</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">output</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">threads</a>=1)</td></tr>
 <tr class="separator:a2bec560824c4bbf7d6ebaf99a7b6fed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af235154f27aa967293f33074351141dd" id="r_af235154f27aa967293f33074351141dd"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:af235154f27aa967293f33074351141dd"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#af235154f27aa967293f33074351141dd">tatami_stats::column_nan_counts</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, int threads=1)</td></tr>
+<tr class="memitem:af235154f27aa967293f33074351141dd" id="r_af235154f27aa967293f33074351141dd"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a>  = int, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; </td></tr>
+<tr class="memitem:af235154f27aa967293f33074351141dd"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#af235154f27aa967293f33074351141dd">tatami_stats::column_nan_counts</a> (<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">p</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">threads</a>=1)</td></tr>
 <tr class="separator:af235154f27aa967293f33074351141dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91d864e4099bcb8b17457346dabf35af" id="r_a91d864e4099bcb8b17457346dabf35af"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:a91d864e4099bcb8b17457346dabf35af"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a91d864e4099bcb8b17457346dabf35af">tatami_stats::row_zero_counts</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, int threads=1)</td></tr>
-<tr class="separator:a91d864e4099bcb8b17457346dabf35af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7acf00262b6b1257df7230543be189c0" id="r_a7acf00262b6b1257df7230543be189c0"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a7acf00262b6b1257df7230543be189c0"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a7acf00262b6b1257df7230543be189c0">tatami_stats::row_zero_counts</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, int threads=1)</td></tr>
-<tr class="separator:a7acf00262b6b1257df7230543be189c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48621071548f600cdb3e57c43ad0d441" id="r_a48621071548f600cdb3e57c43ad0d441"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:a48621071548f600cdb3e57c43ad0d441"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a48621071548f600cdb3e57c43ad0d441">tatami_stats::column_zero_counts</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, int threads=1)</td></tr>
-<tr class="separator:a48621071548f600cdb3e57c43ad0d441"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1533c4ce8f9b9f049678809aa38743af" id="r_a1533c4ce8f9b9f049678809aa38743af"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a1533c4ce8f9b9f049678809aa38743af"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a1533c4ce8f9b9f049678809aa38743af">tatami_stats::column_zero_counts</a> (const tatami::Matrix&lt; Value_, Index_ &gt; *p, int threads=1)</td></tr>
-<tr class="separator:a1533c4ce8f9b9f049678809aa38743af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74ae2d5563b5eb5cd7dccdebff0cae2d" id="r_a74ae2d5563b5eb5cd7dccdebff0cae2d"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">bool</a> skip_nan_ = false, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> &gt; </td></tr>
+<tr class="memitem:a74ae2d5563b5eb5cd7dccdebff0cae2d"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a74ae2d5563b5eb5cd7dccdebff0cae2d">tatami_stats::row_zero_counts</a> (<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">p</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">output</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">threads</a>=1)</td></tr>
+<tr class="separator:a74ae2d5563b5eb5cd7dccdebff0cae2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6339f1ad383f9939792e05d79b9a8f9" id="r_ae6339f1ad383f9939792e05d79b9a8f9"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">bool</a> skip_nan_ = false, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a>  = int, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; </td></tr>
+<tr class="memitem:ae6339f1ad383f9939792e05d79b9a8f9"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#ae6339f1ad383f9939792e05d79b9a8f9">tatami_stats::row_zero_counts</a> (<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">p</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">threads</a>=1)</td></tr>
+<tr class="separator:ae6339f1ad383f9939792e05d79b9a8f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2461549ea0c43b6bae9d54cd3383f58b" id="r_a2461549ea0c43b6bae9d54cd3383f58b"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">bool</a> skip_nan_ = false, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> &gt; </td></tr>
+<tr class="memitem:a2461549ea0c43b6bae9d54cd3383f58b"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a2461549ea0c43b6bae9d54cd3383f58b">tatami_stats::column_zero_counts</a> (<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">p</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">output</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">threads</a>=1)</td></tr>
+<tr class="separator:a2461549ea0c43b6bae9d54cd3383f58b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fce366803892a4eac5dca5b4e8c66b4" id="r_a5fce366803892a4eac5dca5b4e8c66b4"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">bool</a> skip_nan_ = false, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a>  = int, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a> , <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">typename</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; </td></tr>
+<tr class="memitem:a5fce366803892a4eac5dca5b4e8c66b4"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="counts_8hpp.html#a5fce366803892a4eac5dca5b4e8c66b4">tatami_stats::column_zero_counts</a> (<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *<a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">p</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a> <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">threads</a>=1)</td></tr>
+<tr class="separator:a5fce366803892a4eac5dca5b4e8c66b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Compute row and column counts from a <code>tatami::Matrix</code>. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="abf648e2db19bf3b66b25901365a01cf8" name="abf648e2db19bf3b66b25901365a01cf8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf648e2db19bf3b66b25901365a01cf8">&#9670;&#160;</a></span>row_nan_counts() <span class="overload">[1/2]</span></h2>
+<a id="acfe23cc9476ae6d54a295d97b37b9872" name="acfe23cc9476ae6d54a295d97b37b9872"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe23cc9476ae6d54a295d97b37b9872">&#9670;&#160;</a></span>counts()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
+template&lt;bool skip_nan_ = false, typename Value_ , typename Index_ , typename Output_ , class Condition_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void tatami_stats::row_nan_counts </td>
+          <td class="memname">void tatami_stats::counts </td>
           <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
@@ -140,6 +149,68 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>threads</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Condition_&#160;</td>
+          <td class="paramname"><em>condition</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Count the number of values in each dimension element that satisfy the <code>condition</code>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be numeric. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Type of the output value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to count in each row. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code>tatami::Matrix</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise). On output, this will contain the row/column variances. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">threads</td><td>Number of threads to use. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">condition</td><td>Function that accepts a <code>Value_</code> and returns a boolean. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="abf648e2db19bf3b66b25901365a01cf8" name="abf648e2db19bf3b66b25901365a01cf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf648e2db19bf3b66b25901365a01cf8">&#9670;&#160;</a></span>row_nan_counts() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void tatami_stats::row_nan_counts </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> *&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a>&#160;</td>
           <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
@@ -179,13 +250,13 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
         <tr>
           <td class="memname">std::vector&lt; Output_ &gt; tatami_stats::row_nan_counts </td>
           <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a>&#160;</td>
           <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
@@ -225,19 +296,19 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
         <tr>
           <td class="memname">void tatami_stats::column_nan_counts </td>
           <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Output_ *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> *&#160;</td>
           <td class="paramname"><em>output</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a>&#160;</td>
           <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
@@ -277,13 +348,13 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
         <tr>
           <td class="memname">std::vector&lt; Output_ &gt; tatami_stats::column_nan_counts </td>
           <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a>&#160;</td>
           <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
@@ -312,30 +383,30 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
 
 </div>
 </div>
-<a id="a91d864e4099bcb8b17457346dabf35af" name="a91d864e4099bcb8b17457346dabf35af"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91d864e4099bcb8b17457346dabf35af">&#9670;&#160;</a></span>row_zero_counts() <span class="overload">[1/2]</span></h2>
+<a id="a74ae2d5563b5eb5cd7dccdebff0cae2d" name="a74ae2d5563b5eb5cd7dccdebff0cae2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74ae2d5563b5eb5cd7dccdebff0cae2d">&#9670;&#160;</a></span>row_zero_counts() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
+template&lt;bool skip_nan_ = false, typename Value_ , typename Index_ , typename Output_ &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void tatami_stats::row_zero_counts </td>
           <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Output_ *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> *&#160;</td>
           <td class="paramname"><em>output</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a>&#160;</td>
           <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
@@ -347,6 +418,7 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value.</td></tr>
@@ -364,24 +436,24 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
 
 </div>
 </div>
-<a id="a7acf00262b6b1257df7230543be189c0" name="a7acf00262b6b1257df7230543be189c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7acf00262b6b1257df7230543be189c0">&#9670;&#160;</a></span>row_zero_counts() <span class="overload">[2/2]</span></h2>
+<a id="ae6339f1ad383f9939792e05d79b9a8f9" name="ae6339f1ad383f9939792e05d79b9a8f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6339f1ad383f9939792e05d79b9a8f9">&#9670;&#160;</a></span>row_zero_counts() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </div>
+template&lt;bool skip_nan_ = false, typename Output_  = int, typename Value_ , typename Index_ &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt; Output_ &gt; tatami_stats::row_zero_counts </td>
           <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a>&#160;</td>
           <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
@@ -393,6 +465,7 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
@@ -410,30 +483,30 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
 
 </div>
 </div>
-<a id="a48621071548f600cdb3e57c43ad0d441" name="a48621071548f600cdb3e57c43ad0d441"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a48621071548f600cdb3e57c43ad0d441">&#9670;&#160;</a></span>column_zero_counts() <span class="overload">[1/2]</span></h2>
+<a id="a2461549ea0c43b6bae9d54cd3383f58b" name="a2461549ea0c43b6bae9d54cd3383f58b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2461549ea0c43b6bae9d54cd3383f58b">&#9670;&#160;</a></span>column_zero_counts() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
+template&lt;bool skip_nan_ = false, typename Value_ , typename Index_ , typename Output_ &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void tatami_stats::column_zero_counts </td>
           <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Output_ *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Output_</a> *&#160;</td>
           <td class="paramname"><em>output</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a>&#160;</td>
           <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
@@ -445,6 +518,7 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value.</td></tr>
@@ -462,24 +536,24 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
 
 </div>
 </div>
-<a id="a1533c4ce8f9b9f049678809aa38743af" name="a1533c4ce8f9b9f049678809aa38743af"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1533c4ce8f9b9f049678809aa38743af">&#9670;&#160;</a></span>column_zero_counts() <span class="overload">[2/2]</span></h2>
+<a id="a5fce366803892a4eac5dca5b4e8c66b4" name="a5fce366803892a4eac5dca5b4e8c66b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fce366803892a4eac5dca5b4e8c66b4">&#9670;&#160;</a></span>column_zero_counts() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </div>
+template&lt;bool skip_nan_ = false, typename Output_  = int, typename Value_ , typename Index_ &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt; Output_ &gt; tatami_stats::column_zero_counts </td>
           <td>(</td>
-          <td class="paramtype">const tatami::Matrix&lt; Value_, Index_ &gt; *&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">const</a> tatami::Matrix&lt; <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Value_</a>, <a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">Index_</a> &gt; *&#160;</td>
           <td class="paramname"><em>p</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype"><a class="el" href="counts_8hpp.html#acfe23cc9476ae6d54a295d97b37b9872">int</a>&#160;</td>
           <td class="paramname"><em>threads</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
@@ -491,6 +565,7 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>

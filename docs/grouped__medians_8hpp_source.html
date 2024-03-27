@@ -127,7 +127,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> g = 0; g &lt; ngroups; ++g, ++curoutput) {</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                    <span class="keyword">auto</span>&amp; w = workspace[g];</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    *curoutput = median::compute(w.data(), w.size(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(group_sizes[g]));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    *curoutput = <a class="code hl_function" href="namespacetatami__stats_1_1median.html#a9747d128e5ffc02215e8d9b13dcff91e">median::compute</a>(w.data(), w.size(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(group_sizes[g]));</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                    w.clear();</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                }</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            }</div>
@@ -141,7 +141,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                }</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; w : workspace) {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                    *curoutput = median::compute(w.data(), w.size());</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                    *curoutput = <a class="code hl_function" href="namespacetatami__stats_1_1median.html#a9747d128e5ffc02215e8d9b13dcff91e">median::compute</a>(w.data(), w.size());</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                    ++curoutput;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                    w.clear();</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                }</div>
@@ -191,6 +191,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="agrouped__medians_8hpp_html_a366daf7aeb9f1ac3e71a4c25c8917c65"><div class="ttname"><a href="grouped__medians_8hpp.html#a366daf7aeb9f1ac3e71a4c25c8917c65">tatami_stats::column_medians_by_group</a></div><div class="ttdeci">void column_medians_by_group(const tatami::Matrix&lt; Value_, Index_ &gt; *p, const Group_ *group, const GroupSizes_ &amp;group_sizes, Output_ *output, int threads=1)</div><div class="ttdef"><b>Definition</b> grouped_medians.hpp:145</div></div>
 <div class="ttc" id="agrouped__medians_8hpp_html_a948053f34ffb7797d6b61f3d4475dabb"><div class="ttname"><a href="grouped__medians_8hpp.html#a948053f34ffb7797d6b61f3d4475dabb">tatami_stats::row_medians_by_group</a></div><div class="ttdeci">void row_medians_by_group(const tatami::Matrix&lt; Value_, Index_ &gt; *p, const Group_ *group, const GroupSizes_ &amp;group_sizes, Output_ *output, int threads=1)</div><div class="ttdef"><b>Definition</b> grouped_medians.hpp:100</div></div>
 <div class="ttc" id="amedians_8hpp_html"><div class="ttname"><a href="medians_8hpp.html">medians.hpp</a></div><div class="ttdoc">Compute row and column medians from a tatami::Matrix.</div></div>
+<div class="ttc" id="anamespacetatami__stats_1_1median_html_a9747d128e5ffc02215e8d9b13dcff91e"><div class="ttname"><a href="namespacetatami__stats_1_1median.html#a9747d128e5ffc02215e8d9b13dcff91e">tatami_stats::median::compute</a></div><div class="ttdeci">Output_ compute(Value_ *ptr, Index_ num)</div><div class="ttdef"><b>Definition</b> medians.hpp:63</div></div>
 <div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Utilities for computing matrix statistics.</div></div>
 <div class="ttc" id="autils_8hpp_html_ad46c11e3a7611f30d9695e600c5b7dd6"><div class="ttname"><a href="utils_8hpp.html#ad46c11e3a7611f30d9695e600c5b7dd6">tatami_stats::tabulate_groups</a></div><div class="ttdeci">std::vector&lt; Size_ &gt; tabulate_groups(const Group_ *group, Size_ n)</div><div class="ttdef"><b>Definition</b> utils.hpp:50</div></div>
 </div><!-- fragment --></div><!-- contents -->
