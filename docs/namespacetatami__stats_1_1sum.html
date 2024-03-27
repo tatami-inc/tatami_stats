@@ -133,7 +133,7 @@ template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ 
 <p>Sum an array of values using naive accumulation. This is best used with a sufficiently high-precision <code>Output_</code>, hence the default of <code>double</code>.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column index.</td></tr>

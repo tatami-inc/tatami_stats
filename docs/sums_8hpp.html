@@ -169,7 +169,7 @@ template&lt;bool skip_nan_, typename Value_ , typename Index_ , typename Output_
 <p>Compute sums for each element of a chosen dimension of a <code>tatami::Matrix</code>. This is done using <code>compute()</code>, <code>RunningDense</code> or <code>RunningSparse</code>, depending on the requested dimension in <code>row</code> and the preferred dimension for access in <code>p</code>. Note that all sums are obtained using naive accumulation, so it is best to use a sufficiently high-precision <code>Output_</code> to mitigate round-off errors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be numeric. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value.</td></tr>
@@ -223,6 +223,7 @@ template&lt;bool skip_nan_ = false, typename Value_ , typename Index_ , typename
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value.</td></tr>
@@ -269,6 +270,7 @@ template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ 
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
@@ -321,6 +323,7 @@ template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ 
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
@@ -367,6 +370,7 @@ template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ 
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output value. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>

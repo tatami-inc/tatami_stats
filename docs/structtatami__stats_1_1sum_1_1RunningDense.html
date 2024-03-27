@@ -102,7 +102,7 @@ struct tatami_stats::sum::RunningDense&lt; skip_nan_, Output_, Index_ &gt;</div>
 <p>This class uses naive accumulation to obtain the sum for each target vector. Callers should use a sufficiently high-precision <code>Output_</code> such as <code>double</code> to mitigate round-off errors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
   </table>

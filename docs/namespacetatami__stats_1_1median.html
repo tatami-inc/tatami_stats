@@ -133,8 +133,8 @@ template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ 
 </dl>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be a floating-point value for possible averaging. </td></tr>
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be floating-point to store potential averages. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the input values.</td></tr>
   </table>
   </dd>
@@ -187,8 +187,8 @@ template&lt;bool skip_nan_ = false, typename Output_  = double, typename Value_ 
 </dl>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be a floating-point value for possible averaging. </td></tr>
+    <tr><td class="paramname">skip_nan_</td><td>Whether to check for (and skip) NaNs. If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be floating-point to store potential averages. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the input values.</td></tr>
   </table>
   </dd>
