@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['sums_0',['sums',['../sums_8hpp.html#ab916c4379a37bc06c419394ce4b27f04',1,'tatami_stats']]]
+  ['medians_0',['medians',['../medians_8hpp.html#a4003adec6817a287d2a74c4022c13d5b',1,'tatami_stats']]]
 ];

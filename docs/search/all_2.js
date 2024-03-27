@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['for_20tatami_0',['Matrix statistics for tatami',['../index.html',1,'']]]
+  ['extremes_0',['extremes',['../ranges_8hpp.html#aa3a9a731d8b6b70a76c33b3d77078fac',1,'tatami_stats']]]
 ];

@@ -25,6 +25,8 @@
     <name>ranges.hpp</name>
     <path>tatami_stats/</path>
     <filename>ranges_8hpp.html</filename>
+    <class kind="struct">tatami_stats::extreme::RunningDense</class>
+    <class kind="struct">tatami_stats::extreme::RunningSparse</class>
   </compound>
   <compound kind="file">
     <name>sums.hpp</name>
@@ -45,6 +47,36 @@
     <filename>variances_8hpp.html</filename>
   </compound>
   <compound kind="struct">
+    <name>tatami_stats::extreme::RunningDense</name>
+    <filename>structtatami__stats_1_1extreme_1_1RunningDense.html</filename>
+    <templarg>bool get_minimum_</templarg>
+    <templarg>bool skip_nan_</templarg>
+    <templarg>typename Value_</templarg>
+    <templarg>typename Index_</templarg>
+    <templarg>typename Output_</templarg>
+    <member kind="function">
+      <type></type>
+      <name>RunningDense</name>
+      <anchorfile>structtatami__stats_1_1extreme_1_1RunningDense.html</anchorfile>
+      <anchor>a6713b82c0f14587a7e07bec35c387bc8</anchor>
+      <arglist>(Index_ num, Output_ *store)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>add</name>
+      <anchorfile>structtatami__stats_1_1extreme_1_1RunningDense.html</anchorfile>
+      <anchor>a282bfd844d99edbab445f1a938a1f1e6</anchor>
+      <arglist>(const Value_ *ptr)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>finish</name>
+      <anchorfile>structtatami__stats_1_1extreme_1_1RunningDense.html</anchorfile>
+      <anchor>a86881ea99a59812b66b17efcb0c21d11</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
     <name>tatami_stats::sum::RunningDense</name>
     <filename>structtatami__stats_1_1sum_1_1RunningDense.html</filename>
     <templarg>bool skip_nan_</templarg>
@@ -63,6 +95,36 @@
       <anchorfile>structtatami__stats_1_1sum_1_1RunningDense.html</anchorfile>
       <anchor>a9e972c1b1f73d8896fc5c87907c7ca37</anchor>
       <arglist>(const Value_ *ptr)</arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::extreme::RunningSparse</name>
+    <filename>structtatami__stats_1_1extreme_1_1RunningSparse.html</filename>
+    <templarg>bool get_minimum_</templarg>
+    <templarg>bool skip_nan_</templarg>
+    <templarg>typename Value_</templarg>
+    <templarg>typename Index_</templarg>
+    <templarg>typename Output_</templarg>
+    <member kind="function">
+      <type></type>
+      <name>RunningSparse</name>
+      <anchorfile>structtatami__stats_1_1extreme_1_1RunningSparse.html</anchorfile>
+      <anchor>a355deda8661683d1e636c1369374ffcc</anchor>
+      <arglist>(Index_ num, Output_ *store, Index_ subtract=0)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>add</name>
+      <anchorfile>structtatami__stats_1_1extreme_1_1RunningSparse.html</anchorfile>
+      <anchor>a8e7e82c5133ff11e38dffe69fd9ad119</anchor>
+      <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>finish</name>
+      <anchorfile>structtatami__stats_1_1extreme_1_1RunningSparse.html</anchorfile>
+      <anchor>a071642c482de2874547d19f6ddcd2e88</anchor>
+      <arglist>()</arglist>
     </member>
   </compound>
   <compound kind="struct">
