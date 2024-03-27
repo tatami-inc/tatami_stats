@@ -327,13 +327,33 @@ TEST(ComputingDimExtremes, NoZeros) {
 TEST(ComputingDimExtremes, Empty) {
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(10, 0, std::vector<double>()));
     EXPECT_EQ(tatami_stats::column_mins(dense_row.get()).size(), 0);
-    EXPECT_EQ(tatami_stats::row_mins(dense_row.get()), std::vector<double>(10));
+    EXPECT_EQ(tatami_stats::row_mins(dense_row.get()), std::vector<double>(10, std::numeric_limits<double>::infinity()));
+    EXPECT_EQ(tatami_stats::row_maxs(dense_row.get()), std::vector<double>(10, -std::numeric_limits<double>::infinity()));
 
     // Early return will still sanitize dirty output buffers.
     {
         std::vector<double> row_mins(10, -1), row_maxs(10, -1);
         tatami_stats::row_ranges(dense_row.get(), row_mins.data(), row_maxs.data());
-        EXPECT_EQ(row_mins, std::vector<double>(10));
-        EXPECT_EQ(row_maxs, std::vector<double>(10));
+        EXPECT_EQ(row_mins, std::vector<double>(10, std::numeric_limits<double>::infinity()));
+        EXPECT_EQ(row_maxs, std::vector<double>(10, -std::numeric_limits<double>::infinity()));
     }
+
+    // Trying with the integer types.
+    {
+        auto dense_row = std::make_unique<tatami::DenseRowMatrix<uint8_t, int, std::vector<uint8_t> > >(10, 0, std::vector<uint8_t>());
+        auto minout = tatami_stats::row_mins<false, uint8_t>(dense_row.get());
+        EXPECT_EQ(minout, std::vector<uint8_t>(10, 255));
+        auto maxout = tatami_stats::row_maxs<false, uint8_t>(dense_row.get());
+        EXPECT_EQ(maxout, std::vector<uint8_t>(10, 0));
+    }
+
+    {
+        auto dense_row = std::make_unique<tatami::DenseRowMatrix<int8_t, int, std::vector<int8_t> > >(10, 0, std::vector<int8_t>());
+        auto minout = tatami_stats::row_mins<false, int8_t>(dense_row.get());
+        EXPECT_EQ(minout, std::vector<int8_t>(10, 127));
+        auto maxout = tatami_stats::row_maxs<false, int8_t>(dense_row.get());
+        EXPECT_EQ(maxout, std::vector<int8_t>(10, -128));
+    }
+
+
 }

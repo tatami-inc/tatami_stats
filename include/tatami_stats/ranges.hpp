@@ -41,12 +41,12 @@ constexpr auto choose_placeholder() {
     }
 }
 
-template<bool get_minimum_, typename Value_>
-bool is_better(Value_ best, Value_ alt) {
+template<bool get_minimum_, typename Output_, typename Value_>
+bool is_better(Output_ best, Value_ alt) {
     if constexpr(get_minimum_) {
-        return best > alt;
+        return best > static_cast<Output_>(alt);
     } else {
-        return best < alt;
+        return best < static_cast<Output_>(alt);
     }
 }
 
@@ -55,6 +55,23 @@ bool is_better(Value_ best, Value_ alt) {
  * @endcond
  */
 
+/**
+ * Compute the extremes of a dense array.
+ *
+ * @tparam get_minimum_ Whether to compute the minimum.
+ * If false, the maximum is computed instead.
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent, and the behavior of this function with NaNs is undefined.
+ * @tparam Value_ Type of the input data.
+ * @tparam Index_ Type of the row/column indices.
+ *
+ * @param[in] ptr Pointer to an array of values of length `num`.
+ * @param num Size of the array.
+ *
+ * @return The minimum or maximum value, depending on `get_minimum_`.
+ * If `num = 0` or (if `skip_nan_ = true`) there are no non-NaN values, a placeholder value is returned instead
+ * that is never less than (if `get_minimum_ true`) or greater than (otherwise) any non-NaN value of type `Value_`.
+ */
 template<bool get_minimum_, bool skip_nan_ = false, typename Value_, typename Index_>
 Value_ compute(const Value_* ptr, Index_ num) {
     if constexpr(skip_nan_) {
@@ -79,6 +96,25 @@ Value_ compute(const Value_* ptr, Index_ num) {
     }
 }
 
+/**
+ * Compute the extremes of a sparse array.
+ *
+ * @tparam get_minimum_ Whether to compute the minimum.
+ * If false, the maximum is computed instead.
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent, and the behavior of this function with NaNs is undefined.
+ * @tparam Value_ Type of the input data.
+ * @tparam Index_ Type of the row/column indices.
+ *
+ * @param[in] value Pointer to an array of values of length `num`.
+ * @param num_nonzero Length of the array pointed to by `value`.
+ * @param num_all Total number of values in the dataset, including the zeros not in `value`.
+ * This should be greater than or equal to `num_nonzero`.
+ *
+ * @return The minimum or maximum value, depending on `get_minimum_`.
+ * If `num_all = 0` or (if `skip_nan_ = true`) there are no non-NaN values, a placeholder value is returned instead
+ * that is never less than (if `get_minimum_ true`) or greater than (otherwise) any non-NaN value of type `Value_`.
+ */
 template<bool get_minimum_, bool skip_nan_ = false, typename Value_, typename Index_>
 Value_ compute(const Value_* value, Index_ num_nonzero, Index_ num_all) {
     if (num_nonzero) {
@@ -94,11 +130,36 @@ Value_ compute(const Value_* value, Index_ num_nonzero, Index_ num_all) {
     }
 }
 
-template<bool get_minimum_, bool skip_nan_ = false, typename Output_ = double, typename Index_ = int>
+/**
+ * @brief Running extremes from dense data.
+ *
+ * Compute running minimum/maximum from dense data. 
+ * This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn],
+ * but data are only available for "observed" vectors [P1, P2, P3, ..., Pm],
+ * where Pi[j] contains the i-th element of target vector Vj.
+ * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to m - 1,
+ * which computes the running minimum/maximum at each invocation.
+ *
+ * @tparam get_minimum_ Whether to compute the minimum.
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent, and the behavior of this class in the presence of NaNs is undefined.
+ * @tparam Value_ Type of the input data.
+ * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Type of the output data.
+ */
+template<bool get_minimum_, bool skip_nan_ = false, typename Value_ = double, typename Index_ = int, typename Output_ = double>
 struct RunningDense {
+    /**
+     * @param num Number of target vectors, i.e., n.
+     * @param[out] store Pointer to an output array of length `num`.
+     * After `finish()` is called, this will contain the minimum/maximum for each target vector.
+     */
     RunningDense(Index_ num, Output_* store) : num(num), store(store) {}
 
-    template<typename Value_>
+    /**
+     * Add the next observed vector to the running min/max calculation.
+     * @param[in] ptr Pointer to an array of values of length `num`, corresponding to an observed vector.
+     */
     void add(const Value_* ptr) {
         if (init) {
             init = false;
@@ -122,17 +183,52 @@ struct RunningDense {
         }
     }
 
+    /**
+     * Finish the running calculation once all observed vectors have been passed to `add()`. 
+     */
+    void finish() {
+        if (init) {
+            std::fill_n(store, num, internal::choose_placeholder<get_minimum_, Value_>());
+        }
+    }
+
 private:
     bool init = true;
     Index_ num;
     Output_* store;
 };
 
-template<bool get_minimum_, bool skip_nan_ = false, typename Output_ = double, typename Index_ = int>
+/**
+ * @brief Running extremes from sparse data.
+ *
+ * Compute running minima and maximuma from sparse data. 
+ * This does the same as `RunningDense` but for sparse observed vectors.
+ *
+ * @tparam get_minimum_ Whether to compute the minimum.
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
+ * @tparam Value_ Type of the input value.
+ * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Type of the output data.
+ */
+template<bool get_minimum_, bool skip_nan_ = false, typename Value_ = double, typename Index_ = int, typename Output_ = double>
 struct RunningSparse {
+    /**
+     * @param num Number of target vectors.
+     * @param[out] store Pointer to an output array of length `num`.
+     * After `finish()` is called, this will contain the minimum/maximum for each target vector.
+     * @param subtract Offset to subtract from each element of `index` before using it to index into `store`.
+     * Only relevant if `store` holds statistics for a contiguous subset of target vectors,
+     * e.g., during task allocation for parallelization.
+     */
     RunningSparse(Index_ num, Output_* store, Index_ subtract = 0) : num(num), store(store), subtract(subtract) {}
 
-    template<typename Value_>
+    /**
+     * Add the next observed vector to the min/max calculation.
+     * @param[in] value Value of structural non-zero elements.
+     * @param[in] index Index of structural non-zero elements.
+     * @param number Number of non-zero elements in `value` and `index`.
+     */
     void add(const Value_* value, const Index_* index, Index_ number) {
         if (count == 0) {
             nonzero.resize(num);
@@ -152,14 +248,21 @@ struct RunningSparse {
         ++count;
     }
 
+    /**
+     * Finish the min/max calculation once all observed vectors have been passed to `add()`. 
+     */
     void finish() {
-        for (Index_ i = 0; i < num; ++i) {
-            if (count > nonzero[i]) {
-                auto& current = store[i];
-                if (internal::is_better<get_minimum_>(current, static_cast<Output_>(0))) {
-                    current = 0;
+        if (count) {
+            for (Index_ i = 0; i < num; ++i) {
+                if (count > nonzero[i]) {
+                    auto& current = store[i];
+                    if (internal::is_better<get_minimum_>(current, static_cast<Output_>(0))) {
+                        current = 0;
+                    }
                 }
             }
+        } else {
+            std::fill_n(store, num, internal::choose_placeholder<get_minimum_, Value_>());
         }
     }
 
@@ -173,6 +276,25 @@ private:
 
 }
 
+/**
+ * Compute extremes for each element of a chosen dimension of a `tatami::Matrix`.
+ *
+ * @tparam skip_nan_ Whether to check for (and skip) NaNs.
+ * If false, NaNs are assumed to be absent; the behavior of this function in the presence of NaNs is undefined.
+ * @tparam Value_ Type of the matrix value, should be numeric.
+ * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Type of the output value.
+ *
+ * @param row Whether to compute variances for the rows.
+ * @param p Pointer to a `tatami::Matrix`.
+ * @param threads Number of threads to use.
+ * @param[out] min_out Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
+ * On output, this will contain the minimum of each row/column.
+ * Alternatively, this may be NULL, in which case the minima are not computed.
+ * @param[out] max_out Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
+ * On output, this will contain the maximum of each row/column.
+ * Alternatively, this may be NULL, in which case the maxima are not computed.
+ */
 template<bool skip_nan_, typename Value_, typename Index_, typename Output_>
 void extremes(bool row, const tatami::Matrix<Value_, Index_>* p, int threads, Output_* min_out, Output_* max_out) {
     auto dim = (row ? p->nrow() : p->ncol());
@@ -207,9 +329,8 @@ void extremes(bool row, const tatami::Matrix<Value_, Index_>* p, int threads, Ou
                 auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, s, l, opt);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
-
-                extreme::RunningSparse<true, skip_nan_, Output_, Index_> runmin(l, (store_min ? min_out + s : NULL), s);
-                extreme::RunningSparse<false, skip_nan_, Output_, Index_> runmax(l, (store_max ? max_out + s : NULL), s);
+                extreme::RunningSparse<true, skip_nan_, Value_, Index_, Output_> runmin(l, (store_min ? min_out + s : NULL), s);
+                extreme::RunningSparse<false, skip_nan_, Value_, Index_, Output_> runmax(l, (store_max ? max_out + s : NULL), s);
 
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto out = ext->fetch(vbuffer.data(), ibuffer.data());
@@ -250,9 +371,8 @@ void extremes(bool row, const tatami::Matrix<Value_, Index_>* p, int threads, Ou
             tatami::parallelize([&](size_t, Index_ s, Index_ l) {
                 auto ext = tatami::consecutive_extractor<false>(p, !row, 0, otherdim, s, l);
                 std::vector<Value_> buffer(l);
-
-                extreme::RunningDense<true, skip_nan_, Output_, Index_> runmin(l, (store_min ? min_out + s : NULL));
-                extreme::RunningDense<false, skip_nan_, Output_, Index_> runmax(l, (store_max ? max_out + s : NULL));
+                extreme::RunningDense<true, skip_nan_, Value_, Index_, Output_> runmin(l, (store_min ? min_out + s : NULL));
+                extreme::RunningDense<false, skip_nan_, Value_, Index_, Output_> runmax(l, (store_max ? max_out + s : NULL));
 
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto ptr = ext->fetch(buffer.data());
@@ -315,7 +435,7 @@ std::vector<Output_> column_maxs(const tatami::Matrix<Value_, Index_>* p, int th
  */
 template<bool skip_nan_ = false, typename Value_, typename Index_, typename Output_>
 void row_maxs(const tatami::Matrix<Value_, Index_>* p, Output_* output, int threads = 1) {
-    extremes<skip_nan_, Output_>(true, p, threads, static_cast<Output_*>(NULL), output);
+    extremes<skip_nan_>(true, p, threads, static_cast<Output_*>(NULL), output);
     return;
 }
 
