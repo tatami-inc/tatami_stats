@@ -212,6 +212,38 @@ TEST_P(ComputingDimExtremesTest, RowRanges) {
     }
 }
 
+TEST_P(ComputingDimExtremesTest, RowRangesWithNan) {
+    size_t NR = 52, NC = 83;
+    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    for (size_t r = 0; r < NR; ++r) { // Injecting an NaN at the start.
+        dump[r * NC] = std::numeric_limits<double>::quiet_NaN();
+    }
+
+    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
+    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
+    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
+    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+
+    std::pair<std::vector<double>, std::vector<double> > ref;
+    auto& refmin = ref.first;
+    refmin.resize(NR, std::numeric_limits<double>::infinity());
+    auto& refmax = ref.second;
+    refmax.resize(NR, -std::numeric_limits<double>::infinity());
+
+    for (size_t r = 0; r < NR; ++r) {
+        for (size_t c = 1; c < NC; ++c) { // skipping the first element.
+            double x = dump[c + r * NC];
+            refmin[r] = std::min(refmin[r], x);
+            refmax[r] = std::max(refmax[r], x);
+        }
+    }
+
+    EXPECT_EQ(ref, tatami_stats::row_ranges<true>(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::row_ranges<true>(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::row_ranges<true>(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::row_ranges<true>(sparse_column.get()));
+}
+
 TEST_P(ComputingDimExtremesTest, ColumnRanges) {
     size_t NR = 111, NC = 52;
     auto dump = simulate(NR, NC, GetParam());
@@ -239,6 +271,38 @@ TEST_P(ComputingDimExtremesTest, ColumnRanges) {
     EXPECT_EQ(ref, tatami_stats::column_ranges(unsorted_row.get()));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
     EXPECT_EQ(ref, tatami_stats::column_ranges(unsorted_column.get()));
+}
+
+TEST_P(ComputingDimExtremesTest, ColumnRangesWithNan) {
+    size_t NR = 52, NC = 83;
+    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    for (size_t c = 0; c < NC; ++c) { // Injecting an NaN at the start.
+        dump[c] = std::numeric_limits<double>::quiet_NaN();
+    }
+
+    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, dump));
+    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
+    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
+    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+
+    std::pair<std::vector<double>, std::vector<double> > ref;
+    auto& refmin = ref.first;
+    refmin.resize(NC, std::numeric_limits<double>::infinity());
+    auto& refmax = ref.second;
+    refmax.resize(NC, -std::numeric_limits<double>::infinity());
+
+    for (size_t c = 0; c < NC; ++c) {
+        for (size_t r = 1; r < NR; ++r) { // skipping the first element.
+            double x = dump[c + r * NC];
+            refmin[c] = std::min(refmin[c], x);
+            refmax[c] = std::max(refmax[c], x);
+        }
+    }
+
+    EXPECT_EQ(ref, tatami_stats::column_ranges<true>(dense_row.get()));
+    EXPECT_EQ(ref, tatami_stats::column_ranges<true>(dense_column.get()));
+    EXPECT_EQ(ref, tatami_stats::column_ranges<true>(sparse_row.get()));
+    EXPECT_EQ(ref, tatami_stats::column_ranges<true>(sparse_column.get()));
 }
 
 /********************************************/
