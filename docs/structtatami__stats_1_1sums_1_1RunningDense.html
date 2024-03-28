@@ -89,13 +89,13 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:accf7b5a8d3df2682b38ec0cb6851d2c4" id="r_accf7b5a8d3df2682b38ec0cb6851d2c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html#accf7b5a8d3df2682b38ec0cb6851d2c4">RunningDense</a> (<a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Index_</a> num, <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Output_</a> *sum, <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">bool</a> skip_nan)</td></tr>
+<tr class="memitem:accf7b5a8d3df2682b38ec0cb6851d2c4" id="r_accf7b5a8d3df2682b38ec0cb6851d2c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html#accf7b5a8d3df2682b38ec0cb6851d2c4">RunningDense</a> (Index_ num, Output_ *sum, bool skip_nan)</td></tr>
 <tr class="separator:accf7b5a8d3df2682b38ec0cb6851d2c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1171923aa2b5441d00fb495e8faa6c1e" id="r_a1171923aa2b5441d00fb495e8faa6c1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html#a1171923aa2b5441d00fb495e8faa6c1e">add</a> (<a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">const</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Value_</a> *<a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">ptr</a>)</td></tr>
+<tr class="memitem:a1171923aa2b5441d00fb495e8faa6c1e" id="r_a1171923aa2b5441d00fb495e8faa6c1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html#a1171923aa2b5441d00fb495e8faa6c1e">add</a> (const Value_ *ptr)</td></tr>
 <tr class="separator:a1171923aa2b5441d00fb495e8faa6c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Output_</a>, <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Value_</a>, <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Index_</a>&gt;<br />
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_, typename Value_, typename Index_&gt;<br />
 struct tatami_stats::sums::RunningDense&lt; Output_, Value_, Index_ &gt;</div><p>Running sums from dense data. </p>
 <p>This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn], but data are only available for "observed" vectors [P1, P2, P3, ..., Pm], where Pi[j] contains the i-th element of target vector Vj. The idea is to repeatedly call <code><a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html#a1171923aa2b5441d00fb495e8faa6c1e">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to m - 1, and then finally call <code>finish()</code> to obtain the sum for each target vector.</p>
 <p>This class uses naive accumulation to obtain the sum for each target vector. Callers should use a sufficiently high-precision <code>Output_</code> such as <code>double</code> to mitigate round-off errors.</p>
@@ -114,27 +114,27 @@ struct tatami_stats::sums::RunningDense&lt; Output_, Value_, Index_ &gt;</div><p
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Output_</a> , <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Value_</a> , <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Index_</a> &gt; </div>
+template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html">tatami_stats::sums::RunningDense</a>&lt; <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Output_</a>, <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Value_</a>, <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Index_</a> &gt;::RunningDense </td>
+          <td class="memname"><a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html">tatami_stats::sums::RunningDense</a>&lt; Output_, Value_, Index_ &gt;::RunningDense </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Index_</a>&#160;</td>
+          <td class="paramtype">Index_&#160;</td>
           <td class="paramname"><em>num</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Output_</a> *&#160;</td>
+          <td class="paramtype">Output_ *&#160;</td>
           <td class="paramname"><em>sum</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">bool</a>&#160;</td>
+          <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>skip_nan</em>&#160;</td>
         </tr>
         <tr>
@@ -167,15 +167,15 @@ template&lt;<a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0ee
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Output_</a> , <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Value_</a> , <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">typename</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Index_</a> &gt; </div>
+template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">void</a> <a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html">tatami_stats::sums::RunningDense</a>&lt; <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Output_</a>, <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Value_</a>, <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Index_</a> &gt;::add </td>
+          <td class="memname">void <a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html">tatami_stats::sums::RunningDense</a>&lt; Output_, Value_, Index_ &gt;::add </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">const</a> <a class="el" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">Value_</a> *&#160;</td>
+          <td class="paramtype">const Value_ *&#160;</td>
           <td class="paramname"><em>ptr</em></td><td>)</td>
           <td></td>
         </tr>

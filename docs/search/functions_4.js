@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['runningdense_0',['runningdense',['../structtatami__stats_1_1ranges_1_1RunningDense.html#a8a7b0887feb925b9e5d47ce372f9aa29',1,'tatami_stats::ranges::RunningDense::RunningDense()'],['../structtatami__stats_1_1sums_1_1RunningDense.html#accf7b5a8d3df2682b38ec0cb6851d2c4',1,'tatami_stats::sums::RunningDense::RunningDense()'],['../structtatami__stats_1_1variances_1_1RunningDense.html#ae4305fb083a270fa5f5800e8a5bdb140',1,'tatami_stats::variances::RunningDense::RunningDense()']]],
-  ['runningsparse_1',['runningsparse',['../structtatami__stats_1_1ranges_1_1RunningSparse.html#a410d814eb15f0488357a57831e64321e',1,'tatami_stats::ranges::RunningSparse::RunningSparse()'],['../structtatami__stats_1_1sums_1_1RunningSparse.html#af87f89e39970c8dd7214d1e62d76dfa2',1,'tatami_stats::sums::RunningSparse::RunningSparse()'],['../structtatami__stats_1_1variances_1_1RunningSparse.html#acb56694c71bb6155a3ad90e5e1437347',1,'tatami_stats::variances::RunningSparse::RunningSparse()']]]
+  ['end_0',['end',['https://tatami-inc.github.io/tatami/classtatami_1_1ArrayView.html#a904e6d03b59a20f2cc7831fbb318cf33',1,'tatami::ArrayView::end()'],['https://tatami-inc.github.io/tatami/structtatami_1_1SomeNumericArray.html#aaf5d7921f2356a9a3aca745723611d71',1,'tatami::SomeNumericArray::end()']]]
 ];

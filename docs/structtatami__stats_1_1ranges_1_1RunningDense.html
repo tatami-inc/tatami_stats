@@ -89,15 +89,15 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8a7b0887feb925b9e5d47ce372f9aa29" id="r_a8a7b0887feb925b9e5d47ce372f9aa29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html#a8a7b0887feb925b9e5d47ce372f9aa29">RunningDense</a> (<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a> num, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a> *store, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">bool</a> skip_nan)</td></tr>
+<tr class="memitem:a8a7b0887feb925b9e5d47ce372f9aa29" id="r_a8a7b0887feb925b9e5d47ce372f9aa29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html#a8a7b0887feb925b9e5d47ce372f9aa29">RunningDense</a> (Index_ num, Output_ *store, bool skip_nan)</td></tr>
 <tr class="separator:a8a7b0887feb925b9e5d47ce372f9aa29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6aa418d2d28dec63a58109c5d879aa0" id="r_af6aa418d2d28dec63a58109c5d879aa0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html#af6aa418d2d28dec63a58109c5d879aa0">add</a> (<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">const</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a> *<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">ptr</a>)</td></tr>
+<tr class="memitem:af6aa418d2d28dec63a58109c5d879aa0" id="r_af6aa418d2d28dec63a58109c5d879aa0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html#af6aa418d2d28dec63a58109c5d879aa0">add</a> (const Value_ *ptr)</td></tr>
 <tr class="separator:af6aa418d2d28dec63a58109c5d879aa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c6298041d7f986ab68a645ad2c5e636" id="r_a3c6298041d7f986ab68a645ad2c5e636"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html#a3c6298041d7f986ab68a645ad2c5e636">finish</a> ()</td></tr>
+<tr class="memitem:a3c6298041d7f986ab68a645ad2c5e636" id="r_a3c6298041d7f986ab68a645ad2c5e636"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html#a3c6298041d7f986ab68a645ad2c5e636">finish</a> ()</td></tr>
 <tr class="separator:a3c6298041d7f986ab68a645ad2c5e636"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">bool</a> minimum_, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a>&gt;<br />
+<div class="textblock"><div class="compoundTemplParams">template&lt;bool minimum_, typename Output_, typename Value_, typename Index_&gt;<br />
 struct tatami_stats::ranges::RunningDense&lt; minimum_, Output_, Value_, Index_ &gt;</div><p>Running minima/maxima from dense data. </p>
 <p>This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn], but data are only available for "observed" vectors [P1, P2, P3, ..., Pm], where Pi[j] contains the i-th element of target vector Vj. The idea is to repeatedly call <code><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html#af6aa418d2d28dec63a58109c5d879aa0">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to m - 1, which computes the running minimum/maximum for each target vector at each invocation.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
@@ -116,27 +116,27 @@ struct tatami_stats::ranges::RunningDense&lt; minimum_, Output_, Value_, Index_ 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">bool</a> minimum_, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a> , <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a> , <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a> &gt; </div>
+template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html">tatami_stats::ranges::RunningDense</a>&lt; <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">minimum_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a> &gt;::RunningDense </td>
+          <td class="memname"><a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html">tatami_stats::ranges::RunningDense</a>&lt; minimum_, Output_, Value_, Index_ &gt;::RunningDense </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a>&#160;</td>
+          <td class="paramtype">Index_&#160;</td>
           <td class="paramname"><em>num</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a> *&#160;</td>
+          <td class="paramtype">Output_ *&#160;</td>
           <td class="paramname"><em>store</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">bool</a>&#160;</td>
+          <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>skip_nan</em>&#160;</td>
         </tr>
         <tr>
@@ -169,15 +169,15 @@ template&lt;<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">bool</a> minimum_, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a> , <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a> , <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a> &gt; </div>
+template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">void</a> <a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html">tatami_stats::ranges::RunningDense</a>&lt; <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">minimum_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a> &gt;::add </td>
+          <td class="memname">void <a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html">tatami_stats::ranges::RunningDense</a>&lt; minimum_, Output_, Value_, Index_ &gt;::add </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">const</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a> *&#160;</td>
+          <td class="paramtype">const Value_ *&#160;</td>
           <td class="paramname"><em>ptr</em></td><td>)</td>
           <td></td>
         </tr>
@@ -203,13 +203,13 @@ template&lt;<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">bool</a> minimum_, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a> , <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a> , <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">typename</a> <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a> &gt; </div>
+template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">void</a> <a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html">tatami_stats::ranges::RunningDense</a>&lt; <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">minimum_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Output_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Value_</a>, <a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">Index_</a> &gt;::finish </td>
+          <td class="memname">void <a class="el" href="structtatami__stats_1_1ranges_1_1RunningDense.html">tatami_stats::ranges::RunningDense</a>&lt; minimum_, Output_, Value_, Index_ &gt;::finish </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

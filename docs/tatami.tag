@@ -780,6 +780,6 @@
     <name>index</name>
     <title>Matrix statistics for tatami</title>
     <filename>index.html</filename>
-    <docanchor file="index.html" title="Matrix statistics for tatami">md__2github_2workspace_2README</docanchor>
+    <docanchor file="index.html">md__2github_2workspace_2README</docanchor>
   </compound>
 </tagfile>

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['finish_0',['finish',['../structtatami__stats_1_1ranges_1_1RunningDense.html#a3c6298041d7f986ab68a645ad2c5e636',1,'tatami_stats::ranges::RunningDense::finish()'],['../structtatami__stats_1_1ranges_1_1RunningSparse.html#a37f92e38af89b69bd0b6b6afb21ba5cc',1,'tatami_stats::ranges::RunningSparse::finish()'],['../structtatami__stats_1_1variances_1_1RunningDense.html#a389232abda6b2ed3218e5cb648d1f33c',1,'tatami_stats::variances::RunningDense::finish()'],['../structtatami__stats_1_1variances_1_1RunningSparse.html#a9ab4ac3ef21c82557e7292dc38d9e504',1,'tatami_stats::variances::RunningSparse::finish()']]],
-  ['for_20tatami_1',['Matrix statistics for tatami',['../index.html',1,'']]]
+  ['elementtype_0',['ElementType',['https://tatami-inc.github.io/tatami/namespacetatami.html#a58a028d23a7be58854b2e60dfae1b04b',1,'tatami']]],
+  ['elementtype_2ehpp_1',['ElementType.hpp',['https://tatami-inc.github.io/tatami/ElementType_8hpp.html',1,'']]],
+  ['end_2',['end',['https://tatami-inc.github.io/tatami/classtatami_1_1ArrayView.html#a904e6d03b59a20f2cc7831fbb318cf33',1,'tatami::ArrayView::end()'],['https://tatami-inc.github.io/tatami/structtatami_1_1SomeNumericArray.html#aaf5d7921f2356a9a3aca745723611d71',1,'tatami::SomeNumericArray::end()']]],
+  ['extractor_2ehpp_3',['Extractor.hpp',['https://tatami-inc.github.io/tatami/Extractor_8hpp.html',1,'']]]
 ];
