@@ -30,11 +30,13 @@ var menudata={children:[
 {text:"All",url:"namespacemembers.html",children:[
 {text:"a",url:"namespacemembers.html#index_a"},
 {text:"b",url:"namespacemembers.html#index_b"},
-{text:"d",url:"namespacemembers.html#index_d"}]},
+{text:"d",url:"namespacemembers.html#index_d"},
+{text:"t",url:"namespacemembers.html#index_t"}]},
 {text:"Functions",url:"namespacemembers_func.html",children:[
 {text:"a",url:"namespacemembers_func.html#index_a"},
 {text:"b",url:"namespacemembers_func.html#index_b"},
-{text:"d",url:"namespacemembers_func.html#index_d"}]}]}]},
+{text:"d",url:"namespacemembers_func.html#index_d"},
+{text:"t",url:"namespacemembers_func.html#index_t"}]}]}]},
 {text:"Classes",url:"annotated.html",children:[
 {text:"Class List",url:"annotated.html"},
 {text:"Class Index",url:"classes.html"},

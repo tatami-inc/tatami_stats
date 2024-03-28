@@ -89,11 +89,11 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>tatami_stats {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacetatami__stats.html">tatami_stats</a> {</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Group_, <span class="keyword">typename</span> Size_&gt;</div>
 <div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="utils_8hpp.html#ad6dcc49891da2b812121317849fffb75">   29</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="utils_8hpp.html#ad6dcc49891da2b812121317849fffb75">total_groups</a>(<span class="keyword">const</span> Group_* group, Size_ n) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespacetatami__stats.html#ad6dcc49891da2b812121317849fffb75">   29</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="namespacetatami__stats.html#ad6dcc49891da2b812121317849fffb75">total_groups</a>(<span class="keyword">const</span> Group_* group, Size_ n) {</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (n) {</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(*std::max_element(group, group + n)) + 1;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    } <span class="keywordflow">else</span> {</div>
@@ -104,8 +104,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Group_, <span class="keyword">typename</span> Size_&gt;</div>
 <div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="utils_8hpp.html#ad46c11e3a7611f30d9695e600c5b7dd6">   50</a></span>std::vector&lt;Size_&gt; <a class="code hl_function" href="utils_8hpp.html#ad46c11e3a7611f30d9695e600c5b7dd6">tabulate_groups</a>(<span class="keyword">const</span> Group_* group, Size_ n) {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">auto</span> ngroups = <a class="code hl_function" href="utils_8hpp.html#ad6dcc49891da2b812121317849fffb75">total_groups</a>(group, n);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="namespacetatami__stats.html#ad46c11e3a7611f30d9695e600c5b7dd6">   50</a></span>std::vector&lt;Size_&gt; <a class="code hl_function" href="namespacetatami__stats.html#ad46c11e3a7611f30d9695e600c5b7dd6">tabulate_groups</a>(<span class="keyword">const</span> Group_* group, Size_ n) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">auto</span> ngroups = <a class="code hl_function" href="namespacetatami__stats.html#ad6dcc49891da2b812121317849fffb75">total_groups</a>(group, n);</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::vector&lt;Size_&gt; group_sizes(ngroups);</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">for</span> (Size_ r = 0; r &lt; n; ++r) {</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        ++(group_sizes[group[r]]);</div>
@@ -117,8 +117,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="autils_8hpp_html_ad46c11e3a7611f30d9695e600c5b7dd6"><div class="ttname"><a href="utils_8hpp.html#ad46c11e3a7611f30d9695e600c5b7dd6">tatami_stats::tabulate_groups</a></div><div class="ttdeci">std::vector&lt; Size_ &gt; tabulate_groups(const Group_ *group, Size_ n)</div><div class="ttdef"><b>Definition</b> utils.hpp:50</div></div>
-<div class="ttc" id="autils_8hpp_html_ad6dcc49891da2b812121317849fffb75"><div class="ttname"><a href="utils_8hpp.html#ad6dcc49891da2b812121317849fffb75">tatami_stats::total_groups</a></div><div class="ttdeci">size_t total_groups(const Group_ *group, Size_ n)</div><div class="ttdef"><b>Definition</b> utils.hpp:29</div></div>
+<div class="ttc" id="anamespacetatami__stats_html"><div class="ttname"><a href="namespacetatami__stats.html">tatami_stats</a></div><div class="ttdoc">Functions to compute statistics from a tatami::Matrix.</div><div class="ttdef"><b>Definition</b> counts.hpp:17</div></div>
+<div class="ttc" id="anamespacetatami__stats_html_ad46c11e3a7611f30d9695e600c5b7dd6"><div class="ttname"><a href="namespacetatami__stats.html#ad46c11e3a7611f30d9695e600c5b7dd6">tatami_stats::tabulate_groups</a></div><div class="ttdeci">std::vector&lt; Size_ &gt; tabulate_groups(const Group_ *group, Size_ n)</div><div class="ttdef"><b>Definition</b> utils.hpp:50</div></div>
+<div class="ttc" id="anamespacetatami__stats_html_ad6dcc49891da2b812121317849fffb75"><div class="ttname"><a href="namespacetatami__stats.html#ad6dcc49891da2b812121317849fffb75">tatami_stats::total_groups</a></div><div class="ttdeci">size_t total_groups(const Group_ *group, Size_ n)</div><div class="ttdef"><b>Definition</b> utils.hpp:29</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
