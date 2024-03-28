@@ -42,8 +42,8 @@ For example, instead of creating a new vector, we can fill an existing array wit
 
 ```cpp
 std::vector<double> my_output(mat->nrow());
-tatami_stats::sum::Options sopt;
-tatami_stats::sum::apply(/* row = */ true, mat.get(), output.data(), sopt);
+tatami_stats::sums::Options sopt;
+tatami_stats::sums::apply(/* row = */ true, mat.get(), output.data(), sopt);
 ```
 
 Some of the algorithms expose low-level functions for even more fine-grained control.
