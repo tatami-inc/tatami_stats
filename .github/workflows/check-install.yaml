@@ -16,8 +16,15 @@ jobs:
     - name: Get latest CMake
       uses: lukka/get-cmake@latest
 
+    - name: Install tatami
+      run: |
+        git clone https://github.com/tatami-inc/tatami dep-tatami --depth=1
+        cd dep-tatami
+        cmake -S . -B build -DTATAMI_TESTS=OFF
+        sudo cmake --install build
+
     - name: Configure the build
-      run: cmake -S . -B build -DTATAMI_TESTS=OFF
+      run: cmake -S . -B build -DTATAMI_STATS_FETCH_EXTERN=OFF -DTATAMI_STATS_TESTS=OFF
 
     - name: Install the library
       run: sudo cmake --install build
@@ -30,7 +37,7 @@ jobs:
         cmake_minimum_required(VERSION 3.24)
         project(test_install)
         add_executable(whee source.cpp)
-        find_package(tatami_tatami)
-        target_link_libraries(whee tatami::tatami)
+        find_package(tatami_tatami_stats)
+        target_link_libraries(whee tatami::tatami_stats)
         EOF
         cd _downstream && cmake -S . -B build
