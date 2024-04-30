@@ -132,8 +132,11 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
         num_all -= lost;
     }
 
-    if (num_nonzero * 2 < num_all) {
-        return 0; // zero is the median if there are too many zeroes.
+    // Is the number of non-zeros less than the number of zeros?
+    // If so, the median must be zero. Note that we calculate it
+    // in this way to avoid overflow from 'num_nonzero * 2'.
+    if (num_nonzero < num_all - num_nonzero) {
+        return 0;
     } 
     
     size_t halfway = num_all / 2;
