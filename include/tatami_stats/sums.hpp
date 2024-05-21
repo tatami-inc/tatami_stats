@@ -84,38 +84,39 @@ Output_ direct(const Value_* ptr, Index_ num, bool skip_nan) {
  * @tparam Index_ Type of the row/column indices.
  */
 template<typename Output_, typename Value_, typename Index_>
-struct RunningDense {
+class RunningDense {
+public:
     /**
      * @param num Number of objective vectors, i.e., n.
      * @param[out] sum Pointer to an output array of length `num`.
      * This should be zeroed on input, and will store the running sums after each `add()`.
      * @param skip_nan See `Options::skip_nan` for details.
      */
-    RunningDense(Index_ num, Output_* sum, bool skip_nan) : num(num), sum(sum), skip_nan(skip_nan) {}
+    RunningDense(Index_ num, Output_* sum, bool skip_nan) : my_num(num), my_sum(sum), my_skip_nan(skip_nan) {}
 
     /**
      * Add the next observed vector to the running sums.
-     * @param[in] ptr Pointer to an array of values of length `num`, corresponding to an observed vector.
+     * @param[in] ptr Pointer to an array of values of length `my_num`, corresponding to an observed vector.
      */
     void add(const Value_* ptr) {
-        if (skip_nan) {
-            for (Index_ i = 0; i < num; ++i) {
+        if (my_skip_nan) {
+            for (Index_ i = 0; i < my_num; ++i) {
                 auto val = ptr[i];
                 if (!std::isnan(val)) {
-                    sum[i] += val;
+                    my_sum[i] += val;
                 }
             }
         } else {
-            for (Index_ i = 0; i < num; ++i) {
-                sum[i] += ptr[i];
+            for (Index_ i = 0; i < my_num; ++i) {
+                my_sum[i] += ptr[i];
             }
         }
     }
 
 private:
-    Index_ num;
-    Output_* sum;
-    bool skip_nan;
+    Index_ my_num;
+    Output_* my_sum;
+    bool my_skip_nan;
 };
 
 /**
@@ -129,18 +130,18 @@ private:
  * @tparam Index_ Type of the row/column indices.
  */
 template<typename Output_, typename Value_, typename Index_>
-struct RunningSparse {
+class RunningSparse {
+public:
     /**
-     * @param num Number of objective vectors.
-     * @param[out] sum Pointer to an output array of length `num`.
+     * @param[out] sum Pointer to an output array of length equal to the number of objective vectors.
      * This should be zeroed on input, and will store the running sums after each `add()`.
      * @param skip_nan See `Options::skip_nan` for details.
      * @param subtract Offset to subtract from each element of `index` before using it to index into `mean` and friends.
      * Only relevant if `mean` and friends hold statistics for a contiguous subset of objective vectors,
      * e.g., during task allocation for parallelization.
      */
-    RunningSparse(Index_ num, Output_* sum, bool skip_nan, Index_ subtract = 0) : 
-        num(num), sum(sum), skip_nan(skip_nan), subtract(subtract) {}
+    RunningSparse(Output_* sum, bool skip_nan, Index_ subtract = 0) : 
+        my_sum(sum), my_skip_nan(skip_nan), my_subtract(subtract) {}
 
     /**
      * Add the next observed vector to the running sums.
@@ -150,25 +151,24 @@ struct RunningSparse {
      * @param number Number of non-zero elements in `value` and `index`.
      */
     void add(const Value_* value, const Index_* index, Index_ number) {
-        if (skip_nan) {
+        if (my_skip_nan) {
             for (Index_ i = 0; i < number; ++i) {
                 auto val = value[i];
                 if (!std::isnan(val)) {
-                    sum[index[i] - subtract] += val;
+                    my_sum[index[i] - my_subtract] += val;
                 }
             }
         } else {
             for (Index_ i = 0; i < number; ++i) {
-                sum[index[i] - subtract] += value[i];
+                my_sum[index[i] - my_subtract] += value[i];
             }
         }
     }
 
 private:
-    Index_ num;
-    Output_* sum;
-    bool skip_nan;
-    Index_ subtract;
+    Output_* my_sum;
+    bool my_skip_nan;
+    Index_ my_subtract;
 };
 
 /**
@@ -218,7 +218,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
                 std::vector<Index_> ibuffer(l);
 
                 LocalOutputBuffer<Output_> local_output(thread, s, l, output);
-                sums::RunningSparse<Output_, Value_, Index_> runner(l, local_output.data(), sopt.skip_nan, s);
+                sums::RunningSparse<Output_, Value_, Index_> runner(local_output.data(), sopt.skip_nan, s);
 
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto out = ext->fetch(vbuffer.data(), ibuffer.data());

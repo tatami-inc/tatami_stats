@@ -109,7 +109,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
 
                 for (size_t g = 0; g < num_groups; ++g) {
                     local_output.emplace_back(thread, start, len, output[g]);
-                    runners.emplace_back(len, local_output.back().data(), sopt.skip_nan, start);
+                    runners.emplace_back(local_output.back().data(), sopt.skip_nan, start);
                 }
 
                 auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, start, len, opt);

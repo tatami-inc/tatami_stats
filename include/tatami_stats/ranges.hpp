@@ -164,40 +164,41 @@ Value_ direct(const Value_* value, Index_ num_nonzero, Index_ num_all, bool skip
  * @tparam Index_ Type of the row/column indices.
  */
 template<bool minimum_, typename Output_, typename Value_, typename Index_>
-struct RunningDense {
+class RunningDense {
+public:
     /**
      * @param num Number of objective vectors, i.e., n.
      * @param[out] store Pointer to an output array of length `num`.
      * After `finish()` is called, this will contain the minimum/maximum for each objective vector.
      * @param skip_nan See `Options::skip_nan` for details.
      */
-    RunningDense(Index_ num, Output_* store, bool skip_nan) : num(num), store(store), skip_nan(skip_nan) {}
+    RunningDense(Index_ num, Output_* store, bool skip_nan) : my_num(num), my_store(store), my_skip_nan(skip_nan) {}
 
     /**
      * Add the next observed vector to the running min/max calculation.
      * @param[in] ptr Pointer to an array of values of length `num`, corresponding to an observed vector.
      */
     void add(const Value_* ptr) {
-        if (init) {
-            init = false;
-            if (skip_nan) {
-                for (Index_ i = 0; i < num; ++i, ++ptr) {
+        if (my_init) {
+            my_init = false;
+            if (my_skip_nan) {
+                for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                     auto val = *ptr;
                     if (std::isnan(val)) {
-                        store[i] = internal::choose_placeholder<minimum_, Value_>();
+                        my_store[i] = internal::choose_placeholder<minimum_, Value_>();
                     } else {
-                        store[i] = val;
+                        my_store[i] = val;
                     }
                 }
             } else {
-                std::copy_n(ptr, num, store);
+                std::copy_n(ptr, my_num, my_store);
             }
 
         } else {
-            for (Index_ i = 0; i < num; ++i, ++ptr) {
+            for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                 auto val = *ptr;
-                if (internal::is_better<minimum_>(store[i], val)) { // this should implicitly skip NaNs, any NaN comparison will be false.
-                    store[i] = val;
+                if (internal::is_better<minimum_>(my_store[i], val)) { // this should implicitly skip NaNs, any NaN comparison will be false.
+                    my_store[i] = val;
                 }
             }
         }
@@ -207,16 +208,16 @@ struct RunningDense {
      * Finish the running calculation once all observed vectors have been passed to `add()`. 
      */
     void finish() {
-        if (init) {
-            std::fill_n(store, num, internal::choose_placeholder<minimum_, Value_>());
+        if (my_init) {
+            std::fill_n(my_store, my_num, internal::choose_placeholder<minimum_, Value_>());
         }
     }
 
 private:
-    bool init = true;
-    Index_ num;
-    Output_* store;
-    bool skip_nan;
+    bool my_init = true;
+    Index_ my_num;
+    Output_* my_store;
+    bool my_skip_nan;
 };
 
 /**
@@ -231,7 +232,8 @@ private:
  * @tparam Index_ Type of the row/column indices.
  */
 template<bool minimum_, typename Output_, typename Value_, typename Index_>
-struct RunningSparse {
+class RunningSparse {
+public:
     /**
      * @param num Number of objective vectors.
      * @param[out] store Pointer to an output array of length `num`.
@@ -242,7 +244,7 @@ struct RunningSparse {
      * e.g., during task allocation for parallelization.
      */
     RunningSparse(Index_ num, Output_* store, bool skip_nan, Index_ subtract = 0) : 
-        num(num), store(store), skip_nan(skip_nan), subtract(subtract) {}
+        my_num(num), my_store(store), my_skip_nan(skip_nan), my_subtract(subtract) {}
 
     /**
      * Add the next observed vector to the min/max calculation.
@@ -251,60 +253,60 @@ struct RunningSparse {
      * @param number Number of non-zero elements in `value` and `index`.
      */
     void add(const Value_* value, const Index_* index, Index_ number) {
-        if (count == 0) {
-            nonzero.resize(num);
-            std::fill_n(store, num, internal::choose_placeholder<minimum_, Value_>());
+        if (my_count == 0) {
+            my_nonzero.resize(my_num);
+            std::fill_n(my_store, my_num, internal::choose_placeholder<minimum_, Value_>());
 
-            if (!skip_nan) {
+            if (!my_skip_nan) {
                 for (Index_ i = 0; i < number; ++i, ++value, ++index) {
                     auto val = *value;
-                    auto idx = *index - subtract;
-                    store[idx] = val;
-                    ++nonzero[idx];
+                    auto idx = *index - my_subtract;
+                    my_store[idx] = val;
+                    ++my_nonzero[idx];
                 }
-                count = 1;
+                my_count = 1;
                 return;
             }
         }
 
         for (Index_ i = 0; i < number; ++i, ++value, ++index) {
             auto val = *value;
-            auto idx = *index - subtract;
-            auto& current = store[idx];
+            auto idx = *index - my_subtract;
+            auto& current = my_store[idx];
             if (internal::is_better<minimum_>(current, val)) { // this should implicitly skip NaNs, any NaN comparison will be false.
                 current = val;
             }
-            ++nonzero[idx];
+            ++my_nonzero[idx];
         }
 
-        ++count;
+        ++my_count;
     }
 
     /**
      * Finish the min/max calculation once all observed vectors have been passed to `add()`. 
      */
     void finish() {
-        if (count) {
-            for (Index_ i = 0; i < num; ++i) {
-                if (count > nonzero[i]) {
-                    auto& current = store[i];
+        if (my_count) {
+            for (Index_ i = 0; i < my_num; ++i) {
+                if (my_count > my_nonzero[i]) {
+                    auto& current = my_store[i];
                     if (internal::is_better<minimum_>(current, 0)) {
                         current = 0;
                     }
                 }
             }
         } else {
-            std::fill_n(store, num, internal::choose_placeholder<minimum_, Value_>());
+            std::fill_n(my_store, my_num, internal::choose_placeholder<minimum_, Value_>());
         }
     }
 
 private:
-    Index_ num;
-    Output_* store;
-    bool skip_nan;
-    Index_ subtract;
-    Index_ count = 0;
-    std::vector<Index_> nonzero;
+    Index_ my_num;
+    Output_* my_store;
+    bool my_skip_nan;
+    Index_ my_subtract;
+    Index_ my_count = 0;
+    std::vector<Index_> my_nonzero;
 };
 
 /**

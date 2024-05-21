@@ -171,7 +171,8 @@ std::pair<Output_, Output_> direct(const Value_* ptr, Index_ num, bool skip_nan)
  * @tparam Index_ Type of the row/column indices.
  */
 template<typename Output_, typename Value_, typename Index_>
-struct RunningDense {
+class RunningDense {
+public:
     /**
      * @param num Number of objective vectors, i.e., n.
      * @param[out] mean Pointer to an output array of length `num`.
@@ -181,24 +182,24 @@ struct RunningDense {
      * @param skip_nan See `Options::skip_nan` for details.
      */
     RunningDense(Index_ num, Output_* mean, Output_* variance, bool skip_nan) : 
-        num(num), mean(mean), variance(variance), skip_nan(skip_nan), ok_count(skip_nan ? num : 0) {}
+        my_num(num), my_mean(mean), my_variance(variance), my_skip_nan(skip_nan), my_ok_count(skip_nan ? num : 0) {}
 
     /**
      * Add the next observed vector to the variance calculation.
      * @param[in] ptr Pointer to an array of values of length `num`, corresponding to an observed vector.
      */
     void add(const Value_* ptr) {
-        if (skip_nan) {
-            for (Index_ i = 0; i < num; ++i, ++ptr) {
+        if (my_skip_nan) {
+            for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                 auto val = *ptr;
                 if (!std::isnan(val)) {
-                    internal::add_welford(mean[i], variance[i], val, ++(ok_count[i]));
+                    internal::add_welford(my_mean[i], my_variance[i], val, ++(my_ok_count[i]));
                 }
             }
         } else {
-            ++count;
-            for (Index_ i = 0; i < num; ++i, ++ptr) {
-                internal::add_welford(mean[i], variance[i], *ptr, count);
+            ++my_count;
+            for (Index_ i = 0; i < my_num; ++i, ++ptr) {
+                internal::add_welford(my_mean[i], my_variance[i], *ptr, my_count);
             }
         }
     }
@@ -207,39 +208,39 @@ struct RunningDense {
      * Finish the variance calculation once all observed vectors have been passed to `add()`. 
      */
     void finish() {
-        if (skip_nan) {
-            for (Index_ i = 0; i < num; ++i) {
-                auto ct = ok_count[i];
+        if (my_skip_nan) {
+            for (Index_ i = 0; i < my_num; ++i) {
+                auto ct = my_ok_count[i];
                 if (ct < 2) {
-                    variance[i] = std::numeric_limits<Output_>::quiet_NaN();
+                    my_variance[i] = std::numeric_limits<Output_>::quiet_NaN();
                     if (ct == 0) {
-                        mean[i] = std::numeric_limits<Output_>::quiet_NaN();
+                        my_mean[i] = std::numeric_limits<Output_>::quiet_NaN();
                     }
                 } else {
-                    variance[i] /= ct - 1;
+                    my_variance[i] /= ct - 1;
                 }
             }
         } else {
-            if (count < 2) {
-                std::fill_n(variance, num, std::numeric_limits<Output_>::quiet_NaN());
-                if (count == 0) {
-                    std::fill_n(mean, num, std::numeric_limits<Output_>::quiet_NaN());
+            if (my_count < 2) {
+                std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
+                if (my_count == 0) {
+                    std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
                 }
             } else {
-                for (Index_ i = 0; i < num; ++i) {
-                    variance[i] /= count - 1;
+                for (Index_ i = 0; i < my_num; ++i) {
+                    my_variance[i] /= my_count - 1;
                 }
             }
         }
     }
 
 private:
-    Index_ num;
-    Output_* mean;
-    Output_* variance;
-    bool skip_nan;
-    Index_ count = 0;
-    std::vector<Index_> ok_count;
+    Index_ my_num;
+    Output_* my_mean;
+    Output_* my_variance;
+    bool my_skip_nan;
+    Index_ my_count = 0;
+    std::vector<Index_> my_ok_count;
 };
 
 /**
@@ -253,7 +254,8 @@ private:
  * @tparam Index_ Type of the row/column indices.
  */
 template<typename Output_, typename Value_, typename Index_>
-struct RunningSparse {
+class RunningSparse {
+public:
     /**
      * @param num Number of objective vectors.
      * @param[out] mean Pointer to an output array of length `num`, containing the means for each objective vector.
@@ -266,7 +268,7 @@ struct RunningSparse {
      * e.g., during task allocation for parallelization.
      */
     RunningSparse(Index_ num, Output_* mean, Output_* variance, bool skip_nan, Index_ subtract = 0) : 
-        num(num), mean(mean), variance(variance), nonzero(num), skip_nan(skip_nan), subtract(subtract), nan(skip_nan ? num : 0) {}
+        my_num(num), my_mean(mean), my_variance(variance), my_nonzero(num), my_skip_nan(skip_nan), my_subtract(subtract), my_nan(skip_nan ? num : 0) {}
 
     /**
      * Add the next observed vector to the variance calculation.
@@ -275,22 +277,22 @@ struct RunningSparse {
      * @param number Number of non-zero elements in `value` and `index`.
      */
     void add(const Value_* value, const Index_* index, Index_ number) {
-        ++count;
-        if (skip_nan) {
+        ++my_count;
+        if (my_skip_nan) {
             for (Index_ i = 0; i < number; ++i) {
                 auto val = value[i];
-                auto ri = index[i] - subtract;
+                auto ri = index[i] - my_subtract;
                 if (std::isnan(val)) {
-                    ++nan[ri];
+                    ++my_nan[ri];
                 } else {
-                    internal::add_welford(mean[ri], variance[ri], val, ++(nonzero[ri]));
+                    internal::add_welford(my_mean[ri], my_variance[ri], val, ++(my_nonzero[ri]));
                 }
             }
 
         } else {
             for (Index_ i = 0; i < number; ++i) {
-                auto ri = index[i] - subtract;
-                internal::add_welford(mean[ri], variance[ri], value[i], ++(nonzero[ri]));
+                auto ri = index[i] - my_subtract;
+                internal::add_welford(my_mean[ri], my_variance[ri], value[i], ++(my_nonzero[ri]));
             }
         }
     }
@@ -299,11 +301,11 @@ struct RunningSparse {
      * Finish the variance calculation once all observed vectors have been passed to `add()`. 
      */
     void finish() {
-        if (skip_nan) {
-            for (Index_ i = 0; i < num; ++i) {
-                auto& curM = mean[i];
-                auto& curV = variance[i];
-                auto ct = count - nan[i];
+        if (my_skip_nan) {
+            for (Index_ i = 0; i < my_num; ++i) {
+                auto& curM = my_mean[i];
+                auto& curV = my_variance[i];
+                auto ct = my_count - my_nan[i];
 
                 if (ct < 2) {
                     curV = std::numeric_limits<Output_>::quiet_NaN();
@@ -311,36 +313,36 @@ struct RunningSparse {
                         curM = std::numeric_limits<Output_>::quiet_NaN();
                     }
                 } else {
-                    internal::add_welford_zeros(curM, curV, nonzero[i], ct);
+                    internal::add_welford_zeros(curM, curV, my_nonzero[i], ct);
                     curV /= ct - 1;
                 }
             }
 
         } else {
-            if (count < 2) {
-                std::fill_n(variance, num, std::numeric_limits<Output_>::quiet_NaN());
-                if (count == 0) {
-                    std::fill_n(mean, num, std::numeric_limits<Output_>::quiet_NaN());
+            if (my_count < 2) {
+                std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
+                if (my_count == 0) {
+                    std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
                 }
             } else {
-                for (Index_ i = 0; i < num; ++i) {
-                    auto& var = variance[i];
-                    internal::add_welford_zeros(mean[i], var, nonzero[i], count);
-                    var /= count - 1;
+                for (Index_ i = 0; i < my_num; ++i) {
+                    auto& var = my_variance[i];
+                    internal::add_welford_zeros(my_mean[i], var, my_nonzero[i], my_count);
+                    var /= my_count - 1;
                 }
             }
         }
     }
 
 private:
-    Index_ num;
-    Output_* mean;
-    Output_* variance;
-    std::vector<Index_> nonzero;
-    bool skip_nan;
-    Index_ subtract;
-    Index_ count = 0;
-    std::vector<Index_> nan;
+    Index_ my_num;
+    Output_* my_mean;
+    Output_* my_variance;
+    std::vector<Index_> my_nonzero;
+    bool my_skip_nan;
+    Index_ my_subtract;
+    Index_ my_count = 0;
+    std::vector<Index_> my_nan;
 };
 
 /**
