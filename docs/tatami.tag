@@ -375,6 +375,27 @@
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
     <templarg>typename Index_</templarg>
+    <member kind="function">
+      <type></type>
+      <name>RunningSparse</name>
+      <anchorfile>classtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
+      <anchor>acb56694c71bb6155a3ad90e5e1437347</anchor>
+      <arglist>(Index_ num, Output_ *mean, Output_ *variance, bool skip_nan, Index_ subtract=0)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>add</name>
+      <anchorfile>classtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
+      <anchor>ad998372f22ce80165cc39a8bfcb74108</anchor>
+      <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>finish</name>
+      <anchorfile>classtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
+      <anchor>a9ab4ac3ef21c82557e7292dc38d9e504</anchor>
+      <arglist>()</arglist>
+    </member>
   </compound>
   <compound kind="namespace">
     <name>tatami_stats</name>

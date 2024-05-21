@@ -255,11 +255,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Output_, <span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_&gt;</div>
 <div class="foldopen" id="foldopen00257" data-start="{" data-end="};">
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno"><a class="line" href="classtatami__stats_1_1variances_1_1RunningSparse.html">  257</a></span><span class="keyword">class </span><a class="code hl_class" href="classtatami__stats_1_1variances_1_1RunningSparse.html">RunningSparse</a> {</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <a class="code hl_class" href="classtatami__stats_1_1variances_1_1RunningSparse.html">RunningSparse</a>(Index_ num, Output_* mean, Output_* variance, <span class="keywordtype">bool</span> skip_nan, Index_ subtract = 0) : </div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00270" data-start="{" data-end="}">
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno"><a class="line" href="classtatami__stats_1_1variances_1_1RunningSparse.html#acb56694c71bb6155a3ad90e5e1437347">  270</a></span>    <a class="code hl_function" href="classtatami__stats_1_1variances_1_1RunningSparse.html#acb56694c71bb6155a3ad90e5e1437347">RunningSparse</a>(Index_ num, Output_* mean, Output_* variance, <span class="keywordtype">bool</span> skip_nan, Index_ subtract = 0) : </div>
 <div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        my_num(num), my_mean(mean), my_variance(variance), my_nonzero(num), my_skip_nan(skip_nan), my_subtract(subtract), my_nan(skip_nan ? num : 0) {}</div>
+</div>
 <div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordtype">void</span> add(<span class="keyword">const</span> Value_* value, <span class="keyword">const</span> Index_* index, Index_ number) {</div>
+<div class="foldopen" id="foldopen00279" data-start="{" data-end="}">
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno"><a class="line" href="classtatami__stats_1_1variances_1_1RunningSparse.html#ad998372f22ce80165cc39a8bfcb74108">  279</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classtatami__stats_1_1variances_1_1RunningSparse.html#ad998372f22ce80165cc39a8bfcb74108">add</a>(<span class="keyword">const</span> Value_* value, <span class="keyword">const</span> Index_* index, Index_ number) {</div>
 <div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        ++my_count;</div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="keywordflow">if</span> (my_skip_nan) {</div>
 <div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            <span class="keywordflow">for</span> (Index_ i = 0; i &lt; number; ++i) {</div>
@@ -279,8 +282,10 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            }</div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        }</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    }</div>
+</div>
 <div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <span class="keywordtype">void</span> finish() {</div>
+<div class="foldopen" id="foldopen00303" data-start="{" data-end="}">
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno"><a class="line" href="classtatami__stats_1_1variances_1_1RunningSparse.html#a9ab4ac3ef21c82557e7292dc38d9e504">  303</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classtatami__stats_1_1variances_1_1RunningSparse.html#a9ab4ac3ef21c82557e7292dc38d9e504">finish</a>() {</div>
 <div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        <span class="keywordflow">if</span> (my_skip_nan) {</div>
 <div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>            <span class="keywordflow">for</span> (Index_ i = 0; i &lt; my_num; ++i) {</div>
 <div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>                <span class="keyword">auto</span>&amp; curM = my_mean[i];</div>
@@ -313,6 +318,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>            }</div>
 <div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        }</div>
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    }</div>
+</div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
 <div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    Index_ my_num;</div>
@@ -358,9 +364,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span> </div>
 <div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>                <span class="keywordflow">for</span> (Index_ x = 0; x &lt; otherdim; ++x) {</div>
 <div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>                    <span class="keyword">auto</span> out = ext-&gt;fetch(vbuffer.data(), ibuffer.data());</div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>                    runner.add(out.value, out.index, out.number);</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>                    runner.<a class="code hl_function" href="classtatami__stats_1_1variances_1_1RunningSparse.html#ad998372f22ce80165cc39a8bfcb74108">add</a>(out.value, out.index, out.number);</div>
 <div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>                }</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>                runner.finish();</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>                runner.<a class="code hl_function" href="classtatami__stats_1_1variances_1_1RunningSparse.html#a9ab4ac3ef21c82557e7292dc38d9e504">finish</a>();</div>
 <div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
 <div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>                local_output.<a class="code hl_function" href="classtatami__stats_1_1LocalOutputBuffer.html#a64ee29c3a09b95a5d44c5111f357720e">transfer</a>(); </div>
 <div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>            }, dim, vopt.<a class="code hl_variable" href="structtatami__stats_1_1variances_1_1Options.html#a067e87951e90ca4510b110c13efe56cb">num_threads</a>);</div>
@@ -450,6 +456,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclasstatami__stats_1_1variances_1_1RunningDense_html_a389232abda6b2ed3218e5cb648d1f33c"><div class="ttname"><a href="classtatami__stats_1_1variances_1_1RunningDense.html#a389232abda6b2ed3218e5cb648d1f33c">tatami_stats::variances::RunningDense::finish</a></div><div class="ttdeci">void finish()</div><div class="ttdef"><b>Definition</b> variances.hpp:210</div></div>
 <div class="ttc" id="aclasstatami__stats_1_1variances_1_1RunningDense_html_ae4305fb083a270fa5f5800e8a5bdb140"><div class="ttname"><a href="classtatami__stats_1_1variances_1_1RunningDense.html#ae4305fb083a270fa5f5800e8a5bdb140">tatami_stats::variances::RunningDense::RunningDense</a></div><div class="ttdeci">RunningDense(Index_ num, Output_ *mean, Output_ *variance, bool skip_nan)</div><div class="ttdef"><b>Definition</b> variances.hpp:184</div></div>
 <div class="ttc" id="aclasstatami__stats_1_1variances_1_1RunningSparse_html"><div class="ttname"><a href="classtatami__stats_1_1variances_1_1RunningSparse.html">tatami_stats::variances::RunningSparse</a></div><div class="ttdoc">Running variances from sparse data.</div><div class="ttdef"><b>Definition</b> variances.hpp:257</div></div>
+<div class="ttc" id="aclasstatami__stats_1_1variances_1_1RunningSparse_html_a9ab4ac3ef21c82557e7292dc38d9e504"><div class="ttname"><a href="classtatami__stats_1_1variances_1_1RunningSparse.html#a9ab4ac3ef21c82557e7292dc38d9e504">tatami_stats::variances::RunningSparse::finish</a></div><div class="ttdeci">void finish()</div><div class="ttdef"><b>Definition</b> variances.hpp:303</div></div>
+<div class="ttc" id="aclasstatami__stats_1_1variances_1_1RunningSparse_html_acb56694c71bb6155a3ad90e5e1437347"><div class="ttname"><a href="classtatami__stats_1_1variances_1_1RunningSparse.html#acb56694c71bb6155a3ad90e5e1437347">tatami_stats::variances::RunningSparse::RunningSparse</a></div><div class="ttdeci">RunningSparse(Index_ num, Output_ *mean, Output_ *variance, bool skip_nan, Index_ subtract=0)</div><div class="ttdef"><b>Definition</b> variances.hpp:270</div></div>
+<div class="ttc" id="aclasstatami__stats_1_1variances_1_1RunningSparse_html_ad998372f22ce80165cc39a8bfcb74108"><div class="ttname"><a href="classtatami__stats_1_1variances_1_1RunningSparse.html#ad998372f22ce80165cc39a8bfcb74108">tatami_stats::variances::RunningSparse::add</a></div><div class="ttdeci">void add(const Value_ *value, const Index_ *index, Index_ number)</div><div class="ttdef"><b>Definition</b> variances.hpp:279</div></div>
 <div class="ttc" id="anamespacetatami__stats_1_1variances_html_a0069f1a28f0299ae7ebe390ea4c288b6"><div class="ttname"><a href="namespacetatami__stats_1_1variances.html#a0069f1a28f0299ae7ebe390ea4c288b6">tatami_stats::variances::by_row</a></div><div class="ttdeci">std::vector&lt; Output_ &gt; by_row(const tatami::Matrix&lt; Value_, Index_ &gt; *p, const Options &amp;vopt)</div><div class="ttdef"><b>Definition</b> variances.hpp:482</div></div>
 <div class="ttc" id="anamespacetatami__stats_1_1variances_html_a321f88af41ac5ef639c72c57a067bd71"><div class="ttname"><a href="namespacetatami__stats_1_1variances.html#a321f88af41ac5ef639c72c57a067bd71">tatami_stats::variances::direct</a></div><div class="ttdeci">std::pair&lt; Output_, Output_ &gt; direct(const Value_ *value, Index_ num_nonzero, Index_ num_all, bool skip_nan)</div><div class="ttdef"><b>Definition</b> variances.hpp:86</div></div>
 <div class="ttc" id="anamespacetatami__stats_1_1variances_html_aa569b5ff798e7b55ca6d930711ae6773"><div class="ttname"><a href="namespacetatami__stats_1_1variances.html#aa569b5ff798e7b55ca6d930711ae6773">tatami_stats::variances::apply</a></div><div class="ttdeci">void apply(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; *p, Output_ *output, const Options &amp;vopt)</div><div class="ttdef"><b>Definition</b> variances.hpp:364</div></div>
