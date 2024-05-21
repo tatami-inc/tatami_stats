@@ -2,6 +2,7 @@
 #define TATAMI_STATS_VARS_HPP
 
 #include "tatami/tatami.hpp"
+#include "utils.hpp"
 
 #include <vector>
 #include <cmath>
@@ -377,18 +378,22 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
             }, dim, vopt.num_threads);
 
         } else {
-            std::fill(output, output + dim, static_cast<Output_>(0));
-            tatami::parallelize([&](size_t, Index_ s, Index_ l) {
+            tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
                 auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, s, l);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
+
                 std::vector<Output_> running_means(l);
-                variances::RunningSparse<Output_, Value_, Index_> runner(l, running_means.data(), output + s, vopt.skip_nan, s);
+                LocalOutputBuffer<Output_> local_output(thread, s, l, output);
+                variances::RunningSparse<Output_, Value_, Index_> runner(l, running_means.data(), local_output.data(), vopt.skip_nan, s);
+
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto out = ext->fetch(vbuffer.data(), ibuffer.data());
                     runner.add(out.value, out.index, out.number);
                 }
                 runner.finish();
+
+                local_output.transfer(); 
             }, dim, vopt.num_threads);
         }
 
@@ -404,16 +409,20 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
             }, dim, vopt.num_threads);
 
         } else {
-            std::fill(output, output + dim, static_cast<Output_>(0));
-            tatami::parallelize([&](size_t, Index_ s, Index_ l) {
+            tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
                 auto ext = tatami::consecutive_extractor<false>(p, !row, 0, otherdim, s, l);
                 std::vector<Value_> buffer(l);
+
                 std::vector<Output_> running_means(l);
-                variances::RunningDense<Output_, Value_, Index_> runner(l, running_means.data(), output + s, vopt.skip_nan);
+                LocalOutputBuffer<Output_> local_output(thread, s, l, output);
+                variances::RunningDense<Output_, Value_, Index_> runner(l, running_means.data(), local_output.data(), vopt.skip_nan);
+
                 for (Index_ x = 0; x < otherdim; ++x) {
                     runner.add(ext->fetch(buffer.data()));
                 }
                 runner.finish();
+
+                local_output.transfer(); 
             }, dim, vopt.num_threads);
         }
     }

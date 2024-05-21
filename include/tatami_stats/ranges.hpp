@@ -2,6 +2,7 @@
 #define TATAMI_STATS_RANGES_HPP
 
 #include "tatami/tatami.hpp"
+#include "utils.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -353,12 +354,15 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
             }, dim, ropt.num_threads);
 
         } else {
-            tatami::parallelize([&](size_t, Index_ s, Index_ l) {
+            tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
                 auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, s, l, opt);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
-                ranges::RunningSparse<true, Output_, Value_, Index_> runmin(l, (store_min ? min_out + s : NULL), ropt.skip_nan, s);
-                ranges::RunningSparse<false, Output_, Value_, Index_> runmax(l, (store_max ? max_out + s : NULL), ropt.skip_nan, s);
+
+                auto local_min = (store_min ? LocalOutputBuffer<Output_>(thread, s, l, min_out) : LocalOutputBuffer<Output_>());
+                auto local_max = (store_max ? LocalOutputBuffer<Output_>(thread, s, l, max_out) : LocalOutputBuffer<Output_>());
+                ranges::RunningSparse<true, Output_, Value_, Index_> runmin(l, local_min.data(), ropt.skip_nan, s);
+                ranges::RunningSparse<false, Output_, Value_, Index_> runmax(l, local_max.data(), ropt.skip_nan, s);
 
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto out = ext->fetch(vbuffer.data(), ibuffer.data());
@@ -372,9 +376,11 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
 
                 if (store_min) {
                     runmin.finish();
+                    local_min.transfer();
                 }
                 if (store_max) {
                     runmax.finish();
+                    local_max.transfer();
                 }
             }, dim, ropt.num_threads);
         }
@@ -396,11 +402,14 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
             }, dim, ropt.num_threads);
 
         } else {
-            tatami::parallelize([&](size_t, Index_ s, Index_ l) {
+            tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
                 auto ext = tatami::consecutive_extractor<false>(p, !row, 0, otherdim, s, l);
                 std::vector<Value_> buffer(l);
-                ranges::RunningDense<true, Output_, Value_, Index_> runmin(l, (store_min ? min_out + s : NULL), ropt.skip_nan);
-                ranges::RunningDense<false, Output_, Value_, Index_> runmax(l, (store_max ? max_out + s : NULL), ropt.skip_nan);
+
+                auto local_min = (store_min ? LocalOutputBuffer<Output_>(thread, s, l, min_out) : LocalOutputBuffer<Output_>());
+                auto local_max = (store_max ? LocalOutputBuffer<Output_>(thread, s, l, max_out) : LocalOutputBuffer<Output_>());
+                ranges::RunningDense<true, Output_, Value_, Index_> runmin(l, local_min.data(), ropt.skip_nan);
+                ranges::RunningDense<false, Output_, Value_, Index_> runmax(l, local_max.data(), ropt.skip_nan);
 
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto ptr = ext->fetch(buffer.data());
@@ -414,9 +423,11 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
 
                 if (store_min) {
                     runmin.finish();
+                    local_min.transfer();
                 }
                 if (store_max) {
                     runmax.finish();
+                    local_max.transfer();
                 }
             }, dim, ropt.num_threads);
         }

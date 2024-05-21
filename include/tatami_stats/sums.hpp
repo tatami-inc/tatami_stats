@@ -2,6 +2,7 @@
 #define TATAMI_STATS__SUMS_HPP
 
 #include "tatami/tatami.hpp"
+#include "utils.hpp"
 
 #include <vector>
 #include <numeric>
@@ -210,18 +211,21 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
         } else {
             tatami::Options opt;
             opt.sparse_ordered_index = false;
-            std::fill(output, output + dim, static_cast<Output_>(0));
 
-            tatami::parallelize([&](size_t, Index_ s, Index_ l) {
+            tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
                 auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, s, l, opt);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
-                sums::RunningSparse<Output_, Value_, Index_> runner(l, output + s, sopt.skip_nan, s);
+
+                LocalOutputBuffer<Output_> local_output(thread, s, l, output);
+                sums::RunningSparse<Output_, Value_, Index_> runner(l, local_output.data(), sopt.skip_nan, s);
 
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto out = ext->fetch(vbuffer.data(), ibuffer.data());
                     runner.add(out.value, out.index, out.number);
                 }
+
+                local_output.transfer();
             }, dim, sopt.num_threads);
         }
 
@@ -237,17 +241,19 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
             }, dim, sopt.num_threads);
 
         } else {
-            std::fill(output, output + dim, static_cast<Output_>(0));
-
-            tatami::parallelize([&](size_t, Index_ s, Index_ l) {
+            tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
                 auto ext = tatami::consecutive_extractor<false>(p, !row, 0, otherdim, s, l);
                 std::vector<Value_> buffer(l);
-                sums::RunningDense<Output_, Value_, Index_> runner(l, output + s, sopt.skip_nan);
+
+                LocalOutputBuffer<Output_> local_output(thread, s, l, output);
+                sums::RunningDense<Output_, Value_, Index_> runner(l, local_output.data(), sopt.skip_nan);
 
                 for (Index_ x = 0; x < otherdim; ++x) {
                     auto out = ext->fetch(buffer.data());
                     runner.add(out);
                 }
+
+                local_output.transfer();
             }, dim, sopt.num_threads);
         }
     }

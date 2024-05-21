@@ -95,21 +95,21 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
             }, dim, sopt.num_threads);
 
         } else {
-            for (size_t g = 0; g < num_groups; ++g) {
-                std::fill(output[g], output[g] + dim, static_cast<Output_>(0));
-            }
-
             // Order doesn't affect numerical precision of the outcome, as
             // addition order for each target vector is already well-defined
             // for a running calculation.
             tatami::Options opt;
             opt.sparse_ordered_index = false; 
 
-            tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
+            tatami::parallelize([&](size_t thread, Index_ start, Index_ len) -> void {
                 std::vector<sums::RunningSparse<Output_, Value_, Index_> > runners;
                 runners.reserve(num_groups);
+                std::vector<LocalOutputBuffer<Output_> > local_output;
+                local_output.reserve(num_groups);
+
                 for (size_t g = 0; g < num_groups; ++g) {
-                    runners.emplace_back(len, output[g] + start, sopt.skip_nan, start);
+                    local_output.emplace_back(thread, start, len, output[g]);
+                    runners.emplace_back(len, local_output.back().data(), sopt.skip_nan, start);
                 }
 
                 auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, start, len, opt);
@@ -119,6 +119,10 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                 for (int i = 0; i < otherdim; ++i) {
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
                     runners[group[i]].add(range.value, range.index, range.number);
+                }
+
+                for (size_t g = 0; g < num_groups; ++g) {
+                    local_output[g].transfer();
                 }
             }, dim, sopt.num_threads);
         }
@@ -154,15 +158,15 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
             }, dim, sopt.num_threads);
 
         } else {
-            for (size_t g = 0; g < num_groups; ++g) {
-                std::fill(output[g], output[g] + dim, static_cast<Output_>(0));
-            }
-
-            tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
+            tatami::parallelize([&](size_t thread, Index_ start, Index_ len) -> void {
                 std::vector<sums::RunningDense<Output_, Value_, Index_> > runners;
                 runners.reserve(num_groups);
+                std::vector<LocalOutputBuffer<Output_> > local_output;
+                local_output.reserve(num_groups);
+
                 for (size_t g = 0; g < num_groups; ++g) {
-                    runners.emplace_back(len, output[g] + start, sopt.skip_nan);
+                    local_output.emplace_back(thread, start, len, output[g]);
+                    runners.emplace_back(len, local_output.back().data(), sopt.skip_nan);
                 }
 
                 std::vector<double> xbuffer(len);
@@ -171,6 +175,10 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                 for (int i = 0; i < otherdim; ++i) {
                     auto ptr = ext->fetch(xbuffer.data());
                     runners[group[i]].add(ptr);
+                }
+
+                for (size_t g = 0; g < num_groups; ++g) {
+                    local_output[g].transfer();
                 }
             }, dim, sopt.num_threads);
         }
