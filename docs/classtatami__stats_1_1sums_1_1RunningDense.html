@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats::sums::RunningSparse&lt; Output_, Value_, Index_ &gt; Struct Template Reference</title>
+<title>tatami_stats: tatami_stats::sums::RunningDense&lt; Output_, Value_, Index_ &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,33 +71,34 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="namespacetatami__stats_1_1sums.html">sums</a></li><li class="navelem"><a class="el" href="structtatami__stats_1_1sums_1_1RunningSparse.html">RunningSparse</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="namespacetatami__stats_1_1sums.html">sums</a></li><li class="navelem"><a class="el" href="classtatami__stats_1_1sums_1_1RunningDense.html">RunningDense</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="structtatami__stats_1_1sums_1_1RunningSparse-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats::sums::RunningSparse&lt; Output_, Value_, Index_ &gt; Struct Template Reference</div></div>
+<a href="classtatami__stats_1_1sums_1_1RunningDense-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">tatami_stats::sums::RunningDense&lt; Output_, Value_, Index_ &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Running sums from sparse data.  
- <a href="structtatami__stats_1_1sums_1_1RunningSparse.html#details">More...</a></p>
+<p>Running sums from dense data.  
+ <a href="classtatami__stats_1_1sums_1_1RunningDense.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="sums_8hpp_source.html">sums.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af87f89e39970c8dd7214d1e62d76dfa2" id="r_af87f89e39970c8dd7214d1e62d76dfa2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sums_1_1RunningSparse.html#af87f89e39970c8dd7214d1e62d76dfa2">RunningSparse</a> (Index_ num, Output_ *sum, bool skip_nan, Index_ subtract=0)</td></tr>
-<tr class="separator:af87f89e39970c8dd7214d1e62d76dfa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fede3f8461b31bc9f5da83571bfac39" id="r_a2fede3f8461b31bc9f5da83571bfac39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1sums_1_1RunningSparse.html#a2fede3f8461b31bc9f5da83571bfac39">add</a> (const Value_ *value, const Index_ *index, Index_ number)</td></tr>
-<tr class="separator:a2fede3f8461b31bc9f5da83571bfac39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf7b5a8d3df2682b38ec0cb6851d2c4" id="r_accf7b5a8d3df2682b38ec0cb6851d2c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtatami__stats_1_1sums_1_1RunningDense.html#accf7b5a8d3df2682b38ec0cb6851d2c4">RunningDense</a> (Index_ num, Output_ *sum, bool skip_nan)</td></tr>
+<tr class="separator:accf7b5a8d3df2682b38ec0cb6851d2c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1171923aa2b5441d00fb495e8faa6c1e" id="r_a1171923aa2b5441d00fb495e8faa6c1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtatami__stats_1_1sums_1_1RunningDense.html#a1171923aa2b5441d00fb495e8faa6c1e">add</a> (const Value_ *ptr)</td></tr>
+<tr class="separator:a1171923aa2b5441d00fb495e8faa6c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_, typename Value_, typename Index_&gt;<br />
-struct tatami_stats::sums::RunningSparse&lt; Output_, Value_, Index_ &gt;</div><p>Running sums from sparse data. </p>
-<p>Compute running sums from sparse data. This is the counterpart to <code><a class="el" href="structtatami__stats_1_1sums_1_1RunningDense.html" title="Running sums from dense data.">RunningDense</a></code>, but for sparse observed vectors.</p>
+class tatami_stats::sums::RunningDense&lt; Output_, Value_, Index_ &gt;</div><p>Running sums from dense data. </p>
+<p>This considers a scenario with a set of equilength "objective" vectors [V1, V2, V3, ..., Vn], but data are only available for "observed" vectors [P1, P2, P3, ..., Pm], where Pi[j] contains the i-th element of objective vector Vj. The idea is to repeatedly call <code><a class="el" href="classtatami__stats_1_1sums_1_1RunningDense.html#a1171923aa2b5441d00fb495e8faa6c1e">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to m - 1, and then finally call <code>finish()</code> to obtain the sum for each objective vector.</p>
+<p>This class uses naive accumulation to obtain the sum for each objective vector. Callers should use a sufficiently high-precision <code>Output_</code> such as <code>double</code> to mitigate round-off errors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
@@ -107,8 +108,8 @@ struct tatami_stats::sums::RunningSparse&lt; Output_, Value_, Index_ &gt;</div><
   </dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="af87f89e39970c8dd7214d1e62d76dfa2" name="af87f89e39970c8dd7214d1e62d76dfa2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af87f89e39970c8dd7214d1e62d76dfa2">&#9670;&#160;</a></span>RunningSparse()</h2>
+<a id="accf7b5a8d3df2682b38ec0cb6851d2c4" name="accf7b5a8d3df2682b38ec0cb6851d2c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf7b5a8d3df2682b38ec0cb6851d2c4">&#9670;&#160;</a></span>RunningDense()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -119,7 +120,7 @@ template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structtatami__stats_1_1sums_1_1RunningSparse.html">tatami_stats::sums::RunningSparse</a>&lt; Output_, Value_, Index_ &gt;::RunningSparse </td>
+          <td class="memname"><a class="el" href="classtatami__stats_1_1sums_1_1RunningDense.html">tatami_stats::sums::RunningDense</a>&lt; Output_, Value_, Index_ &gt;::RunningDense </td>
           <td>(</td>
           <td class="paramtype">Index_&#160;</td>
           <td class="paramname"><em>num</em>, </td>
@@ -134,13 +135,7 @@ template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>skip_nan</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Index_&#160;</td>
-          <td class="paramname"><em>subtract</em> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>skip_nan</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -156,10 +151,9 @@ template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of target vectors. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">sum</td><td>Pointer to an output array of length <code>num</code>. This should be zeroed on input, and will store the running sums after each <code><a class="el" href="structtatami__stats_1_1sums_1_1RunningSparse.html#a2fede3f8461b31bc9f5da83571bfac39">add()</a></code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of objective vectors, i.e., n. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">sum</td><td>Pointer to an output array of length <code>num</code>. This should be zeroed on input, and will store the running sums after each <code><a class="el" href="classtatami__stats_1_1sums_1_1RunningDense.html#a1171923aa2b5441d00fb495e8faa6c1e">add()</a></code>. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1sums_1_1Options.html#a9fade20069b7314f5a43315b66a08e7d">Options::skip_nan</a></code> for details. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">subtract</td><td>Offset to subtract from each element of <code>index</code> before using it to index into <code>mean</code> and friends. Only relevant if <code>mean</code> and friends hold statistics for a contiguous subset of target vectors, e.g., during task allocation for parallelization. </td></tr>
   </table>
   </dd>
 </dl>
@@ -167,8 +161,8 @@ template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2fede3f8461b31bc9f5da83571bfac39" name="a2fede3f8461b31bc9f5da83571bfac39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fede3f8461b31bc9f5da83571bfac39">&#9670;&#160;</a></span>add()</h2>
+<a id="a1171923aa2b5441d00fb495e8faa6c1e" name="a1171923aa2b5441d00fb495e8faa6c1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1171923aa2b5441d00fb495e8faa6c1e">&#9670;&#160;</a></span>add()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -179,27 +173,11 @@ template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structtatami__stats_1_1sums_1_1RunningSparse.html">tatami_stats::sums::RunningSparse</a>&lt; Output_, Value_, Index_ &gt;::add </td>
+          <td class="memname">void <a class="el" href="classtatami__stats_1_1sums_1_1RunningDense.html">tatami_stats::sums::RunningDense</a>&lt; Output_, Value_, Index_ &gt;::add </td>
           <td>(</td>
           <td class="paramtype">const Value_ *&#160;</td>
-          <td class="paramname"><em>value</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>ptr</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const Index_ *&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Index_&#160;</td>
-          <td class="paramname"><em>number</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -210,16 +188,14 @@ template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 </div><div class="memdoc">
 <p>Add the next observed vector to the running sums. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Value of structural non-zero elements. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Index of structural non-zero elements. This does not have to be sorted. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">number</td><td>Number of non-zero elements in <code>value</code> and <code>index</code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>Pointer to an array of values of length <code>my_num</code>, corresponding to an observed vector. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>tatami_stats/<a class="el" href="sums_8hpp_source.html">sums.hpp</a></li>
 </ul>
 </div><!-- contents -->

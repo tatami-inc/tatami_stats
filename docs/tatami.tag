@@ -40,8 +40,8 @@
     <path>tatami_stats/</path>
     <filename>ranges_8hpp.html</filename>
     <class kind="struct">tatami_stats::ranges::Options</class>
-    <class kind="struct">tatami_stats::ranges::RunningDense</class>
-    <class kind="struct">tatami_stats::ranges::RunningSparse</class>
+    <class kind="class">tatami_stats::ranges::RunningDense</class>
+    <class kind="class">tatami_stats::ranges::RunningSparse</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::ranges</namespace>
   </compound>
@@ -50,8 +50,8 @@
     <path>tatami_stats/</path>
     <filename>sums_8hpp.html</filename>
     <class kind="struct">tatami_stats::sums::Options</class>
-    <class kind="struct">tatami_stats::sums::RunningDense</class>
-    <class kind="struct">tatami_stats::sums::RunningSparse</class>
+    <class kind="class">tatami_stats::sums::RunningDense</class>
+    <class kind="class">tatami_stats::sums::RunningSparse</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::sums</namespace>
   </compound>
@@ -73,8 +73,8 @@
     <path>tatami_stats/</path>
     <filename>variances_8hpp.html</filename>
     <class kind="struct">tatami_stats::variances::Options</class>
-    <class kind="struct">tatami_stats::variances::RunningDense</class>
-    <class kind="struct">tatami_stats::variances::RunningSparse</class>
+    <class kind="class">tatami_stats::variances::RunningDense</class>
+    <class kind="class">tatami_stats::variances::RunningSparse</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::variances</namespace>
   </compound>
@@ -241,9 +241,9 @@
       <arglist></arglist>
     </member>
   </compound>
-  <compound kind="struct">
+  <compound kind="class">
     <name>tatami_stats::ranges::RunningDense</name>
-    <filename>structtatami__stats_1_1ranges_1_1RunningDense.html</filename>
+    <filename>classtatami__stats_1_1ranges_1_1RunningDense.html</filename>
     <templarg>bool minimum_</templarg>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
@@ -251,77 +251,77 @@
     <member kind="function">
       <type></type>
       <name>RunningDense</name>
-      <anchorfile>structtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
       <anchor>a8a7b0887feb925b9e5d47ce372f9aa29</anchor>
       <arglist>(Index_ num, Output_ *store, bool skip_nan)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>add</name>
-      <anchorfile>structtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
       <anchor>af6aa418d2d28dec63a58109c5d879aa0</anchor>
       <arglist>(const Value_ *ptr)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>finish</name>
-      <anchorfile>structtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
       <anchor>a3c6298041d7f986ab68a645ad2c5e636</anchor>
       <arglist>()</arglist>
     </member>
   </compound>
-  <compound kind="struct">
+  <compound kind="class">
     <name>tatami_stats::sums::RunningDense</name>
-    <filename>structtatami__stats_1_1sums_1_1RunningDense.html</filename>
+    <filename>classtatami__stats_1_1sums_1_1RunningDense.html</filename>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
     <templarg>typename Index_</templarg>
     <member kind="function">
       <type></type>
       <name>RunningDense</name>
-      <anchorfile>structtatami__stats_1_1sums_1_1RunningDense.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1sums_1_1RunningDense.html</anchorfile>
       <anchor>accf7b5a8d3df2682b38ec0cb6851d2c4</anchor>
       <arglist>(Index_ num, Output_ *sum, bool skip_nan)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>add</name>
-      <anchorfile>structtatami__stats_1_1sums_1_1RunningDense.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1sums_1_1RunningDense.html</anchorfile>
       <anchor>a1171923aa2b5441d00fb495e8faa6c1e</anchor>
       <arglist>(const Value_ *ptr)</arglist>
     </member>
   </compound>
-  <compound kind="struct">
+  <compound kind="class">
     <name>tatami_stats::variances::RunningDense</name>
-    <filename>structtatami__stats_1_1variances_1_1RunningDense.html</filename>
+    <filename>classtatami__stats_1_1variances_1_1RunningDense.html</filename>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
     <templarg>typename Index_</templarg>
     <member kind="function">
       <type></type>
       <name>RunningDense</name>
-      <anchorfile>structtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
       <anchor>ae4305fb083a270fa5f5800e8a5bdb140</anchor>
       <arglist>(Index_ num, Output_ *mean, Output_ *variance, bool skip_nan)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>add</name>
-      <anchorfile>structtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
       <anchor>a13d93ffc98acfd3f7eb53265ef694c07</anchor>
       <arglist>(const Value_ *ptr)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>finish</name>
-      <anchorfile>structtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
       <anchor>a389232abda6b2ed3218e5cb648d1f33c</anchor>
       <arglist>()</arglist>
     </member>
   </compound>
-  <compound kind="struct">
+  <compound kind="class">
     <name>tatami_stats::ranges::RunningSparse</name>
-    <filename>structtatami__stats_1_1ranges_1_1RunningSparse.html</filename>
+    <filename>classtatami__stats_1_1ranges_1_1RunningSparse.html</filename>
     <templarg>bool minimum_</templarg>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
@@ -329,73 +329,52 @@
     <member kind="function">
       <type></type>
       <name>RunningSparse</name>
-      <anchorfile>structtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
       <anchor>a410d814eb15f0488357a57831e64321e</anchor>
       <arglist>(Index_ num, Output_ *store, bool skip_nan, Index_ subtract=0)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>add</name>
-      <anchorfile>structtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
       <anchor>aab1432179521651b5e238b04f70ba522</anchor>
       <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>finish</name>
-      <anchorfile>structtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
       <anchor>a37f92e38af89b69bd0b6b6afb21ba5cc</anchor>
       <arglist>()</arglist>
     </member>
   </compound>
-  <compound kind="struct">
+  <compound kind="class">
     <name>tatami_stats::sums::RunningSparse</name>
-    <filename>structtatami__stats_1_1sums_1_1RunningSparse.html</filename>
+    <filename>classtatami__stats_1_1sums_1_1RunningSparse.html</filename>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
     <templarg>typename Index_</templarg>
     <member kind="function">
       <type></type>
       <name>RunningSparse</name>
-      <anchorfile>structtatami__stats_1_1sums_1_1RunningSparse.html</anchorfile>
-      <anchor>af87f89e39970c8dd7214d1e62d76dfa2</anchor>
-      <arglist>(Index_ num, Output_ *sum, bool skip_nan, Index_ subtract=0)</arglist>
+      <anchorfile>classtatami__stats_1_1sums_1_1RunningSparse.html</anchorfile>
+      <anchor>abcbadacc65ee6a6cee5bc6e668db180f</anchor>
+      <arglist>(Output_ *sum, bool skip_nan, Index_ subtract=0)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>add</name>
-      <anchorfile>structtatami__stats_1_1sums_1_1RunningSparse.html</anchorfile>
+      <anchorfile>classtatami__stats_1_1sums_1_1RunningSparse.html</anchorfile>
       <anchor>a2fede3f8461b31bc9f5da83571bfac39</anchor>
       <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
     </member>
   </compound>
-  <compound kind="struct">
+  <compound kind="class">
     <name>tatami_stats::variances::RunningSparse</name>
-    <filename>structtatami__stats_1_1variances_1_1RunningSparse.html</filename>
+    <filename>classtatami__stats_1_1variances_1_1RunningSparse.html</filename>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
     <templarg>typename Index_</templarg>
-    <member kind="function">
-      <type></type>
-      <name>RunningSparse</name>
-      <anchorfile>structtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
-      <anchor>acb56694c71bb6155a3ad90e5e1437347</anchor>
-      <arglist>(Index_ num, Output_ *mean, Output_ *variance, bool skip_nan, Index_ subtract=0)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>add</name>
-      <anchorfile>structtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
-      <anchor>ad998372f22ce80165cc39a8bfcb74108</anchor>
-      <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>finish</name>
-      <anchorfile>structtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
-      <anchor>a9ab4ac3ef21c82557e7292dc38d9e504</anchor>
-      <arglist>()</arglist>
-    </member>
   </compound>
   <compound kind="namespace">
     <name>tatami_stats</name>
@@ -654,8 +633,8 @@
     <name>tatami_stats::ranges</name>
     <filename>namespacetatami__stats_1_1ranges.html</filename>
     <class kind="struct">tatami_stats::ranges::Options</class>
-    <class kind="struct">tatami_stats::ranges::RunningDense</class>
-    <class kind="struct">tatami_stats::ranges::RunningSparse</class>
+    <class kind="class">tatami_stats::ranges::RunningDense</class>
+    <class kind="class">tatami_stats::ranges::RunningSparse</class>
     <member kind="function">
       <type>Value_</type>
       <name>direct</name>
@@ -710,8 +689,8 @@
     <name>tatami_stats::sums</name>
     <filename>namespacetatami__stats_1_1sums.html</filename>
     <class kind="struct">tatami_stats::sums::Options</class>
-    <class kind="struct">tatami_stats::sums::RunningDense</class>
-    <class kind="struct">tatami_stats::sums::RunningSparse</class>
+    <class kind="class">tatami_stats::sums::RunningDense</class>
+    <class kind="class">tatami_stats::sums::RunningSparse</class>
     <member kind="function">
       <type>Output_</type>
       <name>direct</name>
@@ -759,8 +738,8 @@
     <name>tatami_stats::variances</name>
     <filename>namespacetatami__stats_1_1variances.html</filename>
     <class kind="struct">tatami_stats::variances::Options</class>
-    <class kind="struct">tatami_stats::variances::RunningDense</class>
-    <class kind="struct">tatami_stats::variances::RunningSparse</class>
+    <class kind="class">tatami_stats::variances::RunningDense</class>
+    <class kind="class">tatami_stats::variances::RunningSparse</class>
     <member kind="function">
       <type>std::pair&lt; Output_, Output_ &gt;</type>
       <name>direct</name>
