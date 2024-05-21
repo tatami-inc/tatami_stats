@@ -70,13 +70,13 @@ Output_ direct(const Value_* ptr, Index_ num, bool skip_nan) {
 /**
  * @brief Running sums from dense data.
  *
- * This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn],
+ * This considers a scenario with a set of equilength "objective" vectors [V1, V2, V3, ..., Vn],
  * but data are only available for "observed" vectors [P1, P2, P3, ..., Pm],
- * where Pi[j] contains the i-th element of target vector Vj.
+ * where Pi[j] contains the i-th element of objective vector Vj.
  * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to m - 1,
- * and then finally call `finish()` to obtain the sum for each target vector.
+ * and then finally call `finish()` to obtain the sum for each objective vector.
  *
- * This class uses naive accumulation to obtain the sum for each target vector.
+ * This class uses naive accumulation to obtain the sum for each objective vector.
  * Callers should use a sufficiently high-precision `Output_` such as `double` to mitigate round-off errors.
  *
  * @tparam Output_ Type of the output data.
@@ -86,7 +86,7 @@ Output_ direct(const Value_* ptr, Index_ num, bool skip_nan) {
 template<typename Output_, typename Value_, typename Index_>
 struct RunningDense {
     /**
-     * @param num Number of target vectors, i.e., n.
+     * @param num Number of objective vectors, i.e., n.
      * @param[out] sum Pointer to an output array of length `num`.
      * This should be zeroed on input, and will store the running sums after each `add()`.
      * @param skip_nan See `Options::skip_nan` for details.
@@ -131,12 +131,12 @@ private:
 template<typename Output_, typename Value_, typename Index_>
 struct RunningSparse {
     /**
-     * @param num Number of target vectors.
+     * @param num Number of objective vectors.
      * @param[out] sum Pointer to an output array of length `num`.
      * This should be zeroed on input, and will store the running sums after each `add()`.
      * @param skip_nan See `Options::skip_nan` for details.
      * @param subtract Offset to subtract from each element of `index` before using it to index into `mean` and friends.
-     * Only relevant if `mean` and friends hold statistics for a contiguous subset of target vectors,
+     * Only relevant if `mean` and friends hold statistics for a contiguous subset of objective vectors,
      * e.g., during task allocation for parallelization.
      */
     RunningSparse(Index_ num, Output_* sum, bool skip_nan, Index_ subtract = 0) : 

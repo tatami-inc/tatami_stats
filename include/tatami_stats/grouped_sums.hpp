@@ -95,9 +95,9 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
             }, dim, sopt.num_threads);
 
         } else {
-            // Order doesn't affect numerical precision of the outcome, as
-            // addition order for each target vector is already well-defined
-            // for a running calculation.
+            // Order within each observed vector doesn't affect numerical
+            // precision of the outcome, as addition order for each objective
+            // vector is already well-defined for a running calculation.
             tatami::Options opt;
             opt.sparse_ordered_index = false; 
 

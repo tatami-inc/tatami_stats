@@ -152,11 +152,11 @@ Value_ direct(const Value_* value, Index_ num_nonzero, Index_ num_all, bool skip
 /**
  * @brief Running minima/maxima from dense data.
  *
- * This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn],
+ * This considers a scenario with a set of equilength "objective" vectors [V1, V2, V3, ..., Vn],
  * but data are only available for "observed" vectors [P1, P2, P3, ..., Pm],
- * where Pi[j] contains the i-th element of target vector Vj.
+ * where Pi[j] contains the i-th element of objective vector Vj.
  * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to m - 1,
- * which computes the running minimum/maximum for each target vector at each invocation.
+ * which computes the running minimum/maximum for each objective vector at each invocation.
  *
  * @tparam minimum_ Whether to compute the minimum.
  * @tparam Output_ Type of the output data.
@@ -166,9 +166,9 @@ Value_ direct(const Value_* value, Index_ num_nonzero, Index_ num_all, bool skip
 template<bool minimum_, typename Output_, typename Value_, typename Index_>
 struct RunningDense {
     /**
-     * @param num Number of target vectors, i.e., n.
+     * @param num Number of objective vectors, i.e., n.
      * @param[out] store Pointer to an output array of length `num`.
-     * After `finish()` is called, this will contain the minimum/maximum for each target vector.
+     * After `finish()` is called, this will contain the minimum/maximum for each objective vector.
      * @param skip_nan See `Options::skip_nan` for details.
      */
     RunningDense(Index_ num, Output_* store, bool skip_nan) : num(num), store(store), skip_nan(skip_nan) {}
@@ -233,12 +233,12 @@ private:
 template<bool minimum_, typename Output_, typename Value_, typename Index_>
 struct RunningSparse {
     /**
-     * @param num Number of target vectors.
+     * @param num Number of objective vectors.
      * @param[out] store Pointer to an output array of length `num`.
-     * After `finish()` is called, this will contain the minimum/maximum for each target vector.
+     * After `finish()` is called, this will contain the minimum/maximum for each objective vector.
      * @param skip_nan See `Options::skip_nan` for details.
      * @param subtract Offset to subtract from each element of `index` before using it to index into `store`.
-     * Only relevant if `store` holds statistics for a contiguous subset of target vectors,
+     * Only relevant if `store` holds statistics for a contiguous subset of objective vectors,
      * e.g., during task allocation for parallelization.
      */
     RunningSparse(Index_ num, Output_* store, bool skip_nan, Index_ subtract = 0) : 

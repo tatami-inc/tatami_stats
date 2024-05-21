@@ -160,11 +160,11 @@ std::pair<Output_, Output_> direct(const Value_* ptr, Index_ num, bool skip_nan)
  * @brief Running variances from dense data.
  *
  * Compute running means and variances from dense data using Welford's method.
- * This considers a scenario with a set of equilength "target" vectors [V1, V2, V3, ..., Vn],
+ * This considers a scenario with a set of equilength "objective" vectors [V1, V2, V3, ..., Vn],
  * but data are only available for "observed" vectors [P1, P2, P3, ..., Pm],
- * where Pi[j] contains the i-th element of target vector Vj.
+ * where Pi[j] contains the i-th element of objective vector Vj.
  * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to m - 1,
- * and then finally call `finish()` to obtain the mean and variance for each target vector.
+ * and then finally call `finish()` to obtain the mean and variance for each objective vector.
  *
  * @tparam Output_ Type of the output data.
  * @tparam Value_ Type of the input data.
@@ -173,11 +173,11 @@ std::pair<Output_, Output_> direct(const Value_* ptr, Index_ num, bool skip_nan)
 template<typename Output_, typename Value_, typename Index_>
 struct RunningDense {
     /**
-     * @param num Number of target vectors, i.e., n.
+     * @param num Number of objective vectors, i.e., n.
      * @param[out] mean Pointer to an output array of length `num`.
-     * This should be zeroed on input; after `finish()` is called, this will contain the means for each target vector.
-     * @param[out] variance Pointer to an output array of length `num`, containing the variances for each target vector.
-     * This should be zeroed on input; after `finish()` is called, this will contain the sample variance for each target vector.
+     * This should be zeroed on input; after `finish()` is called, this will contain the means for each objective vector.
+     * @param[out] variance Pointer to an output array of length `num`, containing the variances for each objective vector.
+     * This should be zeroed on input; after `finish()` is called, this will contain the sample variance for each objective vector.
      * @param skip_nan See `Options::skip_nan` for details.
      */
     RunningDense(Index_ num, Output_* mean, Output_* variance, bool skip_nan) : 
@@ -255,14 +255,14 @@ private:
 template<typename Output_, typename Value_, typename Index_>
 struct RunningSparse {
     /**
-     * @param num Number of target vectors.
-     * @param[out] mean Pointer to an output array of length `num`, containing the means for each target vector.
-     * This should be zeroed on input; after `finish()` is called, this will contain the mean for each target vector.
-     * @param[out] variance Pointer to an output array of length `num`, containing the variances for each target vector.
-     * This should be zeroed on input; after `finish()` is called, this will contain the sample variance for each target vector.
+     * @param num Number of objective vectors.
+     * @param[out] mean Pointer to an output array of length `num`, containing the means for each objective vector.
+     * This should be zeroed on input; after `finish()` is called, this will contain the mean for each objective vector.
+     * @param[out] variance Pointer to an output array of length `num`, containing the variances for each objective vector.
+     * This should be zeroed on input; after `finish()` is called, this will contain the sample variance for each objective vector.
      * @param skip_nan See `Options::skip_nan` for details.
      * @param subtract Offset to subtract from each element of `index` before using it to index into `mean` and friends.
-     * Only relevant if `mean` and friends hold statistics for a contiguous subset of target vectors,
+     * Only relevant if `mean` and friends hold statistics for a contiguous subset of objective vectors,
      * e.g., during task allocation for parallelization.
      */
     RunningSparse(Index_ num, Output_* mean, Output_* variance, bool skip_nan, Index_ subtract = 0) : 

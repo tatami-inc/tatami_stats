@@ -59,7 +59,7 @@ std::vector<Size_> tabulate_groups(const Group_* group, Size_ n) {
 /**
  * @brief Local output buffer for running calculations.
  *
- * A typical parallelization scenario involves dividing the set of target vectors into contiguous blocks, where each thread operates on a block at a time.
+ * A typical parallelization scenario involves dividing the set of objective vectors into contiguous blocks, where each thread operates on a block at a time.
  * However, in running calculations, an entire block's statistics are updated when its corresponding thread processes an observed vector.
  * If these statistics are stored in a global buffer, false sharing at the boundaries of the blocks can result in performance degradation. 
  *
@@ -75,8 +75,8 @@ public:
     /**
      * @tparam Index_ Type of the start index and length.
      * @param thread Identity of the thread, starting from zero to the total number of threads.
-     * @param start Index of the first target vector in the contiguous block for this thread.
-     * @param length Number of target vectors in the contiguous block for this thread.
+     * @param start Index of the first objective vector in the contiguous block for this thread.
+     * @param length Number of objective vectors in the contiguous block for this thread.
      * @param[out] output Pointer to the global output buffer.
      */
     template<typename Index_>
