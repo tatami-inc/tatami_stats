@@ -19,10 +19,10 @@ TEST(GroupedMedians, ByRow) {
     // one side of zero, otherwise the structural zeros will dominate the
     // median; in this case, we choose all-negative values.
     auto simulated = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5, -10, -2);
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, std::move(simulated)));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
+    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
+    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
     std::vector<int> cgroups(NC);
     int ngroup = 3; 
@@ -67,10 +67,10 @@ TEST(GroupedMedians, ByRowWithNan) {
         simulated[r * NC + (r % NC)] = std::numeric_limits<double>::quiet_NaN();
     }
 
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, std::move(simulated)));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
+    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
+    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
     std::vector<int> cgroups(NC);
     int ngroup = 3; 
@@ -101,10 +101,10 @@ TEST(GroupedMedians, ByColumn) {
 
     // See above for why we use a density of 0.5. This time, we use all-positive values.
     auto simulated = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5, 0.1, 2);
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, std::move(simulated)));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
+    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
+    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
     std::vector<int> rgroups(NR);
     int ngroup = 7; 
@@ -149,10 +149,10 @@ TEST(GroupedMedians, ByColumnWithNan) {
         simulated[(c % NR) * NC + c] = std::numeric_limits<double>::quiet_NaN();
     }
 
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, std::move(simulated)));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
+    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
+    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
     std::vector<int> rgroups(NR);
     int ngroup = 7; 
@@ -200,10 +200,10 @@ TEST(GroupedMedians, DirtyOutputs) {
 
     // See above for why we use a density of 0.5.
     auto simulated = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5, -3, -0.5);
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double>(NR, NC, std::move(simulated)));
-    auto dense_column = tatami::convert_to_dense<false>(dense_row.get());
-    auto sparse_row = tatami::convert_to_compressed_sparse<true>(dense_row.get());
-    auto sparse_column = tatami::convert_to_compressed_sparse<false>(dense_row.get());
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
+    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
+    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
     int ngroup = 5; 
     std::vector<int> grouping;
