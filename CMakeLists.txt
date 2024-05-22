@@ -14,7 +14,7 @@ option(TATAMI_STATS_FETCH_EXTERN "Automatically fetch tatami_stats's external de
 if(TATAMI_STATS_FETCH_EXTERN)
     add_subdirectory(extern)
 else()
-    find_package(tatami_tatami CONFIG REQUIRED)
+    find_package(tatami_tatami 3.0.0 CONFIG REQUIRED)
 endif()
 
 target_link_libraries(tatami_stats INTERFACE tatami::tatami)
@@ -57,5 +57,10 @@ configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in
     "${CMAKE_CURRENT_BINARY_DIR}/tatami_tatami_statsConfig.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/tatami_tatami_stats)
 
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/tatami_tatami_statsConfigVersion.cmake
+    COMPATIBILITY SameMajorVersion)
+
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tatami_tatami_statsConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/tatami_tatami_statsConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/tatami_tatami_stats)
