@@ -21,7 +21,9 @@ Low-level utilities for each algorithm are also exported for developer convenien
 ```cpp
 #include "tatami_stats/tatami_stats.hpp"
 
-std::shared_ptr<tatami::NumericMatrix> mat(new tatami::DenseRowMatrix<double>(nrows, ncols, vals));
+std::shared_ptr<tatami::NumericMatrix> mat(
+    new tatami::DenseRowMatrix<double, int>(nrows, ncols, vals)
+);
 
 // Compute row-wise medians.
 auto row_medians = tatami_stats::medians::by_row(mat.get());
