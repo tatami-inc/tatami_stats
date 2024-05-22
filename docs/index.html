@@ -81,7 +81,9 @@ $(function() {
 <p><b><a class="el" href="namespacetatami__stats.html" title="Functions to compute statistics from a tatami::Matrix.">tatami_stats</a></b> is a header-only library, so it can be easily used by just <code>#include</code>ing the relevant source files:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="tatami__stats_8hpp.html">tatami_stats/tatami_stats.hpp</a>&quot;</span></div>
 <div class="line"> </div>
-<div class="line">std::shared_ptr&lt;tatami::NumericMatrix&gt; mat(<span class="keyword">new</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1DenseRowMatrix.html">tatami::DenseRowMatrix&lt;double&gt;</a>(nrows, ncols, vals));</div>
+<div class="line">std::shared_ptr&lt;tatami::NumericMatrix&gt; mat(</div>
+<div class="line">    <span class="keyword">new</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1DenseRowMatrix.html">tatami::DenseRowMatrix&lt;double, int&gt;</a>(nrows, ncols, vals)</div>
+<div class="line">);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Compute row-wise medians.</span></div>
 <div class="line"><span class="keyword">auto</span> row_medians = <a class="code hl_function" href="namespacetatami__stats_1_1medians.html#aec4803eb6b9ba02620a0dd349ea06119">tatami_stats::medians::by_row</a>(mat.get());</div>
