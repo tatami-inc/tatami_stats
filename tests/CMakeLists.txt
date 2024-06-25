@@ -32,6 +32,7 @@ macro(create_test target)
         src/counts.cpp
         src/grouped_medians.cpp
         src/grouped_sums.cpp
+        src/grouped_variances.cpp
     )
 
     target_link_libraries(
