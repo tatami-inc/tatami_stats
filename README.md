@@ -2,7 +2,7 @@
 
 ![Unit tests](https://github.com/tatami-inc/tatami_stats/actions/workflows/run-tests.yaml/badge.svg)
 ![Documentation](https://github.com/tatami-inc/tatami_stats/actions/workflows/doxygenate.yaml/badge.svg)
-[![Codecov](https://codecov.io/gh/tatami-inc/tatami_stats/branch/master/graph/badge.svg?token=Z189ORCLLR)](https://codecov.io/gh/tatami-inc/tatami)
+[![Codecov](https://codecov.io/gh/tatami-inc/tatami_stats/branch/master/graph/badge.svg?token=wt1JXHOpEk)](https://codecov.io/gh/tatami-inc/tatami_stats)
 
 ## Overview
 
@@ -73,8 +73,8 @@ for (int r = 0; r < nrows; ++r) {
 ```
 
 These low-level functions allow developers to compute multiple statistics with a single pass through the matrix.
-This is often superior to calling, e.g., `tatami_stats::sums::by_row` and then `tatami_stats::medians::by_row` separately;
-doing so extracts data from the matrix twice, which may be expensive for file-backed matrices.
+In contrast, calling `tatami_stats::sums::by_row` and `tatami_stats::medians::by_row` separately would extract data from the matrix twice,
+which may be expensive for file-backed matrices.
 
 ## Building projects 
 
