@@ -151,11 +151,11 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; <
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Directly compute the median from a dense vector.</p>
+<p>Directly compute the median from a dense objective vector.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>Pointer to an array of values. This may be modified on output. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Length of the array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>Pointer to an array of length <code>num</code>, containing the values of the objective vector. This may be modified on output. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Length of the objective vector, i.e., length of the array at <code>ptr</code>. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1medians_1_1Options.html#a2fa7e058d6053d7f593554ce67a34145">Options::skip_nan</a></code> for details.</td></tr>
   </table>
   </dd>
@@ -211,12 +211,12 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; <
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Directly compute the median from a sparse vector.</p>
+<p>Directly compute the median from a sparse objective vector.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Pointer to an array of structural non-zero values. This may be modified on output. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_nonzero</td><td>Number of non-zero elements, i.e., the length of the array referenced by <code>ptr</code>. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_all</td><td>Total number of elements in the set, i.e., <code>num_all - num_nonzero</code> is the number of zeros. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Pointer to an array of length <code>num_nonzero</code>, containing values of the structural non-zeroes. This may be modified on output. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_nonzero</td><td>Number of structural non-zeros in the objective vector. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_all</td><td>Length of the obejctive vector, including the structural zeros, i.e., <code>num_all - num_nonzero</code> is the number of zeros. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1medians_1_1Options.html#a2fa7e058d6053d7f593554ce67a34145">Options::skip_nan</a></code> for details.</td></tr>
   </table>
   </dd>
@@ -283,7 +283,7 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute medians for the rows. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute the median for each row. If false, the median is computed for each column instead. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise). On output, this will contain the row/column medians. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">mopt</td><td>Median calculation options. </td></tr>

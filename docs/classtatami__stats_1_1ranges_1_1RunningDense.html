@@ -99,10 +99,10 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;bool minimum_, typename Output_, typename Value_, typename Index_&gt;<br />
 class tatami_stats::ranges::RunningDense&lt; minimum_, Output_, Value_, Index_ &gt;</div><p>Running minima/maxima from dense data. </p>
-<p>This considers a scenario with a set of equilength "objective" vectors [V1, V2, V3, ..., Vn], but data are only available for "observed" vectors [P1, P2, P3, ..., Pm], where Pi[j] contains the i-th element of objective vector Vj. The idea is to repeatedly call <code><a class="el" href="classtatami__stats_1_1ranges_1_1RunningDense.html#af6aa418d2d28dec63a58109c5d879aa0">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to m - 1, which computes the running minimum/maximum for each objective vector at each invocation.</p>
+<p>This considers a scenario with a set of equilength "objective" vectors <picture><source srcset="form_2_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[v_1, v_2, v_3, ..., v_n]$" src="form_2.png"/></picture>, but data are only available for "observed" vectors <picture><source srcset="form_3_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[p_1, p_2, p_3, ..., p_m]$" src="form_3.png"/></picture>, where the <picture><source srcset="form_4_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$j$" src="form_4.png"/></picture>-th element of <picture><source srcset="form_5_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$p_i$" src="form_5.png"/></picture> is the <picture><source srcset="form_6_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$i$" src="form_6.png"/></picture>-th element of <picture><source srcset="form_7_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$v_j$" src="form_7.png"/></picture>. The idea is to repeatedly call <code><a class="el" href="classtatami__stats_1_1ranges_1_1RunningDense.html#af6aa418d2d28dec63a58109c5d879aa0">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to <picture><source srcset="form_8_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$m - 1$" src="form_8.png"/></picture>, which computes the running minimum/maximum for each objective vector at each invocation.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">minimum_</td><td>Whether to compute the minimum. </td></tr>
+    <tr><td class="paramname">minimum_</td><td>Whether to compute the minimum. If false, the maximum is computed instead. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
@@ -153,7 +153,7 @@ template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ 
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of objective vectors, i.e., n. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of objective vectors, i.e., <picture><source srcset="form_9_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$n$" src="form_9.png"/></picture>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">store</td><td>Pointer to an output array of length <code>num</code>. After <code><a class="el" href="classtatami__stats_1_1ranges_1_1RunningDense.html#a3c6298041d7f986ab68a645ad2c5e636">finish()</a></code> is called, this will contain the minimum/maximum for each objective vector. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1ranges_1_1Options.html#a15b5deec811e94c441d714abdad16692">Options::skip_nan</a></code> for details. </td></tr>
   </table>
