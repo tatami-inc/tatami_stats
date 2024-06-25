@@ -65,7 +65,7 @@ void add_welford_zeros(Output_& mean, Output_& sumsq, Index_ num_nonzero, Index_
  */
 
 /**
- * Compute the mean and variance from a sparse array of values.
+ * Compute the mean and variance from a sparse objective vector.
  * This uses the standard two-pass algorithm with naive accumulation of the sum of squared differences;
  * thus, it is best used with a sufficiently high-precision `Output_` like `double`.
  *
@@ -73,9 +73,9 @@ void add_welford_zeros(Output_& mean, Output_& sumsq, Index_ num_nonzero, Index_
  * @tparam Value_ Type of the input data.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param[in] value Pointer to an array of values of length `num`.
+ * @param[in] value Pointer to an array of length `num`, containing the values of the structural non-zeros.
  * @param num_nonzero Length of the array pointed to by `value`.
- * @param num_all Total number of values in the dataset, including the zeros not in `value`.
+ * @param num_all Length of the objective vector, including the structural zeros not in `value`.
  * This should be greater than or equal to `num_nonzero`.
  * @param skip_nan See `Options::skip_nan`.
  *
@@ -136,7 +136,7 @@ std::pair<Output_, Output_> direct(const Value_* value, Index_ num_nonzero, Inde
 }
 
 /**
- * Compute the mean and variance from an array of values.
+ * Compute the mean and variance from a dense objective vector.
  * This uses the standard two-pass algorithm with naive accumulation of the sum of squared differences;
  * thus, it is best used with a sufficiently high-precision `Output_` like `double`.
  *
@@ -144,8 +144,8 @@ std::pair<Output_, Output_> direct(const Value_* value, Index_ num_nonzero, Inde
  * @tparam Value_ Type of the input data.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param[in] ptr Pointer to an array of values of length `num`.
- * @param num Size of the array.
+ * @param[in] ptr Pointer to an array of length `num`, containing the values of the objective vector.
+ * @param num Length of the objective vector, i.e., length of the array at `ptr`.
  * @param skip_nan See `Options::skip_nan`.
  *
  * @return The sample mean and variance of values in `[ptr, ptr + num)`.
@@ -160,10 +160,10 @@ std::pair<Output_, Output_> direct(const Value_* ptr, Index_ num, bool skip_nan)
  * @brief Running variances from dense data.
  *
  * Compute running means and variances from dense data using Welford's method.
- * This considers a scenario with a set of equilength "objective" vectors [V1, V2, V3, ..., Vn],
- * but data are only available for "observed" vectors [P1, P2, P3, ..., Pm],
- * where Pi[j] contains the i-th element of objective vector Vj.
- * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to m - 1,
+ * This considers a scenario with a set of equilength "objective" vectors \f$[v_1, v_2, v_3, ..., v_n]\f$,
+ * but data are only available for "observed" vectors \f$[p_1, p_2, p_3, ..., p_m]\f$,
+ * where the \f$j\f$-th element of \f$p_i\f$ is the \f$i\f$-th element of \f$v_j\f$.
+ * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to \f$m - 1\f$,
  * and then finally call `finish()` to obtain the mean and variance for each objective vector.
  *
  * @tparam Output_ Type of the output data.
@@ -174,7 +174,7 @@ template<typename Output_, typename Value_, typename Index_>
 class RunningDense {
 public:
     /**
-     * @param num Number of objective vectors, i.e., n.
+     * @param num Number of objective vectors, i.e., \f$n\f$.
      * @param[out] mean Pointer to an output array of length `num`.
      * This should be zeroed on input; after `finish()` is called, this will contain the means for each objective vector.
      * @param[out] variance Pointer to an output array of length `num`, containing the variances for each objective vector.
@@ -247,7 +247,7 @@ private:
  * @brief Running variances from sparse data.
  *
  * Compute running means and variances from sparse data using Welford's method.
- * This does the same as its dense overload for sparse observed vectors.
+ * This does the same as `RunningDense` but for sparse observed vectors.
  *
  * @tparam Output_ Type of the output data.
  * @tparam Value_ Type of the input data.
@@ -354,7 +354,8 @@ private:
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
  *
- * @param row Whether to compute variances for the rows.
+ * @param row Whether to compute the variance for each row.
+ * If false, the variance is computed for each column instead.
  * @param p Pointer to a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column variances.

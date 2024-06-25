@@ -39,15 +39,16 @@ struct Options {
 };
 
 /**
- * Directly sum an array of values using naive accumulation.
+ * Compute the sum across an objective vector using naive accumulation.
  * This is best used with a sufficiently high-precision `Output_`, hence the default of `double`.
  *
  * @tparam Output_ Type of the output data.
  * @tparam Value_ Type of the input data.
  * @tparam Index_ Type of the row/column index.
  *
- * @param[in] ptr Pointer to an array of values of length `num`.
- * @param num Size of the array.
+ * @param[in] ptr Pointer to an array of length `num`, containing the values of the objective vector.
+ * @param num Size of the array at `ptr`.
+ * This may be less than the length of the objective vector for sparse data.
  * @param skip_nan See `Options::skip_nan`.
  * @return The sum.
  */
@@ -70,10 +71,10 @@ Output_ direct(const Value_* ptr, Index_ num, bool skip_nan) {
 /**
  * @brief Running sums from dense data.
  *
- * This considers a scenario with a set of equilength "objective" vectors [V1, V2, V3, ..., Vn],
- * but data are only available for "observed" vectors [P1, P2, P3, ..., Pm],
- * where Pi[j] contains the i-th element of objective vector Vj.
- * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to m - 1,
+ * This considers a scenario with a set of equilength "objective" vectors \f$[v_1, v_2, v_3, ..., v_n]\f$,
+ * but data are only available for "observed" vectors \f$[p_1, p_2, p_3, ..., p_m]\f$,
+ * where the \f$j\f$-th element of \f$p_i\f$ is the \f$i\f$-th element of \f$v_j\f$.
+ * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to \f$m - 1\f$,
  * and then finally call `finish()` to obtain the sum for each objective vector.
  *
  * This class uses naive accumulation to obtain the sum for each objective vector.
@@ -87,7 +88,7 @@ template<typename Output_, typename Value_, typename Index_>
 class RunningDense {
 public:
     /**
-     * @param num Number of objective vectors, i.e., n.
+     * @param num Number of objective vectors, i.e., \f$n\f$.
      * @param[out] sum Pointer to an output array of length `num`.
      * This should be zeroed on input, and will store the running sums after each `add()`.
      * @param skip_nan See `Options::skip_nan` for details.
@@ -182,7 +183,8 @@ private:
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
  *
- * @param row Whether to compute variances for the rows.
+ * @param row Whether to compute the sum for each row.
+ * If false, the sum is computed for each column instead.
  * @param p Pointer to a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column variances.

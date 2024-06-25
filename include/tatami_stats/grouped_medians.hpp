@@ -47,7 +47,8 @@ struct Options {
  * @tparam Output_ Type of the output value.
  * This should be floating-point to store potential averages.
  *
- * @param row Whether to compute medians for the rows.
+ * @param row Whether to compute group-wise medians within each row.
+ * If false, medians are computed in each column instead.
  * @param p Pointer to a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of columns (if `row = true`) or rows (otherwise).
  * Each value should be an integer that specifies the group assignment.

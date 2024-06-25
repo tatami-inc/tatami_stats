@@ -46,12 +46,13 @@ struct Options {
  * @tparam Output_ Type of the output value.
  * This should be floating-point to store potential averages.
  *
- * @param row Whether to compute sums for the rows.
+ * @param row Whether to compute group-wise sums within each row.
+ * If false, sums are computed within the column instead.
  * @param p Pointer to a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of columns (if `row = true`) or rows (otherwise).
  * Each value should be an integer that specifies the group assignment.
- * Values should lie in `[0, N)` where `N` is the number of unique groups.
- * @param num_groups Number of groups, i.e., `N`.
+ * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
+ * @param num_groups Number of groups, i.e., \f$N\f$.
  * This can be determined by calling `tatami_stats::total_groups()` on `group`.
  * @param[out] output Pointer to an array of pointers of length equal to the number of groups.
  * Each inner pointer should reference an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
@@ -196,7 +197,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
  * @param p Pointer to a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of columns.
  * Each value should be an integer that specifies the group assignment.
- * Values should lie in `[0, N)` where `N` is the number of unique groups.
+ * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  * @param sopt Summation options.
  *
  * @return Vector of length equal to the number of groups.
@@ -230,7 +231,7 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* 
  * @param p Pointer to a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of columns.
  * Each value should be an integer that specifies the group assignment.
- * Values should lie in `[0, N)` where `N` is the number of unique groups.
+ * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  *
  * @return Vector of length equal to the number of groups.
  * Each entry is a vector of length equal to the number of rows, containing the row-wise sums for the corresponding group.
@@ -251,7 +252,7 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* 
  * @param p Pointer to a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of rows.
  * Each value should be an integer that specifies the group assignment.
- * Values should lie in `[0, N)` where `N` is the number of unique groups.
+ * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  * @param sopt Summation options.
  *
  * @return Vector of length equal to the number of groups.
@@ -285,7 +286,7 @@ std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_
  * @param p Pointer to a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of rows.
  * Each value should be an integer that specifies the group assignment.
- * Values should lie in `[0, N)` where `N` is the number of unique groups.
+ * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  *
  * @return Vector of length equal to the number of groups.
  * Each entry is a vector of length equal to the number of columns, containing the column-wise sums for the corresponding group.
