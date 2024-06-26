@@ -78,14 +78,27 @@ public:
      * @param start Index of the first objective vector in the contiguous block for this thread.
      * @param length Number of objective vectors in the contiguous block for this thread.
      * @param[out] output Pointer to the global output buffer.
+     * @param fill Initial value to fill the buffer.
      */
     template<typename Index_>
-    LocalOutputBuffer(size_t thread, Index_ start, Index_ length, Output_* output) : my_output(output + start), use_local(thread > 0), my_buffer(use_local ? length : 0) {
+    LocalOutputBuffer(size_t thread, Index_ start, Index_ length, Output_* output, Output_ fill) : my_output(output + start), use_local(thread > 0), my_buffer(use_local ? length : 0, fill) {
         if (!use_local) {
             // Setting to zero to match the initial behavior of 'my_buffer' when 'use_local = true'.
-            std::fill_n(my_output, length, static_cast<Output_>(0));
+            std::fill_n(my_output, length, fill);
         }
     }
+
+    /**
+     * Overloaded constructor that sets the default `fill = 0`.
+     *
+     * @tparam Index_ Type of the start index and length.
+     * @param thread Identity of the thread, starting from zero to the total number of threads.
+     * @param start Index of the first objective vector in the contiguous block for this thread.
+     * @param length Number of objective vectors in the contiguous block for this thread.
+     * @param[out] output Pointer to the global output buffer.
+     */
+    template<typename Index_>
+    LocalOutputBuffer(size_t thread, Index_ start, Index_ length, Output_* output) : LocalOutputBuffer(thread, start, length, output, 0) {}
 
     /**
      * Default constructor.
