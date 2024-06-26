@@ -94,6 +94,13 @@
       <type></type>
       <name>LocalOutputBuffer</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
+      <anchor>a25a3f87da56ab90796f207b37508f8e7</anchor>
+      <arglist>(size_t thread, Index_ start, Index_ length, Output_ *output, Output_ fill)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>LocalOutputBuffer</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
       <anchor>af1f9f07457ec2d43b0b6debd2657814d</anchor>
       <arglist>(size_t thread, Index_ start, Index_ length, Output_ *output)</arglist>
     </member>
