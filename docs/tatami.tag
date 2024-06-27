@@ -446,8 +446,8 @@
       <type>size_t</type>
       <name>total_groups</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>ad6dcc49891da2b812121317849fffb75</anchor>
-      <arglist>(const Group_ *group, Size_ n)</arglist>
+      <anchor>ac2384fe2de19a933c735ce79f9bc1b89</anchor>
+      <arglist>(const Group_ *group, size_t n)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; Size_ &gt;</type>
