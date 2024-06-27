@@ -112,42 +112,45 @@ void direct(
     std::fill_n(output_means, num_groups, 0);
     std::fill_n(output_variances, num_groups, 0);
 
-    if (skip_nan) {
-        std::fill_n(valid_group_size, num_groups, 0);
+    ::tatami_stats::internal::nanable_ifelse<Value_>(
+        skip_nan,
+        [&]() {
+            std::fill_n(valid_group_size, num_groups, 0);
 
-        for (Index_ j = 0; j < num; ++j) {
-            auto x = ptr[j];
-            if (!std::isnan(x)) {
-                auto b = group[j];
-                output_means[b] += x;
-                ++valid_group_size[b];
+            for (Index_ j = 0; j < num; ++j) {
+                auto x = ptr[j];
+                if (!std::isnan(x)) {
+                    auto b = group[j];
+                    output_means[b] += x;
+                    ++valid_group_size[b];
+                }
             }
-        }
-        internal::finish_means(num_groups, valid_group_size, output_means);
+            internal::finish_means(num_groups, valid_group_size, output_means);
 
-        for (Index_ j = 0; j < num; ++j) {
-            auto x = ptr[j];
-            if (!std::isnan(x)) {
+            for (Index_ j = 0; j < num; ++j) {
+                auto x = ptr[j];
+                if (!std::isnan(x)) {
+                    auto b = group[j];
+                    auto delta = x - output_means[b];
+                    output_variances[b] += delta * delta;
+                }
+            }
+            internal::finish_variances(num_groups, valid_group_size, output_variances);
+        },
+        [&]() {
+            for (Index_ j = 0; j < num; ++j) {
+                output_means[group[j]] += ptr[j];
+            }
+            internal::finish_means(num_groups, group_size, output_means);
+
+            for (Index_ j = 0; j < num; ++j) {
                 auto b = group[j];
-                auto delta = x - output_means[b];
+                auto delta = ptr[j] - output_means[b];
                 output_variances[b] += delta * delta;
             }
+            internal::finish_variances(num_groups, group_size, output_variances);
         }
-        internal::finish_variances(num_groups, valid_group_size, output_variances);
-
-    } else {
-        for (Index_ j = 0; j < num; ++j) {
-            output_means[group[j]] += ptr[j];
-        }
-        internal::finish_means(num_groups, group_size, output_means);
-
-        for (Index_ j = 0; j < num; ++j) {
-            auto b = group[j];
-            auto delta = ptr[j] - output_means[b];
-            output_variances[b] += delta * delta;
-        }
-        internal::finish_variances(num_groups, group_size, output_variances);
-    }
+    );
 }
 
 /**
@@ -200,52 +203,55 @@ void direct(
     std::fill_n(output_nonzero, num_groups, 0);
     std::fill_n(output_variances, num_groups, 0);
 
-    if (skip_nan) {
-        std::copy_n(group_size, num_groups, valid_group_size);
+    ::tatami_stats::internal::nanable_ifelse<Value_>(
+        skip_nan,
+        [&]() {
+            std::copy_n(group_size, num_groups, valid_group_size);
 
-        for (Index_ j = 0; j < num_nonzero; ++j) {
-            auto x = value[j];
-            auto b = group[index[j]];
-            if (!std::isnan(x)) {
-                output_means[b] += x;
-                ++(output_nonzero[b]);
-            } else {
-                --(valid_group_size[b]);
-            }
-        }
-        internal::finish_means(num_groups, valid_group_size, output_means);
-
-        for (Index_ j = 0; j < num_nonzero; ++j) {
-            auto x = value[j];
-            if (!std::isnan(x)) {
+            for (Index_ j = 0; j < num_nonzero; ++j) {
+                auto x = value[j];
                 auto b = group[index[j]];
-                auto delta = x - output_means[b];
+                if (!std::isnan(x)) {
+                    output_means[b] += x;
+                    ++(output_nonzero[b]);
+                } else {
+                    --(valid_group_size[b]);
+                }
+            }
+            internal::finish_means(num_groups, valid_group_size, output_means);
+
+            for (Index_ j = 0; j < num_nonzero; ++j) {
+                auto x = value[j];
+                if (!std::isnan(x)) {
+                    auto b = group[index[j]];
+                    auto delta = x - output_means[b];
+                    output_variances[b] += delta * delta;
+                }
+            }
+            for (size_t b = 0; b < num_groups; ++b) {
+                output_variances[b] += output_means[b] * output_means[b] * (valid_group_size[b] - output_nonzero[b]);
+            }
+            internal::finish_variances(num_groups, valid_group_size, output_variances);
+        },
+        [&]() {
+            for (Index_ j = 0; j < num_nonzero; ++j) {
+                auto b = group[index[j]];
+                output_means[b] += value[j];
+                ++output_nonzero[b];
+            }
+            internal::finish_means(num_groups, group_size, output_means);
+
+            for (Index_ j = 0; j < num_nonzero; ++j) {
+                auto b = group[index[j]];
+                auto delta = value[j] - output_means[b];
                 output_variances[b] += delta * delta;
             }
+            for (size_t b = 0; b < num_groups; ++b) {
+                output_variances[b] += output_means[b] * output_means[b] * (group_size[b] - output_nonzero[b]);
+            }
+            internal::finish_variances(num_groups, group_size, output_variances);
         }
-        for (size_t b = 0; b < num_groups; ++b) {
-            output_variances[b] += output_means[b] * output_means[b] * (valid_group_size[b] - output_nonzero[b]);
-        }
-        internal::finish_variances(num_groups, valid_group_size, output_variances);
-
-    } else {
-        for (Index_ j = 0; j < num_nonzero; ++j) {
-            auto b = group[index[j]];
-            output_means[b] += value[j];
-            ++output_nonzero[b];
-        }
-        internal::finish_means(num_groups, group_size, output_means);
-
-        for (Index_ j = 0; j < num_nonzero; ++j) {
-            auto b = group[index[j]];
-            auto delta = value[j] - output_means[b];
-            output_variances[b] += delta * delta;
-        }
-        for (size_t b = 0; b < num_groups; ++b) {
-            output_variances[b] += output_means[b] * output_means[b] * (group_size[b] - output_nonzero[b]);
-        }
-        internal::finish_variances(num_groups, group_size, output_variances);
-    }
+    );
 }
 
 /**

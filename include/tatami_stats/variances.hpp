@@ -59,6 +59,13 @@ void add_welford_zeros(Output_& mean, Output_& sumsq, Index_ num_nonzero, Index_
     mean *= ratio;
 }
 
+// Avoid problems from interactions between constexpr/lambda/std::conditional. 
+template<typename Index_>
+struct MockVector {
+    MockVector(size_t) {}
+    Index_ operator[](size_t) const { return 0; }
+};
+
 }
 /**
  * @endcond
@@ -87,40 +94,48 @@ std::pair<Output_, Output_> direct(const Value_* value, Index_ num_nonzero, Inde
     Output_ mean = 0;
     Index_ lost = 0;
 
-    if (skip_nan) {
-        auto copy = value;
-        for (Index_ i = 0; i < num_nonzero; ++i, ++copy) {
-            auto val = *copy;
-            if (std::isnan(val)) {
-                ++lost;
-            } else {
-                mean += val;
+    ::tatami_stats::internal::nanable_ifelse<Value_>(
+        skip_nan,
+        [&]() {
+            auto copy = value;
+            for (Index_ i = 0; i < num_nonzero; ++i, ++copy) {
+                auto val = *copy;
+                if (std::isnan(val)) {
+                    ++lost;
+                } else {
+                    mean += val;
+                }
+            }
+        },
+        [&]() {
+            auto copy = value;
+            for (Index_ i = 0; i < num_nonzero; ++i, ++copy) {
+                mean += *copy;
             }
         }
-    } else {
-        auto copy = value;
-        for (Index_ i = 0; i < num_nonzero; ++i, ++copy) {
-            mean += *copy;
-        }
-    }
+    );
 
     auto count = num_all - lost;
     mean /= count;
 
     Output_ var = 0;
-    if (skip_nan) {
-        for (Index_ i = 0; i < num_nonzero; ++i, ++value) {
-            auto val = *value;
-            if (!std::isnan(val)) {
+    ::tatami_stats::internal::nanable_ifelse<Value_>(
+        skip_nan,
+        [&]() {
+            for (Index_ i = 0; i < num_nonzero; ++i, ++value) {
+                auto val = *value;
+                if (!std::isnan(val)) {
+                    var += (val - mean) * (val - mean);
+                }
+            }
+        },
+        [&]() {
+            for (Index_ i = 0; i < num_nonzero; ++i, ++value) {
+                auto val = *value;
                 var += (val - mean) * (val - mean);
             }
         }
-    } else {
-        for (Index_ i = 0; i < num_nonzero; ++i, ++value) {
-            auto val = *value;
-            var += (val - mean) * (val - mean);
-        }
-    }
+    );
 
     if (num_nonzero < num_all) {
         var += (num_all - num_nonzero) * mean * mean;
@@ -189,49 +204,57 @@ public:
      * @param[in] ptr Pointer to an array of values of length `num`, corresponding to an observed vector.
      */
     void add(const Value_* ptr) {
-        if (my_skip_nan) {
-            for (Index_ i = 0; i < my_num; ++i, ++ptr) {
-                auto val = *ptr;
-                if (!std::isnan(val)) {
-                    internal::add_welford(my_mean[i], my_variance[i], val, ++(my_ok_count[i]));
+        ::tatami_stats::internal::nanable_ifelse<Value_>(
+            my_skip_nan,
+            [&]() {
+                for (Index_ i = 0; i < my_num; ++i, ++ptr) {
+                    auto val = *ptr;
+                    if (!std::isnan(val)) {
+                        internal::add_welford(my_mean[i], my_variance[i], val, ++(my_ok_count[i]));
+                    }
+                }
+            },
+            [&]() {
+                ++my_count;
+                for (Index_ i = 0; i < my_num; ++i, ++ptr) {
+                    internal::add_welford(my_mean[i], my_variance[i], *ptr, my_count);
                 }
             }
-        } else {
-            ++my_count;
-            for (Index_ i = 0; i < my_num; ++i, ++ptr) {
-                internal::add_welford(my_mean[i], my_variance[i], *ptr, my_count);
-            }
-        }
+        );
     }
 
     /**
      * Finish the variance calculation once all observed vectors have been passed to `add()`. 
      */
     void finish() {
-        if (my_skip_nan) {
-            for (Index_ i = 0; i < my_num; ++i) {
-                auto ct = my_ok_count[i];
-                if (ct < 2) {
-                    my_variance[i] = std::numeric_limits<Output_>::quiet_NaN();
-                    if (ct == 0) {
-                        my_mean[i] = std::numeric_limits<Output_>::quiet_NaN();
+        ::tatami_stats::internal::nanable_ifelse<Value_>(
+            my_skip_nan,
+            [&]() {
+                for (Index_ i = 0; i < my_num; ++i) {
+                    auto ct = my_ok_count[i];
+                    if (ct < 2) {
+                        my_variance[i] = std::numeric_limits<Output_>::quiet_NaN();
+                        if (ct == 0) {
+                            my_mean[i] = std::numeric_limits<Output_>::quiet_NaN();
+                        }
+                    } else {
+                        my_variance[i] /= ct - 1;
+                    }
+                }
+            },
+            [&]() {
+                if (my_count < 2) {
+                    std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
+                    if (my_count == 0) {
+                        std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
                     }
                 } else {
-                    my_variance[i] /= ct - 1;
+                    for (Index_ i = 0; i < my_num; ++i) {
+                        my_variance[i] /= my_count - 1;
+                    }
                 }
             }
-        } else {
-            if (my_count < 2) {
-                std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
-                if (my_count == 0) {
-                    std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
-                }
-            } else {
-                for (Index_ i = 0; i < my_num; ++i) {
-                    my_variance[i] /= my_count - 1;
-                }
-            }
-        }
+        );
     }
 
 private:
@@ -240,7 +263,7 @@ private:
     Output_* my_variance;
     bool my_skip_nan;
     Index_ my_count = 0;
-    std::vector<Index_> my_ok_count;
+    typename std::conditional<std::numeric_limits<Value_>::has_quiet_NaN, std::vector<Index_>, internal::MockVector<Index_> >::type my_ok_count;
 };
 
 /**
@@ -278,60 +301,67 @@ public:
      */
     void add(const Value_* value, const Index_* index, Index_ number) {
         ++my_count;
-        if (my_skip_nan) {
-            for (Index_ i = 0; i < number; ++i) {
-                auto val = value[i];
-                auto ri = index[i] - my_subtract;
-                if (std::isnan(val)) {
-                    ++my_nan[ri];
-                } else {
-                    internal::add_welford(my_mean[ri], my_variance[ri], val, ++(my_nonzero[ri]));
+
+        ::tatami_stats::internal::nanable_ifelse<Value_>(
+            my_skip_nan,
+            [&]() {
+                for (Index_ i = 0; i < number; ++i) {
+                    auto val = value[i];
+                    auto ri = index[i] - my_subtract;
+                    if (std::isnan(val)) {
+                        ++my_nan[ri];
+                    } else {
+                        internal::add_welford(my_mean[ri], my_variance[ri], val, ++(my_nonzero[ri]));
+                    }
+                }
+            },
+            [&]() {
+                for (Index_ i = 0; i < number; ++i) {
+                    auto ri = index[i] - my_subtract;
+                    internal::add_welford(my_mean[ri], my_variance[ri], value[i], ++(my_nonzero[ri]));
                 }
             }
-
-        } else {
-            for (Index_ i = 0; i < number; ++i) {
-                auto ri = index[i] - my_subtract;
-                internal::add_welford(my_mean[ri], my_variance[ri], value[i], ++(my_nonzero[ri]));
-            }
-        }
+        );
     }
 
     /**
      * Finish the variance calculation once all observed vectors have been passed to `add()`. 
      */
     void finish() {
-        if (my_skip_nan) {
-            for (Index_ i = 0; i < my_num; ++i) {
-                auto& curM = my_mean[i];
-                auto& curV = my_variance[i];
-                auto ct = my_count - my_nan[i];
+        ::tatami_stats::internal::nanable_ifelse<Value_>(
+            my_skip_nan,
+            [&]() {
+                for (Index_ i = 0; i < my_num; ++i) {
+                    auto& curM = my_mean[i];
+                    auto& curV = my_variance[i];
+                    auto ct = my_count - my_nan[i];
 
-                if (ct < 2) {
-                    curV = std::numeric_limits<Output_>::quiet_NaN();
-                    if (ct == 0) {
-                        curM = std::numeric_limits<Output_>::quiet_NaN();
+                    if (ct < 2) {
+                        curV = std::numeric_limits<Output_>::quiet_NaN();
+                        if (ct == 0) {
+                            curM = std::numeric_limits<Output_>::quiet_NaN();
+                        }
+                    } else {
+                        internal::add_welford_zeros(curM, curV, my_nonzero[i], ct);
+                        curV /= ct - 1;
+                    }
+                }
+            },
+            [&]() {
+                if (my_count < 2) {
+                    std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
+                    if (my_count == 0) {
+                        std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
                     }
                 } else {
-                    internal::add_welford_zeros(curM, curV, my_nonzero[i], ct);
-                    curV /= ct - 1;
+                    for (Index_ i = 0; i < my_num; ++i) {
+                        auto& var = my_variance[i];
+                        internal::add_welford_zeros(my_mean[i], var, my_nonzero[i], my_count);
+                        var /= my_count - 1;
+                    }
                 }
             }
-
-        } else {
-            if (my_count < 2) {
-                std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
-                if (my_count == 0) {
-                    std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
-                }
-            } else {
-                for (Index_ i = 0; i < my_num; ++i) {
-                    auto& var = my_variance[i];
-                    internal::add_welford_zeros(my_mean[i], var, my_nonzero[i], my_count);
-                    var /= my_count - 1;
-                }
-            }
-        }
+        );
     }
 
 private:
@@ -342,7 +372,7 @@ private:
     bool my_skip_nan;
     Index_ my_subtract;
     Index_ my_count = 0;
-    std::vector<Index_> my_nan;
+    typename std::conditional<std::numeric_limits<Value_>::has_quiet_NaN, std::vector<Index_>, internal::MockVector<Index_> >::type my_nan;
 };
 
 /**
