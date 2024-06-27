@@ -16,17 +16,16 @@ namespace tatami_stats {
  * Count the total number of groups, typically for per-group memory allocations.
  *
  * @tparam Group_ Integer type for the group assignments.
- * @tparam Index_ Integer type for the number of observations.
  *
  * @param[in] group Pointer to an array of group assignments per observation.
- * Each assignment should be an integer in `[0, G)` where `G` is the total number of groups.
+ * Each assignment should be an integer in \f$[0, G)\f$ where \f$G\f$ is the total number of groups.
  * @param n Number of observations, i.e., the length of the array referenced by `group`.
  *
- * @return Total number of groups, i.e., `G`.
+ * @return Total number of groups, i.e., \f$G\f$.
  * Note that not all groups may actually have non-zero occurrences in `group`.
  */
-template<typename Group_, typename Size_>
-size_t total_groups(const Group_* group, Size_ n) {
+template<typename Group_>
+size_t total_groups(const Group_* group, size_t n) {
     if (n) {
         return static_cast<size_t>(*std::max_element(group, group + n)) + 1;
     } else {
@@ -38,13 +37,13 @@ size_t total_groups(const Group_* group, Size_ n) {
  * Count the occurrences of each group.
  *
  * @tparam Group_ Integer type for the group assignments.
- * @tparam Index_ Integer type for the number of observations.
+ * @tparam Size_ Integer type for the number of observations.
  *
  * @param[in] group Pointer to an array of group assignments per observation.
- * Each assignment should be an integer in `[0, G)` where `G` is the total number of groups.
+ * Each assignment should be an integer in \f$[0, G)\f$ where \f$G\f$ is the total number of groups.
  * @param n Number of observations, i.e., the length of the array referenced by `group`.
  *
- * @return Vector of length equal to `G`, containing the number of occurrences of each group.
+ * @return Vector of length equal to \f$G\f$, containing the number of occurrences of each group.
  */
 template<typename Group_, typename Size_>
 std::vector<Size_> tabulate_groups(const Group_* group, Size_ n) {
