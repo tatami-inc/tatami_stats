@@ -113,7 +113,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                     runners.emplace_back(local_output.back().data(), sopt.skip_nan, start);
                 }
 
-                auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, start, len, opt);
+                auto ext = tatami::consecutive_extractor<true>(p, !row, static_cast<Index_>(0), otherdim, start, len, opt);
                 std::vector<Value_> xbuffer(len);
                 std::vector<Index_> ibuffer(len);
 
@@ -171,7 +171,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                 }
 
                 std::vector<double> xbuffer(len);
-                auto ext = tatami::consecutive_extractor<false>(p, !row, 0, otherdim, start, len);
+                auto ext = tatami::consecutive_extractor<false>(p, !row, static_cast<Index_>(0), otherdim, start, len);
 
                 for (int i = 0; i < otherdim; ++i) {
                     auto ptr = ext->fetch(xbuffer.data());

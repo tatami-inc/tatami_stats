@@ -215,7 +215,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
             opt.sparse_ordered_index = false;
 
             tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
-                auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, s, l, opt);
+                auto ext = tatami::consecutive_extractor<true>(p, !row, static_cast<Index_>(0), otherdim, s, l, opt);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
 
@@ -244,7 +244,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 
         } else {
             tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
-                auto ext = tatami::consecutive_extractor<false>(p, !row, 0, otherdim, s, l);
+                auto ext = tatami::consecutive_extractor<false>(p, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> buffer(l);
 
                 LocalOutputBuffer<Output_> local_output(thread, s, l, output);
