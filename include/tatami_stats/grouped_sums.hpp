@@ -76,18 +76,22 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
                     std::fill(tmp.begin(), tmp.end(), static_cast<Output_>(0));
 
-                    if (sopt.skip_nan) {
-                        for (int j = 0; j < range.number; ++j) {
-                            auto val = range.value[j];
-                            if (!std::isnan(val)) {
-                                tmp[group[range.index[j]]] += val;
+                    internal::nanable_ifelse<Value_>(
+                        sopt.skip_nan,
+                        [&]() {
+                            for (int j = 0; j < range.number; ++j) {
+                                auto val = range.value[j];
+                                if (!std::isnan(val)) {
+                                    tmp[group[range.index[j]]] += val;
+                                }
+                            }
+                        },
+                        [&]() {
+                            for (int j = 0; j < range.number; ++j) {
+                                tmp[group[range.index[j]]] += range.value[j];
                             }
                         }
-                    } else {
-                        for (int j = 0; j < range.number; ++j) {
-                            tmp[group[range.index[j]]] += range.value[j];
-                        }
-                    }
+                    );
 
                     for (size_t g = 0; g < num_groups; ++g) {
                         output[g][i + start] = tmp[g];
@@ -139,18 +143,22 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                     auto ptr = ext->fetch(xbuffer.data());
                     std::fill(tmp.begin(), tmp.end(), static_cast<Output_>(0));
 
-                    if (sopt.skip_nan) {
-                        for (Index_ j = 0; j < otherdim; ++j) {
-                            auto val = ptr[j];
-                            if (!std::isnan(val)) {
-                                tmp[group[j]] += val;
+                    internal::nanable_ifelse<Value_>(
+                        sopt.skip_nan,
+                        [&]() {
+                            for (Index_ j = 0; j < otherdim; ++j) {
+                                auto val = ptr[j];
+                                if (!std::isnan(val)) {
+                                    tmp[group[j]] += val;
+                                }
+                            }
+                        },
+                        [&]() {
+                            for (Index_ j = 0; j < otherdim; ++j) {
+                                tmp[group[j]] += ptr[j];
                             }
                         }
-                    } else {
-                        for (Index_ j = 0; j < otherdim; ++j) {
-                            tmp[group[j]] += ptr[j];
-                        }
-                    }
+                    );
 
                     for (size_t g = 0; g < num_groups; ++g) {
                         output[g][i + start] = tmp[g];

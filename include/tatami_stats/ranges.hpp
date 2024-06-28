@@ -94,26 +94,30 @@ bool is_better(Output_ best, Value_ alt) {
  */
 template<bool minimum_, typename Value_, typename Index_>
 Value_ direct(const Value_* ptr, Index_ num, bool skip_nan) {
-    if (skip_nan) {
-        auto current = internal::choose_placeholder<minimum_, Value_>(); 
-        for (Index_ i = 0; i < num; ++i) {
-            auto val = ptr[i];
-            if (internal::is_better<minimum_>(current, val)) { // no need to explicitly handle NaNs, as any comparison with NaNs is always false.
-                current = val;
+    return ::tatami_stats::internal::nanable_ifelse_with_value<Value_>(
+        skip_nan,
+        [&]() -> Value_ {
+            auto current = internal::choose_placeholder<minimum_, Value_>(); 
+            for (Index_ i = 0; i < num; ++i) {
+                auto val = ptr[i];
+                if (internal::is_better<minimum_>(current, val)) { // no need to explicitly handle NaNs, as any comparison with NaNs is always false.
+                    current = val;
+                }
+            }
+            return current;
+        },
+        [&]() -> Value_ {
+            if (num) {
+                if constexpr(minimum_) {
+                    return *std::min_element(ptr, ptr + num);
+                } else {
+                    return *std::max_element(ptr, ptr + num);
+                }
+            } else {
+                return internal::choose_placeholder<minimum_, Value_>(); 
             }
         }
-        return current;
-
-    } else if (num) {
-        if constexpr(minimum_) {
-            return *std::min_element(ptr, ptr + num);
-        } else {
-            return *std::max_element(ptr, ptr + num);
-        }
-
-    } else {
-        return internal::choose_placeholder<minimum_, Value_>(); 
-    }
+    );
 }
 
 /**
@@ -182,18 +186,22 @@ public:
     void add(const Value_* ptr) {
         if (my_init) {
             my_init = false;
-            if (my_skip_nan) {
-                for (Index_ i = 0; i < my_num; ++i, ++ptr) {
-                    auto val = *ptr;
-                    if (std::isnan(val)) {
-                        my_store[i] = internal::choose_placeholder<minimum_, Value_>();
-                    } else {
-                        my_store[i] = val;
+            ::tatami_stats::internal::nanable_ifelse<Value_>(
+                my_skip_nan,
+                [&]() {
+                    for (Index_ i = 0; i < my_num; ++i, ++ptr) {
+                        auto val = *ptr;
+                        if (std::isnan(val)) {
+                            my_store[i] = internal::choose_placeholder<minimum_, Value_>();
+                        } else {
+                            my_store[i] = val;
+                        }
                     }
+                },
+                [&]() {
+                    std::copy_n(ptr, my_num, my_store);
                 }
-            } else {
-                std::copy_n(ptr, my_num, my_store);
-            }
+            );
 
         } else {
             for (Index_ i = 0; i < my_num; ++i, ++ptr) {

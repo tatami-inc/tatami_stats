@@ -2,6 +2,7 @@
 #define TATAMI_STATS__MEDIANS_HPP
 
 #include "tatami/tatami.hpp"
+#include "utils.hpp"
 
 #include <cmath>
 #include <vector>
@@ -78,11 +79,15 @@ Index_ translocate_nans(Value_* ptr, Index_& num) {
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
-    if (skip_nan) {
-        auto lost = internal::translocate_nans(ptr, num);
-        ptr += lost;
-        num -= lost;
-    }
+    ::tatami_stats::internal::nanable_ifelse<Value_>(
+        skip_nan,
+        [&]() {
+            auto lost = internal::translocate_nans(ptr, num);
+            ptr += lost;
+            num -= lost;
+        },
+        [&]() {}
+    );
 
     if (num == 0) {
         return std::numeric_limits<Output_>::quiet_NaN();
@@ -125,12 +130,16 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
         return direct<Output_>(value, num_all, skip_nan);
     }
 
-    if (skip_nan) {
-        auto lost = internal::translocate_nans(value, num_nonzero);
-        value += lost;
-        num_nonzero -= lost;
-        num_all -= lost;
-    }
+    ::tatami_stats::internal::nanable_ifelse<Value_>(
+        skip_nan,
+        [&]() {
+            auto lost = internal::translocate_nans(value, num_nonzero);
+            value += lost;
+            num_nonzero -= lost;
+            num_all -= lost;
+        },
+        [&]() {}
+    );
 
     // Is the number of non-zeros less than the number of zeros?
     // If so, the median must be zero. Note that we calculate it

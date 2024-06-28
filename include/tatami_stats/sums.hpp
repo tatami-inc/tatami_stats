@@ -54,18 +54,22 @@ struct Options {
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 Output_ direct(const Value_* ptr, Index_ num, bool skip_nan) {
-    if (skip_nan) {
-        Output_ sum = 0;
-        for (Index_ i = 0; i < num; ++i) {
-            auto val = ptr[i];
-            if (!std::isnan(val)) {
-                sum += val;
+    return internal::nanable_ifelse_with_value<Value_>(
+        skip_nan,
+        [&]() -> Output_ {
+            Output_ sum = 0;
+            for (Index_ i = 0; i < num; ++i) {
+                auto val = ptr[i];
+                if (!std::isnan(val)) {
+                    sum += val;
+                }
             }
+            return sum;
+        },
+        [&]() -> Output_ {
+            return std::accumulate(ptr, ptr + num, static_cast<Output_>(0));
         }
-        return sum;
-    } else {
-        return std::accumulate(ptr, ptr + num, static_cast<Output_>(0));
-    }
+    );
 }
 
 /**
@@ -100,18 +104,22 @@ public:
      * @param[in] ptr Pointer to an array of values of length `my_num`, corresponding to an observed vector.
      */
     void add(const Value_* ptr) {
-        if (my_skip_nan) {
-            for (Index_ i = 0; i < my_num; ++i) {
-                auto val = ptr[i];
-                if (!std::isnan(val)) {
-                    my_sum[i] += val;
+        internal::nanable_ifelse<Value_>(
+            my_skip_nan,
+            [&]() {
+                for (Index_ i = 0; i < my_num; ++i) {
+                    auto val = ptr[i];
+                    if (!std::isnan(val)) {
+                        my_sum[i] += val;
+                    }
+                }
+            },
+            [&]() {
+                for (Index_ i = 0; i < my_num; ++i) {
+                    my_sum[i] += ptr[i];
                 }
             }
-        } else {
-            for (Index_ i = 0; i < my_num; ++i) {
-                my_sum[i] += ptr[i];
-            }
-        }
+        );
     }
 
 private:
@@ -152,18 +160,22 @@ public:
      * @param number Number of non-zero elements in `value` and `index`.
      */
     void add(const Value_* value, const Index_* index, Index_ number) {
-        if (my_skip_nan) {
-            for (Index_ i = 0; i < number; ++i) {
-                auto val = value[i];
-                if (!std::isnan(val)) {
-                    my_sum[index[i] - my_subtract] += val;
+        internal::nanable_ifelse<Value_>(
+            my_skip_nan,
+            [&]() {
+                for (Index_ i = 0; i < number; ++i) {
+                    auto val = value[i];
+                    if (!std::isnan(val)) {
+                        my_sum[index[i] - my_subtract] += val;
+                    }
+                }
+            },
+            [&]() {
+                for (Index_ i = 0; i < number; ++i) {
+                    my_sum[index[i] - my_subtract] += value[i];
                 }
             }
-        } else {
-            for (Index_ i = 0; i < number; ++i) {
-                my_sum[index[i] - my_subtract] += value[i];
-            }
-        }
+        );
     }
 
 private:

@@ -127,6 +127,37 @@ private:
     std::vector<Output_> my_buffer;
 };
 
+/**
+ * @cond
+ */
+namespace internal {
+
+template<typename Value_, class If_, class Else_>
+void nanable_ifelse(bool skip_nan, If_ iffun, Else_ elsefun) {
+    if constexpr(std::numeric_limits<Value_>::has_quiet_NaN) {
+        if (skip_nan) {
+            iffun();
+            return;
+        }
+    }
+    elsefun();
+}
+
+template<typename Value_, class If_, class Else_>
+auto nanable_ifelse_with_value(bool skip_nan, If_ iffun, Else_ elsefun) {
+    if constexpr(std::numeric_limits<Value_>::has_quiet_NaN) {
+        if (skip_nan) {
+            return iffun();
+        }
+    }
+    return elsefun();
+}
+
+}
+/**
+ * @endcond
+ */
+
 }
 
 #endif
