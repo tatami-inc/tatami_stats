@@ -287,6 +287,33 @@ TEST(ComputingDimExtremes, NoZeros) {
     EXPECT_EQ(rref, tatami_stats::ranges::by_row(sparse_column.get()));
 }
 
+TEST(ComputingDimExtremes, NewType) {
+    size_t NR = 198, NC = 52;
+    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1, /* lower = */ 1, /* upper = */ 100);
+    for (auto& d : dump) { 
+        d = std::round(d);
+    }
+    auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
+    auto rexpected = tatami_stats::ranges::by_row(ref.get());
+    auto cexpected = tatami_stats::ranges::by_column(ref.get());
+
+    std::vector<int8_t> ivec(dump.begin(), dump.end());
+    auto dense_row = std::make_shared<tatami::DenseRowMatrix<int8_t, uint8_t> >(NR, NC, std::move(ivec));
+    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
+    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
+
+    EXPECT_EQ(tatami_stats::ranges::by_row(dense_row.get()), rexpected);
+    EXPECT_EQ(tatami_stats::ranges::by_row(dense_column.get()), rexpected);
+    EXPECT_EQ(tatami_stats::ranges::by_row(sparse_row.get()), rexpected);
+    EXPECT_EQ(tatami_stats::ranges::by_row(sparse_column.get()), rexpected);
+
+    EXPECT_EQ(tatami_stats::ranges::by_column(dense_row.get()), cexpected);
+    EXPECT_EQ(tatami_stats::ranges::by_column(dense_column.get()), cexpected);
+    EXPECT_EQ(tatami_stats::ranges::by_column(sparse_row.get()), cexpected);
+    EXPECT_EQ(tatami_stats::ranges::by_column(sparse_column.get()), cexpected);
+}
+
 TEST(ComputingDimExtremes, Empty) {
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(10, 0, std::vector<double>()));
     auto cres = tatami_stats::ranges::by_column(dense_row.get());

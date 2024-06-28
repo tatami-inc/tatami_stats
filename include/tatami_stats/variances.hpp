@@ -305,7 +305,7 @@ public:
             for (Index_ i = 0; i < my_num; ++i) {
                 auto& curM = my_mean[i];
                 auto& curV = my_variance[i];
-                auto ct = my_count - my_nan[i];
+                Index_ ct = my_count - my_nan[i];
 
                 if (ct < 2) {
                     curV = std::numeric_limits<Output_>::quiet_NaN();
