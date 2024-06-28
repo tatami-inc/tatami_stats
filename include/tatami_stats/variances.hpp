@@ -63,7 +63,8 @@ void add_welford_zeros(Output_& mean, Output_& sumsq, Index_ num_nonzero, Index_
 template<typename Index_>
 struct MockVector {
     MockVector(size_t) {}
-    Index_ operator[](size_t) const { return 0; }
+    Index_& operator[](size_t) { return out; }
+    Index_ out = 0;
 };
 
 }
@@ -334,7 +335,7 @@ public:
                 for (Index_ i = 0; i < my_num; ++i) {
                     auto& curM = my_mean[i];
                     auto& curV = my_variance[i];
-                    auto ct = my_count - my_nan[i];
+                    Index_ ct = my_count - my_nan[i];
 
                     if (ct < 2) {
                         curV = std::numeric_limits<Output_>::quiet_NaN();
@@ -412,7 +413,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 
         } else {
             tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
-                auto ext = tatami::consecutive_extractor<true>(p, !row, 0, otherdim, s, l);
+                auto ext = tatami::consecutive_extractor<true>(p, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
 
@@ -443,7 +444,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 
         } else {
             tatami::parallelize([&](size_t thread, Index_ s, Index_ l) {
-                auto ext = tatami::consecutive_extractor<false>(p, !row, 0, otherdim, s, l);
+                auto ext = tatami::consecutive_extractor<false>(p, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> buffer(l);
 
                 std::vector<Output_> running_means(l);

@@ -195,6 +195,42 @@ TEST(GroupedMedians, EdgeCases) {
     EXPECT_TRUE(tatami_stats::grouped_medians::by_column(&empty1, grouping.data()).empty());
 }
 
+TEST(GroupedMedians, NewType) {
+    size_t NR = 98, NC = 152;
+    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1, /* lower = */ 1, /* upper = */ 100);
+    for (auto& d : dump) { 
+        d = std::round(d);
+    }
+    auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
+
+    std::vector<int> cgrouping;
+    for (size_t c = 0; c < NC; ++c) {
+        cgrouping.push_back(c % 5);
+    }
+    std::vector<int> rgrouping;
+    for (size_t r = 0; r < NR; ++r) {
+        rgrouping.push_back(r % 7);
+    }
+    auto rexpected = tatami_stats::grouped_medians::by_row(ref.get(), cgrouping.data());
+    auto cexpected = tatami_stats::grouped_medians::by_column(ref.get(), rgrouping.data());
+
+    std::vector<int8_t> ivec(dump.begin(), dump.end());
+    auto dense_row = std::make_shared<tatami::DenseRowMatrix<int8_t, uint8_t> >(NR, NC, std::move(ivec));
+    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
+    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
+
+    EXPECT_EQ(tatami_stats::grouped_medians::by_row(dense_row.get(), cgrouping.data()), rexpected);
+    EXPECT_EQ(tatami_stats::grouped_medians::by_row(dense_column.get(), cgrouping.data()), rexpected);
+    EXPECT_EQ(tatami_stats::grouped_medians::by_row(sparse_row.get(), cgrouping.data()), rexpected);
+    EXPECT_EQ(tatami_stats::grouped_medians::by_row(sparse_column.get(), cgrouping.data()), rexpected);
+
+    EXPECT_EQ(tatami_stats::grouped_medians::by_column(dense_row.get(), rgrouping.data()), cexpected);
+    EXPECT_EQ(tatami_stats::grouped_medians::by_column(dense_column.get(), rgrouping.data()), cexpected);
+    EXPECT_EQ(tatami_stats::grouped_medians::by_column(sparse_row.get(), rgrouping.data()), cexpected);
+    EXPECT_EQ(tatami_stats::grouped_medians::by_column(sparse_column.get(), rgrouping.data()), cexpected);
+}
+
 TEST(GroupedMedians, DirtyOutputs) {
     size_t NR = 56, NC = 179;
 
