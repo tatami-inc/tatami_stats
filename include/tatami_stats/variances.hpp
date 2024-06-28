@@ -63,7 +63,8 @@ void add_welford_zeros(Output_& mean, Output_& sumsq, Index_ num_nonzero, Index_
 template<typename Index_>
 struct MockVector {
     MockVector(size_t) {}
-    Index_ operator[](size_t) const { return 0; }
+    Index_& operator[](size_t) { return out; }
+    Index_ out = 0;
 };
 
 }
