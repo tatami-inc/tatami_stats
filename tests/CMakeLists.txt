@@ -33,6 +33,7 @@ macro(create_test target)
         src/grouped_medians.cpp
         src/grouped_sums.cpp
         src/grouped_variances.cpp
+        src/utils.cpp
     )
 
     target_link_libraries(
