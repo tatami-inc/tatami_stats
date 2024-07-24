@@ -119,6 +119,13 @@
       <arglist>()</arglist>
     </member>
     <member kind="function">
+      <type>const Output_ *</type>
+      <name>data</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
+      <anchor>ae53e9000251661be083d992e9f1cb8be</anchor>
+      <arglist>() const</arglist>
+    </member>
+    <member kind="function">
       <type>void</type>
       <name>transfer</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
