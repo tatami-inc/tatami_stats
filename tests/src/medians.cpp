@@ -10,75 +10,182 @@
 #include "tatami_stats/medians.hpp"
 #include "tatami_test/tatami_test.hpp"
 
-TEST(ComputeMedians, Dense) {
-    {
-        std::vector<int> vec { 2, 1, 4, 5, 3 };
-        int vsize = vec.size();
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, false), 3);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data() + 1, vsize - 1, false), 3.5);
+class ComputeMediansTest : public ::testing::Test {
+protected:
+    template<typename Value_>
+    static double direct_medians(const Value_* vec, size_t n, bool skip_nan) {
+        std::vector<Value_> copy(vec, vec + n);
+        return tatami_stats::medians::direct<double>(copy.data(), copy.size(), skip_nan);
     }
 
-    // Now with NaN stripping.
-    {
-        std::vector<double> vec { 2, 1, std::numeric_limits<double>::quiet_NaN(), 5, 3 };
-        int vsize = vec.size();
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, true), 2.5);
+    template<typename Value_, typename Index_>
+    static double direct_medians(const Value_* vec, Index_ num_nonzero, Index_ num_all, bool skip_nan) {
+        std::vector<Value_> copy(vec, vec + num_nonzero);
+        return tatami_stats::medians::direct<double>(copy.data(), num_nonzero, num_all, skip_nan);
     }
+};
+
+TEST_F(ComputeMediansTest, DenseBasic) {
+    std::vector<int> vec { 2, 1, 4, 5, 3 };
+    int vsize = vec.size();
+    EXPECT_EQ(direct_medians(vec.data(), vsize, false), 3);
+    EXPECT_EQ(direct_medians(vec.data() + 1, vsize - 1, false), 3.5);
+    EXPECT_EQ(direct_medians(vec.data(), vsize - 1, false), 3);
 
     EXPECT_TRUE(std::isnan(tatami_stats::medians::direct(static_cast<double*>(NULL), 0, false)));
 }
 
-TEST(ComputeMedians, Sparse) {
-    {
-        std::vector<int> vec { 2, 1, 4, 5, 3 };
-        int vsize = vec.size();
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 5, false), 3);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 11, false), 0);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 10, false), 0.5);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 9, false), 1);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 8, false), 1.5);
-    }
+TEST_F(ComputeMediansTest, DenseTies) {
+    std::vector<int> vec { 1, 2, 3, 1, 2, 1 };
+    int vsize = vec.size();
+    EXPECT_EQ(direct_medians(vec.data(), vsize, false), 1.5);
+    EXPECT_EQ(direct_medians(vec.data() + 1, vsize - 1, false), 2);
+}
 
-    {
-        std::vector<int> vec { -2, -1, -4, -5, -3 };
-        int vsize = vec.size();
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 5, false), -3);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 11, false), 0);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 10, false), -0.5);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 9, false), -1);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 8, false), -1.5);
-    }
+TEST_F(ComputeMediansTest, DenseRealistic) {
+    for (size_t n = 10; n < 100; n += 10) {
+        std::mt19937_64 rng(n);
+        std::vector<double> contents;
+        std::normal_distribution dist;
+        for (size_t i = 0; i < n; ++i) {
+            contents.push_back(dist(rng));
+        }
 
-    // Various mixed flavors.
+        // Even
+        {
+            auto copy = contents;
+            std::sort(copy.begin(), copy.end());
+            EXPECT_EQ(direct_medians(contents.data(), contents.size(), false), (copy[copy.size() / 2] + copy[copy.size() / 2 - 1]) / 2);
+        }
+
+        // Odd
+        {
+            auto copy = contents;
+            copy.pop_back();
+            std::sort(copy.begin(), copy.end());
+            EXPECT_EQ(direct_medians(contents.data(), contents.size() - 1, false), copy[copy.size() / 2]);
+        }
+    }
+}
+
+TEST_F(ComputeMediansTest, DenseNaN) {
+    std::vector<double> vec { 2, 1, std::numeric_limits<double>::quiet_NaN(), 5, 3 };
+    int vsize = vec.size();
+    EXPECT_EQ(direct_medians(vec.data(), vsize, true), 2.5);
+
+    vec[0] = std::numeric_limits<double>::quiet_NaN();
+    EXPECT_EQ(direct_medians(vec.data(), vsize, true), 3);
+
+    vec[4] = std::numeric_limits<double>::quiet_NaN();
+    EXPECT_EQ(direct_medians(vec.data(), vsize, true), 3);
+
+    std::fill(vec.begin(), vec.end(), std::numeric_limits<double>::quiet_NaN());
+    EXPECT_TRUE(std::isnan(direct_medians(vec.data(), vsize, true)));
+}
+
+TEST_F(ComputeMediansTest, SparseAllPositive) {
+    std::vector<int> vec { 2, 1, 4, 5, 3 };
+    int vsize = vec.size();
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 5, false), 3);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 11, false), 0);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 10, false), 0.5);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 9, false), 1);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 8, false), 1.5);
+
+    EXPECT_TRUE(std::isnan(tatami_stats::medians::direct(static_cast<double*>(NULL), 0, 0, false)));
+}
+
+TEST_F(ComputeMediansTest, SparseAllNegative) {
+    std::vector<int> vec { -2, -1, -4, -5, -3 };
+    int vsize = vec.size();
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 5, false), -3);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 11, false), 0);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 10, false), -0.5);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 9, false), -1);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 8, false), -1.5);
+}
+
+TEST_F(ComputeMediansTest, SparseMixed) {
+    // Mostly positive.
     {
         std::vector<double> vec { 2.5, -1, 4, -5, 3 };
         int vsize = vec.size();
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 5, false), 2.5);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 11, false), 0);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 10, false), 0);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 6, false), 1.25);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 7, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 5, false), 2.5);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 11, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 10, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 6, false), 1.25);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 7, false), 0);
     }
 
+    // Mostly negative.
     {
         std::vector<double> vec { -2.5, 1, -4, 5, -3 };
         int vsize = vec.size();
-        EXPECT_EQ(tatami_stats::medians::direct(vec.data(), vsize, 5, false), -2.5);
-        EXPECT_EQ(tatami_stats::medians::direct(vec.data(), vsize, 11, false), 0);
-        EXPECT_EQ(tatami_stats::medians::direct(vec.data(), vsize, 10, false), 0);
-        EXPECT_EQ(tatami_stats::medians::direct(vec.data(), vsize, 6, false), -1.25);
-        EXPECT_EQ(tatami_stats::medians::direct(vec.data(), vsize, 7, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 5, false), -2.5);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 11, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 10, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 6, false), -1.25);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 7, false), 0);
     }
 
-    // Plus missing values.
+    // Equal numbers of positive and negative.
     {
-        std::vector<double> vec { 2, 1, std::numeric_limits<double>::quiet_NaN(), 5, 3 };
+        std::vector<double> vec { -2.5, 1, -4, 5, -3, 6 };
         int vsize = vec.size();
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 8, true), 1);
-        EXPECT_EQ(tatami_stats::medians::direct<double>(vec.data(), vsize, 9, true), 0.5);
+        EXPECT_FLOAT_EQ(direct_medians(vec.data(), vsize, 6, false), -0.75);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 13, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 12, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 7, false), 0);
+        EXPECT_EQ(direct_medians(vec.data(), vsize, 8, false), 0);
     }
+}
 
-    EXPECT_TRUE(std::isnan(tatami_stats::medians::direct(static_cast<double*>(NULL), 0, 0, false)));
+TEST_F(ComputeMediansTest, SparseNaN) {
+    std::vector<double> vec { 2, 1, std::numeric_limits<double>::quiet_NaN(), 5, 3 };
+    int vsize = vec.size();
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 8, true), 1);
+    EXPECT_EQ(direct_medians(vec.data(), vsize, 9, true), 0.5);
+}
+
+TEST_F(ComputeMediansTest, SparseRealistic) {
+    for (int n = 10; n < 100; n += 5) {
+        std::mt19937_64 rng(n);
+        std::vector<double> contents;
+        std::normal_distribution dist;
+        for (int i = 0; i < n; ++i) {
+            contents.push_back(dist(rng));
+        }
+
+        {
+            auto ref = direct_medians(contents.data(), n, n, false);
+            EXPECT_EQ(ref, direct_medians(contents.data(), n, false));
+        }
+
+        // Replacing the back with a zero.
+        {
+            auto ref = direct_medians(contents.data(), n - 1, n, false);
+            auto copy = contents;
+            copy.back() = 0;
+            EXPECT_EQ(ref, direct_medians(copy.data(), n, false));
+        }
+
+        // Adding an extra zero.
+        {
+            auto ref = direct_medians(contents.data(), n, n + 1, false);
+            auto copy = contents;
+            copy.push_back(0);
+            EXPECT_EQ(ref, direct_medians(copy.data(), n + 1, false));
+        }
+
+        // Adding two extra zeros.
+        {
+            auto ref = direct_medians(contents.data(), n, n + 2, false);
+            auto copy = contents;
+            copy.push_back(0);
+            copy.push_back(0);
+            EXPECT_EQ(ref, direct_medians(copy.data(), n + 2, false));
+        }
+    }
 }
 
 TEST(ComputingDimMedians, SparseMedians) {
