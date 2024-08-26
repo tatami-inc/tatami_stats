@@ -2,11 +2,6 @@
 
 #include <vector>
 
-#ifdef CUSTOM_PARALLEL_TEST
-// Put this before any tatami imports.
-#include "custom_parallel.h"
-#endif
-
 #include "tatami_stats/sums.hpp"
 #include "tatami_test/tatami_test.hpp"
 #include "utils.h"
