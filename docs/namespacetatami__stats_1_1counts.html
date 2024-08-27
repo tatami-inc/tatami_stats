@@ -162,7 +162,7 @@ template&lt;typename Value_ , typename Index_ , typename Output_ , class Conditi
     <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to perform the count within each row. If false, the count is performed within each column instead. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise). On output, this will contain the row/column variances. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_threads</td><td>Number of threads to use. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_threads</td><td>Number of threads to use, for parallelization via <code><a class="elRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a5a08e0387bc00e8045a0364d6e35d120">tatami::parallelize()</a></code>. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">condition</td><td>Function that accepts a <code>Value_</code> and returns a boolean. This function is also responsible for handling any NaNs that might be present in <code>p</code>. </td></tr>
   </table>
   </dd>
