@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.24)
 
 project(tatami_stats
-    VERSION 1.1.0
+    VERSION 1.1.1
     DESCRIPTION "Matrix statistics for tatami"
     LANGUAGES CXX)
 
