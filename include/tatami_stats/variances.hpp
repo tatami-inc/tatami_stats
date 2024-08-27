@@ -36,6 +36,7 @@ struct Options {
 
     /**
      * Number of threads to use when computing variances across a `tatami::Matrix`.
+     * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
 };
