@@ -15,9 +15,10 @@ if(TATAMI_STATS_FETCH_EXTERN)
     add_subdirectory(extern)
 else()
     find_package(tatami_tatami 3.0.0 CONFIG REQUIRED)
+    find_package(ltla_subpar 0.3.0 CONFIG REQUIRED)
 endif()
 
-target_link_libraries(tatami_stats INTERFACE tatami::tatami)
+target_link_libraries(tatami_stats INTERFACE tatami::tatami ltla::subpar)
 
 include(GNUInstallDirs)
 target_include_directories(tatami_stats INTERFACE 
