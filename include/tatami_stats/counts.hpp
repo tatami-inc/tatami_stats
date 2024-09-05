@@ -2,6 +2,7 @@
 #define TATAMI_STATS_COUNTS_HPP
 
 #include "tatami/tatami.hpp"
+#include "subpar/subpar.hpp"
 
 #include <vector>
 #include <algorithm>
