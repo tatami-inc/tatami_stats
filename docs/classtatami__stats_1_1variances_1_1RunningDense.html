@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -99,7 +106,7 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_, typename Value_, typename Index_&gt;<br />
 class tatami_stats::variances::RunningDense&lt; Output_, Value_, Index_ &gt;</div><p>Running variances from dense data. </p>
-<p>Compute running means and variances from dense data using Welford's method. This considers a scenario with a set of equilength "objective" vectors <picture><source srcset="form_2_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[v_1, v_2, v_3, ..., v_n]$" src="form_2.png"/></picture>, but data are only available for "observed" vectors <picture><source srcset="form_3_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[p_1, p_2, p_3, ..., p_m]$" src="form_3.png"/></picture>, where the <picture><source srcset="form_4_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$j$" src="form_4.png"/></picture>-th element of <picture><source srcset="form_5_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$p_i$" src="form_5.png"/></picture> is the <picture><source srcset="form_6_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$i$" src="form_6.png"/></picture>-th element of <picture><source srcset="form_7_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$v_j$" src="form_7.png"/></picture>. The idea is to repeatedly call <code><a class="el" href="classtatami__stats_1_1variances_1_1RunningDense.html#a13d93ffc98acfd3f7eb53265ef694c07">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to <picture><source srcset="form_8_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$m - 1$" src="form_8.png"/></picture>, and then finally call <code><a class="el" href="classtatami__stats_1_1variances_1_1RunningDense.html#a389232abda6b2ed3218e5cb648d1f33c">finish()</a></code> to obtain the mean and variance for each objective vector.</p>
+<p>Compute running means and variances from dense data using Welford's method. This considers a scenario with a set of equilength "objective" vectors \([v_1, v_2, v_3, ..., v_n]\), but data are only available for "observed" vectors \([p_1, p_2, p_3, ..., p_m]\), where the \(j\)-th element of \(p_i\) is the \(i\)-th element of \(v_j\). The idea is to repeatedly call <code><a class="el" href="classtatami__stats_1_1variances_1_1RunningDense.html#a13d93ffc98acfd3f7eb53265ef694c07">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to \(m - 1\), and then finally call <code><a class="el" href="classtatami__stats_1_1variances_1_1RunningDense.html#a389232abda6b2ed3218e5cb648d1f33c">finish()</a></code> to obtain the mean and variance for each objective vector.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
@@ -158,7 +165,7 @@ template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of objective vectors, i.e., <picture><source srcset="form_9_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$n$" src="form_9.png"/></picture>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of objective vectors, i.e., \(n\). </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">mean</td><td>Pointer to an output array of length <code>num</code>. This should be zeroed on input; after <code><a class="el" href="classtatami__stats_1_1variances_1_1RunningDense.html#a389232abda6b2ed3218e5cb648d1f33c">finish()</a></code> is called, this will contain the means for each objective vector. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">variance</td><td>Pointer to an output array of length <code>num</code>, containing the variances for each objective vector. This should be zeroed on input; after <code><a class="el" href="classtatami__stats_1_1variances_1_1RunningDense.html#a389232abda6b2ed3218e5cb648d1f33c">finish()</a></code> is called, this will contain the sample variance for each objective vector. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1variances_1_1Options.html#aeb3ee96b5c18332bd57e0633c3593c53">Options::skip_nan</a></code> for details. </td></tr>

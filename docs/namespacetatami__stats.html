@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -163,12 +170,12 @@ template&lt;typename Group_ &gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of group assignments per observation. Each assignment should be an integer in <picture><source srcset="form_10_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, G)$" src="form_10.png"/></picture> where <picture><source srcset="form_11_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$G$" src="form_11.png"/></picture> is the total number of groups. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of group assignments per observation. Each assignment should be an integer in \([0, G)\) where \(G\) is the total number of groups. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">n</td><td>Number of observations, i.e., the length of the array referenced by <code>group</code>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Total number of groups, i.e., <picture><source srcset="form_11_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$G$" src="form_11.png"/></picture>. Note that not all groups may actually have non-zero occurrences in <code>group</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Total number of groups, i.e., \(G\). Note that not all groups may actually have non-zero occurrences in <code>group</code>. </dd></dl>
 
 </div>
 </div>
@@ -209,12 +216,12 @@ template&lt;typename Group_ , typename Size_ &gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of group assignments per observation. Each assignment should be an integer in <picture><source srcset="form_10_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, G)$" src="form_10.png"/></picture> where <picture><source srcset="form_11_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$G$" src="form_11.png"/></picture> is the total number of groups. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of group assignments per observation. Each assignment should be an integer in \([0, G)\) where \(G\) is the total number of groups. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">n</td><td>Number of observations, i.e., the length of the array referenced by <code>group</code>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Vector of length equal to <picture><source srcset="form_11_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$G$" src="form_11.png"/></picture>, containing the number of occurrences of each group. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Vector of length equal to \(G\), containing the number of occurrences of each group. </dd></dl>
 
 </div>
 </div>

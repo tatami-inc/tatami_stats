@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -201,8 +208,8 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>Pointer to an array of values of length <code>num</code>. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num</td><td>Length of the objective vector, i.e., length of the array at <code>ptr</code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length <code>num</code>, containing the group assignment for each entry of <code>ptr</code>. Entries of <code>group</code> should lie in <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, N)$" src="form_0.png"/></picture> where <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture> is the number of unique groups. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length <code>num</code>, containing the group assignment for each entry of <code>ptr</code>. Entries of <code>group</code> should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., \(N\). </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">group_size</td><td>Pointer to an array of length <code>num_groups</code>, containing the size of each group. This can be obtained by calling <code><a class="el" href="namespacetatami__stats.html#ad46c11e3a7611f30d9695e600c5b7dd6">tabulate_groups()</a></code> on <code>group</code>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output_means</td><td>Pointer to an array of length <code>num_groups</code>. This is filled with the per-group mean on output. Values may be NaN if there are not enough (non-NaN) values in a group. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output_variances</td><td>Pointer to an array of length <code>num_groups</code>. This is filled with the per-group variances on output. Values may be NaN if there are not enough (non-NaN) values in a group. </td></tr>
@@ -310,8 +317,8 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
     <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Pointer to an array of length <code>num_nonzero</code>, containing the values of the structural non-zeros. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Pointer to an array of length <code>num_nonzero</code>, containing the indices of the structural non-zeros. All indices should be non-negative and less than the length of the objective vector. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_nonzero</td><td>Number of structural non-zeros. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the length of the objective vector, containing the group assignment for each vector element. Entries of <code>group</code> should lie in <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, N)$" src="form_0.png"/></picture> where <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture> is the number of unique groups. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the length of the objective vector, containing the group assignment for each vector element. Entries of <code>group</code> should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., \(N\). </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">group_size</td><td>Pointer to an array of length <code>num_groups</code>, containing the size of each group. This can be obtained by calling <code><a class="el" href="namespacetatami__stats.html#ad46c11e3a7611f30d9695e600c5b7dd6">tabulate_groups()</a></code> on <code>group</code>. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output_means</td><td>Pointer to an array of length <code>num_groups</code>. This is filled with the per-group mean on output. Values may be NaN if there are not enough (non-NaN) values in a group. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output_variances</td><td>Pointer to an array of length <code>num_groups</code>. This is filled with the per-group variances on output. Values may be NaN if there are not enough (non-NaN) values in a group. </td></tr>
@@ -395,8 +402,8 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute variances for the rows. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns (if <code>row = true</code>) or rows (otherwise). Each value should be an integer that specifies the group assignment. Values should lie in <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, N)$" src="form_0.png"/></picture> where <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture> is the number of unique groups. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture>. This can be determined by calling <code><a class="el" href="namespacetatami__stats.html#ac2384fe2de19a933c735ce79f9bc1b89">tatami_stats::total_groups()</a></code> on <code>group</code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns (if <code>row = true</code>) or rows (otherwise). Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., \(N\). This can be determined by calling <code><a class="el" href="namespacetatami__stats.html#ac2384fe2de19a933c735ce79f9bc1b89">tatami_stats::total_groups()</a></code> on <code>group</code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">group_size</td><td>Pointer to an array of length <code>num_groups</code>, containing the size of each group. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of pointers of length equal to the number of groups. Each inner pointer should reference an array of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise). On output, this will contain the row/column variances for each group (indexed according to the assignment in <code>group</code>). </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">sopt</td><td>Summation options. </td></tr>
@@ -452,7 +459,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns. Each value should be an integer that specifies the group assignment. Values should lie in <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, N)$" src="form_0.png"/></picture> where <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture> is the number of unique groups. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns. Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">sopt</td><td>Summation options.</td></tr>
   </table>
   </dd>
@@ -501,7 +508,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns. Each value should be an integer that specifies the group assignment. Values should lie in <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, N)$" src="form_0.png"/></picture> where <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture> is the number of unique groups.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns. Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups.</td></tr>
   </table>
   </dd>
 </dl>
@@ -555,7 +562,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of rows. Each value should be an integer that specifies the group assignment. Values should lie in <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, N)$" src="form_0.png"/></picture> where <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture> is the number of unique groups. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of rows. Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">sopt</td><td>Summation options.</td></tr>
   </table>
   </dd>
@@ -604,7 +611,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of rows. Each value should be an integer that specifies the group assignment. Values should lie in <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$[0, N)$" src="form_0.png"/></picture> where <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$N$" src="form_1.png"/></picture> is the number of unique groups.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of rows. Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups.</td></tr>
   </table>
   </dd>
 </dl>
