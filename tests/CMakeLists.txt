@@ -14,6 +14,31 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+include(GoogleTest)
+
+option(CODE_COVERAGE "Enable coverage testing" OFF)
+set(DO_CODE_COVERAGE OFF)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(DO_CODE_COVERAGE ON)
+endif()
+
+macro(decorate_test target)
+    target_link_libraries(
+        ${target}
+        gtest_main
+        tatami_stats
+    )
+
+    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
+    if(DO_CODE_COVERAGE)
+        target_compile_options(${target} PRIVATE -O0 -g --coverage)
+        target_link_options(${target} PRIVATE --coverage)
+    endif()
+
+    gtest_discover_tests(${target})
+endmacro()
+
 add_executable(
     libtest
     src/sums.cpp
@@ -26,20 +51,19 @@ add_executable(
     src/grouped_variances.cpp
     src/utils.cpp
 )
+decorate_test(libtest)
 
-target_link_libraries(
-    libtest
-    gtest_main
-    tatami_stats
+# Adding custom parallelization checks for all functions that make
+# use of the thread ID in their tatami::parallelize() sections.
+add_executable(
+    cuspartest 
+    src/sums.cpp
+    src/variances.cpp
+    src/ranges.cpp
+    src/counts.cpp
+    src/grouped_medians.cpp
+    src/grouped_sums.cpp
+    src/grouped_variances.cpp
 )
-
-target_compile_options(libtest PRIVATE -Wall -Wextra -Wpedantic -Werror)
-
-set(CODE_COVERAGE OFF CACHE BOOL "Enable coverage testing")
-if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(libtest PRIVATE -O0 -g --coverage)
-    target_link_options(libtest PRIVATE --coverage)
-endif()
-
-include(GoogleTest)
-gtest_discover_tests(libtest)
+decorate_test(cuspartest)
+target_compile_definitions(cuspartest PRIVATE SUBPAR_CUSTOM_PARALLELIZE_RANGE=::subpar::test_parallelize_range)
