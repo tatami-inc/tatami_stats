@@ -35,6 +35,12 @@ TEST_F(ComputeMediansTest, DenseTies) {
     int vsize = vec.size();
     EXPECT_EQ(direct_medians(vec.data(), vsize, false), 1.5);
     EXPECT_EQ(direct_medians(vec.data() + 1, vsize - 1, false), 2);
+
+    // Make sure we get identical results when the midpoints are tied floating-point values.
+    std::vector<double> frac_vec { 1.0/3, 2.0/10, 3.0/7, 1.0/3, 2.0/10, 1.0/3 };
+    int fvsize = frac_vec.size();
+    EXPECT_EQ(direct_medians(frac_vec.data(), fvsize, false), 1.0/3);
+    EXPECT_EQ(direct_medians(frac_vec.data() + 1, fvsize - 1, false), 1.0/3);
 }
 
 TEST_F(ComputeMediansTest, DenseRealistic) {
@@ -50,7 +56,7 @@ TEST_F(ComputeMediansTest, DenseRealistic) {
         {
             auto copy = contents;
             std::sort(copy.begin(), copy.end());
-            EXPECT_EQ(direct_medians(contents.data(), contents.size(), false), (copy[copy.size() / 2] + copy[copy.size() / 2 - 1]) / 2);
+            EXPECT_FLOAT_EQ(direct_medians(contents.data(), contents.size(), false), (copy[copy.size() / 2] + copy[copy.size() / 2 - 1]) / 2);
         }
 
         // Odd
@@ -88,6 +94,15 @@ TEST_F(ComputeMediansTest, SparseAllPositive) {
     EXPECT_EQ(direct_medians(vec.data(), vsize, 8, false), 1.5);
 
     EXPECT_TRUE(std::isnan(tatami_stats::medians::direct(static_cast<double*>(NULL), 0, 0, false)));
+
+    // Make sure we get identical results when the midpoints are tied floating-point values.
+    std::vector<double> frac_vec { 1.0/3, 2.0/9, 3.0/7, 1.0/3, 2.0/9, 1.0/3 };
+    int fvsize = frac_vec.size();
+    EXPECT_EQ(direct_medians(frac_vec.data(), fvsize, 6, false), 1.0/3);
+    EXPECT_EQ(direct_medians(frac_vec.data(), fvsize, 7, false), 1.0/3);
+    EXPECT_EQ(direct_medians(frac_vec.data(), fvsize, 8, false), (1.0/3 + 2.0/9) / 2);
+    EXPECT_EQ(direct_medians(frac_vec.data(), fvsize, 9, false), 2.0/9);
+    EXPECT_EQ(direct_medians(frac_vec.data(), fvsize, 10, false), 2.0/9);
 }
 
 TEST_F(ComputeMediansTest, SparseAllNegative) {
