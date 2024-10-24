@@ -190,6 +190,7 @@ public:
             ::tatami_stats::internal::nanable_ifelse<Value_>(
                 my_skip_nan,
                 [&]() {
+                    SUBPAR_VECTORIZABLE
                     for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                         auto val = *ptr;
                         if (std::isnan(val)) {
@@ -205,6 +206,7 @@ public:
             );
 
         } else {
+            SUBPAR_VECTORIZABLE
             for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                 auto val = *ptr;
                 if (internal::is_better<minimum_>(my_store[i], val)) { // this should implicitly skip NaNs, any NaN comparison will be false.
@@ -269,6 +271,7 @@ public:
             std::fill_n(my_store, my_num, internal::choose_placeholder<minimum_, Value_>());
 
             if (!my_skip_nan) {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < number; ++i, ++value, ++index) {
                     auto val = *value;
                     auto idx = *index - my_subtract;
@@ -280,6 +283,7 @@ public:
             }
         }
 
+        SUBPAR_VECTORIZABLE
         for (Index_ i = 0; i < number; ++i, ++value, ++index) {
             auto val = *value;
             auto idx = *index - my_subtract;
@@ -298,6 +302,7 @@ public:
      */
     void finish() {
         if (my_count) {
+            SUBPAR_VECTORIZABLE
             for (Index_ i = 0; i < my_num; ++i) {
                 if (my_count > my_nonzero[i]) {
                     auto& current = my_store[i];

@@ -108,6 +108,7 @@ public:
         internal::nanable_ifelse<Value_>(
             my_skip_nan,
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < my_num; ++i) {
                     auto val = ptr[i];
                     if (!std::isnan(val)) {
@@ -116,6 +117,7 @@ public:
                 }
             },
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < my_num; ++i) {
                     my_sum[i] += ptr[i];
                 }
@@ -164,6 +166,7 @@ public:
         internal::nanable_ifelse<Value_>(
             my_skip_nan,
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < number; ++i) {
                     auto val = value[i];
                     if (!std::isnan(val)) {
@@ -172,6 +175,7 @@ public:
                 }
             },
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < number; ++i) {
                     my_sum[index[i] - my_subtract] += value[i];
                 }

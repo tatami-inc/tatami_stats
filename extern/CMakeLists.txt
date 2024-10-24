@@ -9,7 +9,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   subpar
   GIT_REPOSITORY https://github.com/LTLA/subpar
-  GIT_TAG master # ^0.3.0
+  GIT_TAG master # ^0.3.2
 )
 
 FetchContent_MakeAvailable(tatami)

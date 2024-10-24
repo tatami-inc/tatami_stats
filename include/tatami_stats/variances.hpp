@@ -210,6 +210,7 @@ public:
         ::tatami_stats::internal::nanable_ifelse<Value_>(
             my_skip_nan,
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                     auto val = *ptr;
                     if (!std::isnan(val)) {
@@ -219,6 +220,7 @@ public:
             },
             [&]() {
                 ++my_count;
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                     internal::add_welford(my_mean[i], my_variance[i], *ptr, my_count);
                 }
@@ -233,6 +235,7 @@ public:
         ::tatami_stats::internal::nanable_ifelse<Value_>(
             my_skip_nan,
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < my_num; ++i) {
                     auto ct = my_ok_count[i];
                     if (ct < 2) {
@@ -252,6 +255,7 @@ public:
                         std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
                     }
                 } else {
+                    SUBPAR_VECTORIZABLE
                     for (Index_ i = 0; i < my_num; ++i) {
                         my_variance[i] /= my_count - 1;
                     }
@@ -308,6 +312,7 @@ public:
         ::tatami_stats::internal::nanable_ifelse<Value_>(
             my_skip_nan,
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < number; ++i) {
                     auto val = value[i];
                     auto ri = index[i] - my_subtract;
@@ -319,6 +324,7 @@ public:
                 }
             },
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < number; ++i) {
                     auto ri = index[i] - my_subtract;
                     internal::add_welford(my_mean[ri], my_variance[ri], value[i], ++(my_nonzero[ri]));
@@ -334,6 +340,7 @@ public:
         ::tatami_stats::internal::nanable_ifelse<Value_>(
             my_skip_nan,
             [&]() {
+                SUBPAR_VECTORIZABLE
                 for (Index_ i = 0; i < my_num; ++i) {
                     auto& curM = my_mean[i];
                     auto& curV = my_variance[i];
@@ -357,6 +364,7 @@ public:
                         std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
                     }
                 } else {
+                    SUBPAR_VECTORIZABLE
                     for (Index_ i = 0; i < my_num; ++i) {
                         auto& var = my_variance[i];
                         internal::add_welford_zeros(my_mean[i], var, my_nonzero[i], my_count);

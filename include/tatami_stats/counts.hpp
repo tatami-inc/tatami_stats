@@ -111,6 +111,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
+                    SUBPAR_VECTORIZABLE
                     for (Index_ j = 0; j < range.number; ++j) {
                         auto idx = range.index[j];
                         curoutput[idx] += condition(range.value[j]);
@@ -119,6 +120,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
                 }
 
                 if (count_zero) {
+                    SUBPAR_VECTORIZABLE
                     for (int d = 0; d < dim; ++d) {
                         curoutput[d] += len - nonzeros[d];
                     }
@@ -133,6 +135,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto ptr = ext->fetch(xbuffer.data());
+                    SUBPAR_VECTORIZABLE
                     for (Index_ j = 0; j < dim; ++j) {
                         curoutput[j] += condition(ptr[j]);
                     }
@@ -142,6 +145,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
 
         for (int t = 1; t < num_threads; ++t) {
             auto curoutput = threaded_output_ptrs[t];
+            SUBPAR_VECTORIZABLE
             for (Index_ d = 0; d < dim; ++d) {
                 output[d] += curoutput[d];
             }
