@@ -5,18 +5,22 @@
 #include "tatami_stats/ranges.hpp"
 #include "tatami_test/tatami_test.hpp"
 
-class ComputingDimExtremesTest : public ::testing::TestWithParam<std::pair<double, double> > {
-protected:
-    static std::vector<double> simulate(size_t NR, size_t NC, std::pair<double, double> limits) {
-        return tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1, limits.first, limits.second);
-    }
-};
+class ComputingDimExtremesTest : public ::testing::TestWithParam<std::pair<double, double> > {};
 
 /********************************************/
 
 TEST_P(ComputingDimExtremesTest, RowRanges) {
     size_t NR = 75, NC = 62;
-    auto dump = simulate(NR, NC, GetParam());
+    auto limits = GetParam();
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.lower = limits.first;
+        opt.upper = limits.second;
+        opt.seed = 1239817 + limits.first * 1000 + limits.second;
+        return opt;
+    }());
+
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
@@ -49,9 +53,9 @@ TEST_P(ComputingDimExtremesTest, RowRanges) {
     EXPECT_EQ(ref, tatami_stats::ranges::by_row(sparse_column.get(), ropt));
 
     // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
     EXPECT_EQ(ref, tatami_stats::ranges::by_row(unsorted_row.get()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
     EXPECT_EQ(ref, tatami_stats::ranges::by_row(unsorted_column.get()));
 
     // Checking correct behavior with dirty output buffers, and sometimes
@@ -90,7 +94,15 @@ TEST_P(ComputingDimExtremesTest, RowRanges) {
 
 TEST_P(ComputingDimExtremesTest, RowRangesWithNan) {
     size_t NR = 52, NC = 83;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    auto limits = GetParam();
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.lower = limits.first;
+        opt.upper = limits.second;
+        opt.seed = 543343 + limits.first * 1000 + limits.second;
+        return opt;
+    }());
     for (size_t r = 0; r < NR; ++r) { // Injecting an NaN at the start.
         dump[r * NC] = std::numeric_limits<double>::quiet_NaN();
     }
@@ -124,7 +136,16 @@ TEST_P(ComputingDimExtremesTest, RowRangesWithNan) {
 
 TEST_P(ComputingDimExtremesTest, ColumnRanges) {
     size_t NR = 111, NC = 52;
-    auto dump = simulate(NR, NC, GetParam());
+    auto limits = GetParam();
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.lower = limits.first;
+        opt.upper = limits.second;
+        opt.seed = 9919998 + limits.first * 1000 + limits.second;
+        return opt;
+    }());
+
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
@@ -157,15 +178,23 @@ TEST_P(ComputingDimExtremesTest, ColumnRanges) {
     EXPECT_EQ(ref, tatami_stats::ranges::by_column(sparse_column.get(), ropt));
 
     // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
     EXPECT_EQ(ref, tatami_stats::ranges::by_column(unsorted_row.get()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
     EXPECT_EQ(ref, tatami_stats::ranges::by_column(unsorted_column.get()));
 }
 
 TEST_P(ComputingDimExtremesTest, ColumnRangesWithNan) {
     size_t NR = 52, NC = 83;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    auto limits = GetParam();
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.lower = limits.first;
+        opt.upper = limits.second;
+        opt.seed = 1919191 + limits.first * 1000 + limits.second;
+        return opt;
+    }());
     for (size_t c = 0; c < NC; ++c) { // Injecting an NaN at the start.
         dump[c] = std::numeric_limits<double>::quiet_NaN();
     }
@@ -284,10 +313,18 @@ TEST(ComputingDimExtremes, NoZeros) {
 
 TEST(ComputingDimExtremes, NewType) {
     size_t NR = 198, NC = 52;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1, /* lower = */ 1, /* upper = */ 100);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.lower = 1;
+        opt.upper = 100;
+        opt.seed = 29842;
+        return opt;
+    }());
     for (auto& d : dump) { 
         d = std::round(d);
     }
+
     auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto rexpected = tatami_stats::ranges::by_row(ref.get());
     auto cexpected = tatami_stats::ranges::by_column(ref.get());

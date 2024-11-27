@@ -8,7 +8,13 @@
 
 TEST(ComputingDimVariances, RowVariances) {
     size_t NR = 109, NC = 82;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.seed = 1987191;
+        return opt;
+    }());
+
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
@@ -45,7 +51,12 @@ TEST(ComputingDimVariances, RowVariances) {
 
 TEST(ComputingDimVariances, RowVariancesWithNan) {
     size_t NR = 52, NC = 83;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.seed = 44982197;
+        return opt;
+    }());
     for (size_t r = 0; r < NR; ++r) { // Injecting an NaN at the start.
         dump[r * NC] = std::numeric_limits<double>::quiet_NaN();
     }
@@ -85,7 +96,13 @@ TEST(ComputingDimVariances, RowVariancesWithNan) {
 
 TEST(ComputingDimVariances, ColumnVariances) {
     size_t NR = 99, NC = 92;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.seed = 21823818;
+        return opt;
+    }());
+
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
@@ -122,7 +139,12 @@ TEST(ComputingDimVariances, ColumnVariances) {
 
 TEST(ComputingDimVariances, ColumnVariancesWithNan) {
     size_t NR = 82, NC = 33;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.seed = 191353;
+        return opt;
+    }());
     for (size_t c = 0; c < NC; ++c) { // Injecting an NaN at the start.
         dump[c] = std::numeric_limits<double>::quiet_NaN();
     }
@@ -162,10 +184,18 @@ TEST(ComputingDimVariances, ColumnVariancesWithNan) {
 
 TEST(ComputingDimVariances, NewType) {
     size_t NR = 198, NC = 52;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1, /* lower = */ 1, /* upper = */ 100);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.lower = 1;
+        opt.upper = 100;
+        opt.seed = 1982719;
+        return opt;
+    }());
     for (auto& d : dump) { 
         d = std::round(d);
     }
+
     auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto rexpected = tatami_stats::variances::by_row(ref.get());
     auto cexpected = tatami_stats::variances::by_column(ref.get());
@@ -189,7 +219,13 @@ TEST(ComputingDimVariances, NewType) {
 
 TEST(ComputingDimVariances, DirtyOutput) {
     size_t NR = 99, NC = 152;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{ 
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.seed = 457633478;
+        return opt;
+    }());
+
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);

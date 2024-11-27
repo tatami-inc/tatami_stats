@@ -9,8 +9,13 @@
 
 TEST(GroupedSums, ByRow) {
     size_t NR = 99, NC = 155;
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.2;
+        opt.seed = 239847612;
+        return opt;
+    }());
 
-    auto simulated = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.2);
     auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
@@ -44,9 +49,9 @@ TEST(GroupedSums, ByRow) {
     EXPECT_EQ(expected, tatami_stats::grouped_sums::by_row(sparse_column.get(), cgroups.data(), sopt));
 
     // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
     EXPECT_EQ(expected, tatami_stats::grouped_sums::by_row(unsorted_row.get(), cgroups.data()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
     EXPECT_EQ(expected, tatami_stats::grouped_sums::by_row(unsorted_column.get(), cgroups.data()));
 }
 
@@ -54,7 +59,14 @@ TEST(GroupedSums, ByRowWithNan) {
     size_t NR = 99, NC = 155;
 
     // Sprinkling in some NaNs.
-    auto simulated = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5, -10, -2);
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.15;
+        opt.lower = -10;
+        opt.upper = -2;
+        opt.seed = 23098472;
+        return opt;
+    }());
     for (size_t r = 0; r < NR; ++r) {
         simulated[r * NC + (r % NC)] = std::numeric_limits<double>::quiet_NaN();
     }
@@ -91,7 +103,13 @@ TEST(GroupedSums, ByRowWithNan) {
 TEST(GroupedSums, ByColumn) {
     size_t NR = 56, NC = 179;
 
-    auto simulated = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.25);
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.25;
+        opt.seed = 593871;
+        return opt;
+    }());
+
     auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
@@ -125,9 +143,9 @@ TEST(GroupedSums, ByColumn) {
     EXPECT_EQ(expected, tatami_stats::grouped_sums::by_column(sparse_column.get(), rgroups.data(), sopt));
 
     // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
     EXPECT_EQ(expected, tatami_stats::grouped_sums::by_column(unsorted_row.get(), rgroups.data()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
     EXPECT_EQ(expected, tatami_stats::grouped_sums::by_column(unsorted_column.get(), rgroups.data()));
 }
 
@@ -135,7 +153,14 @@ TEST(GroupedSums, ByColumnWithNan) {
     size_t NR = 99, NC = 155;
 
     // Sprinkling in some NaNs.
-    auto simulated = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5, 1, 2);
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.18;
+        opt.lower = 1;
+        opt.upper = 2;
+        opt.seed = 1923871;
+        return opt;
+    }());
     for (size_t c = 0; c < NC; ++c) {
         simulated[(c % NR) * NC + c] = std::numeric_limits<double>::quiet_NaN();
     }
@@ -188,7 +213,14 @@ TEST(GroupedSums, EdgeCases) {
 
 TEST(GroupedSums, NewType) {
     size_t NR = 98, NC = 152;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1, /* lower = */ 1, /* upper = */ 100);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.1;
+        opt.lower = 1;
+        opt.upper = 100;
+        opt.seed = 717879;
+        return opt;
+    }());
     for (auto& d : dump) { 
         d = std::round(d);
     }
@@ -225,7 +257,13 @@ TEST(GroupedSums, NewType) {
 TEST(GroupedSums, DirtyOutputs) {
     size_t NR = 56, NC = 179;
 
-    auto simulated = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.3);
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.3;
+        opt.seed = 192191;
+        return opt;
+    }());
+
     auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);

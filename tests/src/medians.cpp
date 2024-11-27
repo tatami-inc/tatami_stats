@@ -205,7 +205,16 @@ TEST(ComputingDimMedians, SparseMedians) {
     // need to use the structural zeros.  We also put all non-zero values on
     // one side of zero, otherwise the structural zeros will dominate the
     // median; in this case, we choose all-positive values.
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5, 1, 10)));
+    auto vec = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.5;
+        opt.lower = 1;
+        opt.upper = 10;
+        opt.seed = 734686273;
+        return opt;
+    }());
+
+    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, vec));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
     auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
@@ -237,10 +246,10 @@ TEST(ComputingDimMedians, SparseMedians) {
     EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_column.get(), mopt));
 
     // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::UnsortedWrapper<double, int>(sparse_row));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
     EXPECT_EQ(rref, tatami_stats::medians::by_row(unsorted_row.get()));
     EXPECT_EQ(cref, tatami_stats::medians::by_column(unsorted_row.get()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::UnsortedWrapper<double, int>(sparse_column));
+    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
     EXPECT_EQ(rref, tatami_stats::medians::by_row(unsorted_column.get()));
     EXPECT_EQ(cref, tatami_stats::medians::by_column(unsorted_column.get()));
 }
@@ -249,7 +258,14 @@ TEST(ComputingMedians, WithNan) {
     size_t NR = 152, NC = 183;
 
     {
-        auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5);
+        auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+            tatami_test::SimulateVectorOptions opt;
+            opt.density = 0.5; // using a density of 0.5 with all-positive values to make things interesting, see above.
+            opt.lower = 1;
+            opt.upper = 5;
+            opt.seed = 182761;
+            return opt;
+        }());
         for (size_t c = 0; c < NC; ++c) { // Injecting an NaN at the start of each column.
             dump[c] = std::numeric_limits<double>::quiet_NaN();
         }
@@ -272,7 +288,14 @@ TEST(ComputingMedians, WithNan) {
     }
 
     {
-        auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5);
+        auto dump = tatami_test::simulate_vector<double>(NR * NC, []{ 
+            tatami_test::SimulateVectorOptions opt;
+            opt.density = 0.5; // using a density of 0.5 with all-negative values to make things interesting, see above.
+            opt.lower = -10;
+            opt.upper = -2;
+            opt.seed = 19988;
+            return opt;
+        }());
         for (size_t r = 0; r < NR; ++r) { // Injecting an NaN at the start of each row.
             dump[r * NC] = std::numeric_limits<double>::quiet_NaN();
         }
@@ -339,7 +362,13 @@ protected:
 
 TEST_P(MedianTriangularTest, Positive) {
     size_t order = GetParam();
-    auto dump = tatami_test::simulate_dense_vector<double>(order * order, 0.1, 1);
+    auto dump = tatami_test::simulate_vector<double>(order * order, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.lower = 1; // all non-zeros are positive.
+        opt.upper = 5;
+        opt.seed = 191874 + order;
+        return opt;
+    }());
     triangularize(order, dump);
 
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(order, order, dump));
@@ -361,9 +390,14 @@ TEST_P(MedianTriangularTest, Positive) {
 }
 
 TEST_P(MedianTriangularTest, Negative) {
-    // Seeing what happens if all non-zeros are less than zero.
     size_t order = GetParam();
-    auto dump = tatami_test::simulate_dense_vector<double>(order * order, -2, -0.1);
+    auto dump = tatami_test::simulate_vector<double>(order * order, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.lower = -2;
+        opt.upper = -0.1; // Seeing what happens if all non-zeros are less than zero.
+        opt.seed = 812763 + order;
+        return opt;
+    }());
     triangularize(order, dump);
 
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(order, order, dump));
@@ -385,9 +419,15 @@ TEST_P(MedianTriangularTest, Negative) {
 }
 
 TEST_P(MedianTriangularTest, Mixed) {
-    // Mixing up the ratios of non-zeros on both sides of zero.
     size_t order = GetParam();
-    auto dump = tatami_test::simulate_dense_vector<double>(order * order, -2, 2);
+    auto dump = tatami_test::simulate_vector<double>(order * order, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        // Mixing up the ratios of non-zeros on both sides of zero.
+        opt.lower = -2;
+        opt.upper = 2;
+        opt.seed = 283764283 + order;
+        return opt;
+    }());
     triangularize(order, dump);
 
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(order, order, dump));
@@ -428,10 +468,18 @@ TEST(ComputingDimMedians, RowMediansNaN) {
 
 TEST(ComputingDimMedians, NewType) {
     size_t NR = 198, NC = 52;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.1, /* lower = */ 1, /* upper = */ 100);
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.5;  // using 0.5 to make things interesting, see above.
+        opt.lower = 1;
+        opt.upper = 100;
+        opt.seed = 293876423;
+        return opt;
+    }());
     for (auto& d : dump) { 
         d = std::round(d);
     }
+
     auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto rexpected = tatami_stats::medians::by_row(ref.get());
     auto cexpected = tatami_stats::medians::by_column(ref.get());
@@ -455,7 +503,15 @@ TEST(ComputingDimMedians, NewType) {
 
 TEST(ComputingDimMedians, DirtyOutput) {
     size_t NR = 99, NC = 152;
-    auto dump = tatami_test::simulate_sparse_vector<double>(NR * NC, 0.5, 1, 10); // see comments above about why we use 0.5.
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{ 
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.5;  // using 0.5 to make things interesting, see above.
+        opt.lower = 1;
+        opt.upper = 10;
+        opt.seed = 187181;
+        return opt;
+    }());
+
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
