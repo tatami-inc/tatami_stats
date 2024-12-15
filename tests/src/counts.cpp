@@ -5,7 +5,7 @@
 #include "tatami_stats/counts.hpp"
 #include "tatami_test/tatami_test.hpp"
 
-TEST(ComputingDimCounts, RowNaNCounts) {
+TEST(ComputingDimCounts, RowNanCounts) {
     size_t NR = 99, NC = 152;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -51,7 +51,7 @@ TEST(ComputingDimCounts, RowNaNCounts) {
     EXPECT_EQ(ref, tatami_stats::counts::nan::by_row(unsorted_column.get()));
 }
 
-TEST(ComputingDimCounts, ColumNaNCount) {
+TEST(ComputingDimCounts, ColumNanCounts) {
     size_t NR = 79, NC = 62;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -138,7 +138,7 @@ TEST(ComputingDimCounts, RowZeroCounts) {
     EXPECT_EQ(ref, tatami_stats::counts::zero::by_row(unsorted_column.get()));
 }
 
-TEST(ComputingDimVariances, RowZeroCountsWithNan) {
+TEST(ComputingDimCounts, RowZeroCountsWithNan) {
     size_t NR = 52, NC = 83;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -237,4 +237,37 @@ TEST(ComputingDimVariances, ColumnZeroCountsWithNan) {
     EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(dense_column.get()));
     EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(sparse_row.get()));
     EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(sparse_column.get()));
+}
+
+TEST(ComputingDimCounts, EmptyCounts) {
+    size_t NR = 0, NC = 10;
+    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::vector<double>()));
+    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
+    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
+
+    tatami_stats::counts::zero::Options nopt;
+    nopt.num_threads = 3;
+
+    std::vector<int> empty_c(NC);
+    EXPECT_EQ(empty_c, tatami_stats::counts::zero::by_column(dense_row.get()));
+    EXPECT_EQ(empty_c, tatami_stats::counts::zero::by_column(dense_column.get()));
+    EXPECT_EQ(empty_c, tatami_stats::counts::zero::by_column(sparse_row.get()));
+    EXPECT_EQ(empty_c, tatami_stats::counts::zero::by_column(sparse_column.get()));
+
+    EXPECT_EQ(empty_c, tatami_stats::counts::zero::by_column(dense_row.get(), nopt));
+    EXPECT_EQ(empty_c, tatami_stats::counts::zero::by_column(dense_column.get(), nopt));
+    EXPECT_EQ(empty_c, tatami_stats::counts::zero::by_column(sparse_row.get(), nopt));
+    EXPECT_EQ(empty_c, tatami_stats::counts::zero::by_column(sparse_column.get(), nopt));
+
+    std::vector<int> empty_r(NR);
+    EXPECT_EQ(empty_r, tatami_stats::counts::zero::by_row(dense_row.get()));
+    EXPECT_EQ(empty_r, tatami_stats::counts::zero::by_row(dense_column.get()));
+    EXPECT_EQ(empty_r, tatami_stats::counts::zero::by_row(sparse_row.get()));
+    EXPECT_EQ(empty_r, tatami_stats::counts::zero::by_row(sparse_column.get()));
+
+    EXPECT_EQ(empty_r, tatami_stats::counts::zero::by_row(dense_row.get(), nopt));
+    EXPECT_EQ(empty_r, tatami_stats::counts::zero::by_row(dense_column.get(), nopt));
+    EXPECT_EQ(empty_r, tatami_stats::counts::zero::by_row(sparse_row.get(), nopt));
+    EXPECT_EQ(empty_r, tatami_stats::counts::zero::by_row(sparse_column.get(), nopt));
 }

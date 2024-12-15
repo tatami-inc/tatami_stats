@@ -89,11 +89,14 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
     } else {
         num_threads = subpar::sanitize_num_workers(num_threads, otherdim); // provides some protection against silly num_threads iputs.
         std::vector<Output_*> threaded_output_ptrs(num_threads, output);
-        std::vector<std::vector<Output_> > threaded_output(num_threads - 1);
-        for (int t = 1; t < num_threads; ++t) {
-            auto& curout = threaded_output[t - 1];
-            curout.resize(dim);
-            threaded_output_ptrs[t] = curout.data();
+        std::vector<std::vector<Output_> > threaded_output;
+        if (num_threads > 1) {
+            threaded_output.resize(num_threads - 1);
+            for (int t = 1; t < num_threads; ++t) {
+                auto& curout = threaded_output[t - 1];
+                curout.resize(dim);
+                threaded_output_ptrs[t] = curout.data();
+            }
         }
 
         if (p->sparse()) {
