@@ -84,6 +84,15 @@ TEST_F(ComputeMediansTest, DenseNaN) {
     EXPECT_TRUE(std::isnan(direct_medians(vec.data(), vsize, true)));
 }
 
+TEST_F(ComputeMediansTest, DenseInf) {
+    auto inf = std::numeric_limits<double>::infinity();
+    std::vector<double> vec { inf, inf, -inf, -inf };
+    EXPECT_EQ(direct_medians(vec.data(), 2, false), inf);
+    EXPECT_EQ(direct_medians(vec.data() + 2, 2, false), -inf);
+    EXPECT_EQ(direct_medians(vec.data(), 3, false), inf);
+    EXPECT_TRUE(std::isnan(direct_medians(vec.data(), 4, false)));
+}
+
 TEST_F(ComputeMediansTest, SparseAllPositive) {
     std::vector<int> vec { 2, 1, 4, 5, 3 };
     int vsize = vec.size();
@@ -155,6 +164,18 @@ TEST_F(ComputeMediansTest, SparseNaN) {
     int vsize = vec.size();
     EXPECT_EQ(direct_medians(vec.data(), vsize, 8, true), 1);
     EXPECT_EQ(direct_medians(vec.data(), vsize, 9, true), 0.5);
+}
+
+TEST_F(ComputeMediansTest, SparseInf) {
+    auto inf = std::numeric_limits<double>::infinity();
+    std::vector<double> vec { inf, inf, inf, -inf, -inf, -inf };
+    EXPECT_EQ(direct_medians(vec.data(), 3, 3, false), inf);
+    EXPECT_EQ(direct_medians(vec.data(), 3, 4, false), inf);
+    EXPECT_EQ(direct_medians(vec.data() + 3, 3, false), -inf);
+    EXPECT_EQ(direct_medians(vec.data() + 3, 4, false), -inf);
+    EXPECT_EQ(direct_medians(vec.data(), 4, 5, false), inf);
+    EXPECT_TRUE(std::isnan(direct_medians(vec.data(), 6, 6, false)));
+    EXPECT_EQ(direct_medians(vec.data(), 6, 8, false), 0);
 }
 
 TEST_F(ComputeMediansTest, SparseRealistic) {
