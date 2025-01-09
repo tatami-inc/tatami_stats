@@ -58,13 +58,19 @@ std::vector<Size_> tabulate_groups(const Group_* group, Size_ n) {
 /**
  * @brief Local output buffer for running calculations.
  *
- * A typical parallelization scenario involves dividing the set of objective vectors into contiguous blocks, where each thread operates on a block at a time.
+ * A common parallelization scheme involves dividing the set of objective vectors into contiguous blocks, where each thread operates on a block at a time.
  * However, in running calculations, an entire block's statistics are updated when its corresponding thread processes an observed vector.
- * If these statistics are stored in a global buffer, false sharing at the boundaries of the blocks can result in performance degradation. 
+ * If these statistics are stored in a global output buffer, false sharing at the boundaries of the blocks can degrade performance.
  *
- * To avoid this, the `LocalOutputBuffer` class provides thread-local storage for output statistics. 
- * Once the calculations are finished per thread, callers should use `transfer()` to transfer the local statistics to the global buffer.
- * The exception is that of the first thread, which is allowed to directly write to the global output buffer.
+ * To mitigate false sharing, we create a separate `std::vector` in each thread to store its output statistics.
+ * The aim is to give the memory allocator an opportunity to store each thread's vector contents at non-contiguous addresses on the heap.
+ * (While not guaranteed, well-separated addresses are observed on many compiler/architecture combinations, presumably due to the use of multiple arenas -
+ * see https://github.com/tatami-inc/tatami_stats/issues/9 for testing.)
+ * Once the calculations are finished, each thread can transfer its statistics to the global buffer.
+ *
+ * The `LocalOutputBuffer` is just a wrapper around a `std::vector` with some special behavior for the first thread.
+ * Specifically, the first thread is allowed to directly write to the global buffer.
+ * This avoids any extra allocation in the serial case where there is no need to protect against false sharing.
  *
  * @tparam Output_ Type of the result.
  */
@@ -107,6 +113,7 @@ public:
     /**
      * @return Pointer to an output buffer to use for this thread.
      * This contains at least `length` addressable elements (see the argument of the same name in the constructor). 
+     * For `thread = 0`, this will be equal to `output + start`.
      */
     Output_* data() {
         return (use_local ? my_buffer.data() : my_output);
@@ -115,6 +122,7 @@ public:
     /**
      * @return Const pointer to an output buffer to use for this thread.
      * This contains at least `length` addressable elements (see the argument of the same name in the constructor). 
+     * For `thread = 0`, this will be equal to `output + start`.
      */
     const Output_* data() const {
         return (use_local ? my_buffer.data() : my_output);
@@ -122,6 +130,7 @@ public:
 
     /**
      * Transfer results from the local buffer to the global buffer (i.e., `output` in the constructor).
+     * For `thread = 0`, this will be a no-op.
      */
     void transfer() {
         if (use_local) {
