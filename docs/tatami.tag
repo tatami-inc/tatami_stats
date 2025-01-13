@@ -74,6 +74,7 @@
     <path>tatami_stats/</path>
     <filename>utils_8hpp.html</filename>
     <class kind="class">tatami_stats::LocalOutputBuffer</class>
+    <class kind="class">tatami_stats::LocalOutputBuffers</class>
     <namespace>tatami_stats</namespace>
   </compound>
   <compound kind="file">
@@ -130,6 +131,54 @@
       <name>transfer</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
       <anchor>a64ee29c3a09b95a5d44c5111f357720e</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>tatami_stats::LocalOutputBuffers</name>
+    <filename>classtatami__stats_1_1LocalOutputBuffers.html</filename>
+    <templarg>typename Output_</templarg>
+    <templarg>class GetOutput_</templarg>
+    <member kind="function">
+      <type></type>
+      <name>LocalOutputBuffers</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
+      <anchor>afaad1036df6e6c82485f1375377973b1</anchor>
+      <arglist>(size_t thread, size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>LocalOutputBuffers</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
+      <anchor>a8298dcaaa57f7db497b1476d5a644557</anchor>
+      <arglist>(size_t thread, size_t number, Index_ start, Index_ length, GetOutput_ outfun)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>LocalOutputBuffers</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
+      <anchor>af4c4db4f4578f881b95b7482b4d54ca1</anchor>
+      <arglist>()=default</arglist>
+    </member>
+    <member kind="function">
+      <type>Output_ *</type>
+      <name>data</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
+      <anchor>afade6cb0c028336df221c7d624782a1f</anchor>
+      <arglist>(size_t i)</arglist>
+    </member>
+    <member kind="function">
+      <type>const Output_ *</type>
+      <name>data</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
+      <anchor>a64ad2eb5863d63ebbe8dbcdf94fdf700</anchor>
+      <arglist>(size_t i) const</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>transfer</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
+      <anchor>a4ca91631f18be6ce71fc58d094dacc8a</anchor>
       <arglist>()</arglist>
     </member>
   </compound>
@@ -449,6 +498,7 @@
     <namespace>tatami_stats::sums</namespace>
     <namespace>tatami_stats::variances</namespace>
     <class kind="class">tatami_stats::LocalOutputBuffer</class>
+    <class kind="class">tatami_stats::LocalOutputBuffers</class>
     <member kind="function">
       <type>size_t</type>
       <name>total_groups</name>
