@@ -29,7 +29,7 @@ TEST(Utilities, Groups) {
     }
 }
 
-TEST(Utilities, OutputBuffer) {
+TEST(Utilities, LocalOutputBuffer) {
     {
         std::vector<int> foo(10);
         tatami_stats::LocalOutputBuffer<int> buffer(0, 5, 3, foo.data(), 1);
@@ -67,5 +67,61 @@ TEST(Utilities, OutputBuffer) {
         EXPECT_EQ(foo[6], 2);
         EXPECT_EQ(foo[7], 2);
         EXPECT_EQ(foo[8], 0);
+    }
+}
+
+TEST(Utilities, LocalOutputBuffers) {
+    {
+        std::vector<std::vector<int> > foo(10, std::vector<int>(10));
+        auto fetch = [&](size_t i) -> int* {
+            return foo[i].data();
+        };
+        tatami_stats::LocalOutputBuffers<int, decltype(fetch)> buffers(0, 10, 5, 3, std::move(fetch), 1);
+        const auto& cbuffers = buffers; // check the const overload.
+
+        for (int i = 0; i < 10; ++i) {
+            EXPECT_EQ(foo[i][4], 0); // directly uses the buffer.
+            EXPECT_EQ(foo[i][5], 1);
+            EXPECT_EQ(foo[i][6], 1);
+            EXPECT_EQ(foo[i][7], 1);
+            EXPECT_EQ(foo[i][8], 0);
+
+            buffers.data(i)[0] = 3;
+            EXPECT_EQ(foo[i][5], 3);
+            EXPECT_EQ(cbuffers.data(i)[0], 3);
+        }
+
+        buffers.transfer();
+        for (int i = 0; i < 10; ++i) {
+            EXPECT_EQ(foo[i][4], 0); // directly uses the buffer.
+            EXPECT_EQ(foo[i][5], 3);
+            EXPECT_EQ(foo[i][6], 1);
+            EXPECT_EQ(foo[i][7], 1);
+            EXPECT_EQ(foo[i][8], 0);
+        }
+    }
+
+    {
+        std::vector<std::vector<int> > foo(10, std::vector<int>(10));
+        auto fetch = [&](size_t i) -> int* {
+            return foo[i].data();
+        };
+        tatami_stats::LocalOutputBuffers<int, decltype(fetch)> buffers(1, 10, 5, 3, std::move(fetch), 2);
+        const auto& cbuffers = buffers; // checking the const overload.
+
+        for (int i = 0; i < 10; ++i) {
+            buffers.data(i)[0] = 3;
+            EXPECT_EQ(cbuffers.data(i)[0], 3);
+            EXPECT_EQ(foo[i], std::vector<int>(10)); // buffer is not used yet...
+        }
+
+        buffers.transfer();
+        for (int i = 0; i < 10; ++i) {
+            EXPECT_EQ(foo[i][4], 0);
+            EXPECT_EQ(foo[i][5], 3);
+            EXPECT_EQ(foo[i][6], 2);
+            EXPECT_EQ(foo[i][7], 2);
+            EXPECT_EQ(foo[i][8], 0);
+        }
     }
 }

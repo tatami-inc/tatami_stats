@@ -144,6 +144,109 @@ private:
     std::vector<Output_> my_buffer;
 };
 
+
+/**
+ * @brief Local output buffers for running calculations.
+ *
+ * Zero, one or more local output buffers to be created in each thread to avoid false sharing.
+ * This class is equivalent to a vector of `LocalOutputBuffer` instances, but is easier to initialize and more memory-efficient.
+ * In particular, no vector is created at all for the first thread, avoiding an unnecessary allocation in the serial case.
+ *
+ * @tparam Output_ Type of the result.
+ * @tparam GetOutput_ Functor object that returns a pointer to the output buffer.
+ */
+template<typename Output_, class GetOutput_>
+class LocalOutputBuffers {
+public:
+    /**
+     * @tparam Index_ Type of the start index and length.
+     * @param thread Identity of the thread, starting from zero to the total number of threads.
+     * @param number Number of output buffers.
+     * @param start Index of the first objective vector in the contiguous block for this thread.
+     * @param length Number of objective vectors in the contiguous block for this thread.
+     * @param outfun Function that accepts an `Index_` specifying the index of an output buffer and returns a `Output_*` pointer to that buffer.
+     * @param fill Initial value to fill the buffer.
+     */
+    template<typename Index_>
+    LocalOutputBuffers(size_t thread, size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill) : 
+        my_number(number),
+        my_start(start),
+        my_use_local(thread > 0),
+        my_getter(std::move(outfun))
+    {
+        if (thread == 0) {
+            for (size_t i = 0; i < my_number; ++i) {
+                // Setting to the fill to match the initial behavior of 'my_buffer' when 'thread > 0'.
+                std::fill_n(my_getter(i) + my_start, length, fill);
+            }
+        } else {
+            my_buffers.reserve(my_number);
+            for (size_t i = 0; i < my_number; ++i) {
+                my_buffers.emplace_back(length, fill);
+            }
+        }
+    }
+
+    /**
+     * Overloaded constructor that sets the default `fill = 0`.
+     *
+     * @tparam Index_ Type of the start index and length.
+     * @param thread Identity of the thread, starting from zero to the total number of threads.
+     * @param number Number of output buffers.
+     * @param start Index of the first objective vector in the contiguous block for this thread.
+     * @param length Number of objective vectors in the contiguous block for this thread.
+     * @param outfun Function that accepts an `Index_` specifying the index of an output buffer and returns a `Output_*` pointer to that buffer.
+     */
+    template<typename Index_>
+    LocalOutputBuffers(size_t thread, size_t number, Index_ start, Index_ length, GetOutput_ outfun) :
+        LocalOutputBuffers(thread, number, start, length, std::move(outfun), 0) {}
+
+    /**
+     * Default constructor.
+     */
+    LocalOutputBuffers() = default;
+
+    /**
+     * @param i Index of the output buffer.
+     * @return Pointer to the `i`-th output buffer to use in this thread.
+     * This contains at least `length` addressable elements (see the argument of the same name in the constructor). 
+     * For `thread = 0`, this will be equal to `outfun(i) + start`.
+     */
+    Output_* data(size_t i) {
+        return (my_use_local ? my_buffers[i].data() : my_getter(i) + my_start);
+    }
+
+    /**
+     * @param i Index of the output buffer.
+     * @return Const pointer to the `i`-th output buffer to use for this thread.
+     * This contains at least `length` addressable elements (see the argument of the same name in the constructor). 
+     * For `thread = 0`, this will be equal to `outfun(i) + start`.
+     */
+    const Output_* data(size_t i) const {
+        return (my_use_local ? my_buffers[i].data() : my_getter(i) + my_start);
+    }
+
+    /**
+     * Transfer results from the local buffer to the global buffer (i.e., `output` in the constructor).
+     * For `thread = 0`, this will be a no-op.
+     */
+    void transfer() {
+        if (my_use_local) {
+            for (size_t i = 0; i < my_number; ++i) {
+                const auto& current = my_buffers[i];
+                std::copy(current.begin(), current.end(), my_getter(i) + my_start);
+            }
+        }
+    }
+
+private:
+    size_t my_number = 0;
+    size_t my_start = 0;
+    bool my_use_local = true;
+    std::vector<std::vector<Output_> > my_buffers;
+    GetOutput_ my_getter;
+};
+
 /**
  * @cond
  */
