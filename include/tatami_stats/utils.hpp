@@ -207,6 +207,14 @@ public:
     LocalOutputBuffers() = default;
 
     /**
+     * @return Number of output buffers.
+     * This is the same as `number` in the constructor.
+     */
+    size_t size() const {
+        return my_number;
+    }
+
+    /**
      * @param i Index of the output buffer.
      * @return Pointer to the `i`-th output buffer to use in this thread.
      * This contains at least `length` addressable elements (see the argument of the same name in the constructor). 

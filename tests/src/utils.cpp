@@ -77,6 +77,7 @@ TEST(Utilities, LocalOutputBuffers) {
             return foo[i].data();
         };
         tatami_stats::LocalOutputBuffers<int, decltype(fetch)> buffers(0, 10, 5, 3, std::move(fetch), 1);
+        EXPECT_EQ(buffers.size(), 10);
         const auto& cbuffers = buffers; // check the const overload.
 
         for (int i = 0; i < 10; ++i) {
