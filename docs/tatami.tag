@@ -161,6 +161,13 @@
       <arglist>()=default</arglist>
     </member>
     <member kind="function">
+      <type>size_t</type>
+      <name>size</name>
+      <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
+      <anchor>aad16d06a5c102f48ce95697c5056c402</anchor>
+      <arglist>() const</arglist>
+    </member>
+    <member kind="function">
       <type>Output_ *</type>
       <name>data</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
