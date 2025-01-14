@@ -164,7 +164,7 @@ public:
      * @param number Number of output buffers.
      * @param start Index of the first objective vector in the contiguous block for this thread.
      * @param length Number of objective vectors in the contiguous block for this thread.
-     * @param outfun Function that accepts an `Index_` specifying the index of an output buffer and returns a `Output_*` pointer to that buffer.
+     * @param outfun Function that accepts an `Index_` specifying the index of an output buffer in `[0, number)` and returns a `Output_*` pointer to that buffer.
      * @param fill Initial value to fill the buffer.
      */
     template<typename Index_>
@@ -195,7 +195,7 @@ public:
      * @param number Number of output buffers.
      * @param start Index of the first objective vector in the contiguous block for this thread.
      * @param length Number of objective vectors in the contiguous block for this thread.
-     * @param outfun Function that accepts an `Index_` specifying the index of an output buffer and returns a `Output_*` pointer to that buffer.
+     * @param outfun Function that accepts an `Index_` specifying the index of an output buffer in `[0, number)` and returns a `Output_*` pointer to that buffer.
      */
     template<typename Index_>
     LocalOutputBuffers(size_t thread, size_t number, Index_ start, Index_ length, GetOutput_ outfun) :
@@ -227,7 +227,7 @@ public:
     }
 
     /**
-     * Transfer results from the local buffer to the global buffer (i.e., `output` in the constructor).
+     * Transfer results from the local buffer to the global buffer (i.e., `outfun(i)` for `i` in `[0, number)` from the constructor).
      * For `thread = 0`, this will be a no-op.
      */
     void transfer() {
