@@ -196,7 +196,7 @@ template&lt;typename Index_ &gt; </div>
     <tr><td class="paramname">number</td><td>Number of output buffers. </td></tr>
     <tr><td class="paramname">start</td><td>Index of the first objective vector in the contiguous block for this thread. </td></tr>
     <tr><td class="paramname">length</td><td>Number of objective vectors in the contiguous block for this thread. </td></tr>
-    <tr><td class="paramname">outfun</td><td>Function that accepts an <code>Index_</code> specifying the index of an output buffer and returns a <code>Output_*</code> pointer to that buffer. </td></tr>
+    <tr><td class="paramname">outfun</td><td>Function that accepts an <code>Index_</code> specifying the index of an output buffer in <code>[0, number)</code> and returns a <code>Output_*</code> pointer to that buffer. </td></tr>
     <tr><td class="paramname">fill</td><td>Initial value to fill the buffer. </td></tr>
   </table>
   </dd>
@@ -272,7 +272,7 @@ template&lt;typename Index_ &gt; </div>
     <tr><td class="paramname">number</td><td>Number of output buffers. </td></tr>
     <tr><td class="paramname">start</td><td>Index of the first objective vector in the contiguous block for this thread. </td></tr>
     <tr><td class="paramname">length</td><td>Number of objective vectors in the contiguous block for this thread. </td></tr>
-    <tr><td class="paramname">outfun</td><td>Function that accepts an <code>Index_</code> specifying the index of an output buffer and returns a <code>Output_*</code> pointer to that buffer. </td></tr>
+    <tr><td class="paramname">outfun</td><td>Function that accepts an <code>Index_</code> specifying the index of an output buffer in <code>[0, number)</code> and returns a <code>Output_*</code> pointer to that buffer. </td></tr>
   </table>
   </dd>
 </dl>
@@ -402,7 +402,7 @@ template&lt;typename Output_ , class GetOutput_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Transfer results from the local buffer to the global buffer (i.e., <code>output</code> in the constructor). For <code>thread = 0</code>, this will be a no-op. </p>
+<p>Transfer results from the local buffer to the global buffer (i.e., <code>outfun(i)</code> for <code>i</code> in <code>[0, number)</code> from the constructor). For <code>thread = 0</code>, this will be a no-op. </p>
 
 </div>
 </div>
