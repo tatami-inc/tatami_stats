@@ -83,9 +83,9 @@ var searchData=
   ['matrix_3c_20outputvalue_5f_2c_20index_5f_20_3e_80',['Matrix&lt; OutputValue_, Index_ &gt;',['https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html',1,'tatami']]],
   ['matrix_3c_20value_5f_2c_20index_5f_20_3e_81',['Matrix&lt; Value_, Index_ &gt;',['https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html',1,'tatami']]],
   ['matrix_3c_20valueout_5f_2c_20indexout_5f_20_3e_82',['Matrix&lt; ValueOut_, IndexOut_ &gt;',['https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html',1,'tatami']]],
-  ['maybeoracle_83',['MaybeOracle',['https://tatami-inc.github.io/tatami/namespacetatami.html#aab9d426a238a93d02635b4172c725808',1,'tatami']]],
+  ['maybeoracle_83',['MaybeOracle',['https://tatami-inc.github.io/tatami/namespacetatami.html#a812af1bfb04773bf28da8549c3e6e5ee',1,'tatami']]],
   ['medians_2ehpp_84',['medians.hpp',['../medians_8hpp.html',1,'']]],
-  ['mock_5fhelpers_2ehpp_85',['mock_helpers.hpp',['https://tatami-inc.github.io/tatami/unary_2mock__helpers_8hpp.html',1,'(Global Namespace)'],['https://tatami-inc.github.io/tatami/binary_2mock__helpers_8hpp.html',1,'(Global Namespace)']]],
+  ['mock_5fhelpers_2ehpp_85',['mock_helpers.hpp',['https://tatami-inc.github.io/tatami/binary_2mock__helpers_8hpp.html',1,'(Global Namespace)'],['https://tatami-inc.github.io/tatami/unary_2mock__helpers_8hpp.html',1,'(Global Namespace)']]],
   ['myopicdenseextractor_86',['MyopicDenseExtractor',['https://tatami-inc.github.io/tatami/classtatami_1_1MyopicDenseExtractor.html',1,'tatami']]],
   ['myopicsparseextractor_87',['MyopicSparseExtractor',['https://tatami-inc.github.io/tatami/classtatami_1_1MyopicSparseExtractor.html',1,'tatami']]]
 ];
