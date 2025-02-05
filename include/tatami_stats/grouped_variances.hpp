@@ -115,7 +115,7 @@ void direct(
 
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
-        [&]() {
+        [&]() -> void {
             std::fill_n(valid_group_size, num_groups, 0);
 
             for (Index_ j = 0; j < num; ++j) {
@@ -138,7 +138,7 @@ void direct(
             }
             internal::finish_variances(num_groups, valid_group_size, output_variances);
         },
-        [&]() {
+        [&]() -> void {
             for (Index_ j = 0; j < num; ++j) {
                 output_means[group[j]] += ptr[j];
             }
@@ -206,7 +206,7 @@ void direct(
 
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
-        [&]() {
+        [&]() -> void {
             std::copy_n(group_size, num_groups, valid_group_size);
 
             for (Index_ j = 0; j < num_nonzero; ++j) {
@@ -234,7 +234,7 @@ void direct(
             }
             internal::finish_variances(num_groups, valid_group_size, output_variances);
         },
-        [&]() {
+        [&]() -> void {
             for (Index_ j = 0; j < num_nonzero; ++j) {
                 auto b = group[index[j]];
                 output_means[b] += value[j];

@@ -98,7 +98,7 @@ std::pair<Output_, Output_> direct(const Value_* value, Index_ num_nonzero, Inde
 
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
-        [&]() {
+        [&]() -> void {
             auto copy = value;
             for (Index_ i = 0; i < num_nonzero; ++i, ++copy) {
                 auto val = *copy;
@@ -109,7 +109,7 @@ std::pair<Output_, Output_> direct(const Value_* value, Index_ num_nonzero, Inde
                 }
             }
         },
-        [&]() {
+        [&]() -> void {
             auto copy = value;
             for (Index_ i = 0; i < num_nonzero; ++i, ++copy) {
                 mean += *copy;
@@ -123,7 +123,7 @@ std::pair<Output_, Output_> direct(const Value_* value, Index_ num_nonzero, Inde
     Output_ var = 0;
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
-        [&]() {
+        [&]() -> void {
             for (Index_ i = 0; i < num_nonzero; ++i) {
                 auto val = value[i];
                 if (!std::isnan(val)) {
@@ -132,7 +132,7 @@ std::pair<Output_, Output_> direct(const Value_* value, Index_ num_nonzero, Inde
                 }
             }
         },
-        [&]() {
+        [&]() -> void {
             for (Index_ i = 0; i < num_nonzero; ++i) {
                 auto delta = static_cast<Output_>(value[i]) - mean;
                 var += delta * delta;
@@ -209,7 +209,7 @@ public:
     void add(const Value_* ptr) {
         ::tatami_stats::internal::nanable_ifelse<Value_>(
             my_skip_nan,
-            [&]() {
+            [&]() -> void {
                 for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                     auto val = *ptr;
                     if (!std::isnan(val)) {
@@ -217,7 +217,7 @@ public:
                     }
                 }
             },
-            [&]() {
+            [&]() -> void {
                 ++my_count;
                 for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                     internal::add_welford(my_mean[i], my_variance[i], *ptr, my_count);
@@ -232,7 +232,7 @@ public:
     void finish() {
         ::tatami_stats::internal::nanable_ifelse<Value_>(
             my_skip_nan,
-            [&]() {
+            [&]() -> void {
                 for (Index_ i = 0; i < my_num; ++i) {
                     auto ct = my_ok_count[i];
                     if (ct < 2) {
@@ -245,7 +245,7 @@ public:
                     }
                 }
             },
-            [&]() {
+            [&]() -> void {
                 if (my_count < 2) {
                     std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
                     if (my_count == 0) {
@@ -307,7 +307,7 @@ public:
 
         ::tatami_stats::internal::nanable_ifelse<Value_>(
             my_skip_nan,
-            [&]() {
+            [&]() -> void {
                 for (Index_ i = 0; i < number; ++i) {
                     auto val = value[i];
                     auto ri = index[i] - my_subtract;
@@ -318,7 +318,7 @@ public:
                     }
                 }
             },
-            [&]() {
+            [&]() -> void {
                 for (Index_ i = 0; i < number; ++i) {
                     auto ri = index[i] - my_subtract;
                     internal::add_welford(my_mean[ri], my_variance[ri], value[i], ++(my_nonzero[ri]));
@@ -333,7 +333,7 @@ public:
     void finish() {
         ::tatami_stats::internal::nanable_ifelse<Value_>(
             my_skip_nan,
-            [&]() {
+            [&]() -> void {
                 for (Index_ i = 0; i < my_num; ++i) {
                     auto& curM = my_mean[i];
                     auto& curV = my_variance[i];
@@ -350,7 +350,7 @@ public:
                     }
                 }
             },
-            [&]() {
+            [&]() -> void {
                 if (my_count < 2) {
                     std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
                     if (my_count == 0) {
@@ -404,7 +404,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
         if (direct) {
             tatami::Options opt;
             opt.sparse_extract_index = false;
-            tatami::parallelize([&](int, Index_ s, Index_ l) {
+            tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(p, row, s, l);
                 std::vector<Value_> vbuffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
@@ -414,7 +414,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
             }, dim, vopt.num_threads);
 
         } else {
-            tatami::parallelize([&](int thread, Index_ s, Index_ l) {
+            tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(p, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
@@ -435,7 +435,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 
     } else {
         if (direct) {
-            tatami::parallelize([&](int, Index_ s, Index_ l) {
+            tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(p, row, s, l);
                 std::vector<Value_> buffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
@@ -445,7 +445,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
             }, dim, vopt.num_threads);
 
         } else {
-            tatami::parallelize([&](int thread, Index_ s, Index_ l) {
+            tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(p, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> buffer(l);
 

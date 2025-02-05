@@ -189,7 +189,7 @@ public:
             my_init = false;
             ::tatami_stats::internal::nanable_ifelse<Value_>(
                 my_skip_nan,
-                [&]() {
+                [&]() -> void {
                     for (Index_ i = 0; i < my_num; ++i, ++ptr) {
                         auto val = *ptr;
                         if (std::isnan(val)) {
@@ -199,7 +199,7 @@ public:
                         }
                     }
                 },
-                [&]() {
+                [&]() -> void {
                     std::copy_n(ptr, my_num, my_store);
                 }
             );
@@ -353,7 +353,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
 
         if (direct) {
             opt.sparse_extract_index = false;
-            tatami::parallelize([&](int, Index_ s, Index_ l) {
+            tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(p, row, s, l, opt);
                 std::vector<Value_> vbuffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
@@ -368,7 +368,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
             }, dim, ropt.num_threads);
 
         } else {
-            tatami::parallelize([&](int thread, Index_ s, Index_ l) {
+            tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(p, !row, static_cast<Index_>(0), otherdim, s, l, opt);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
@@ -401,7 +401,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
 
     } else {
         if (direct) {
-            tatami::parallelize([&](int, Index_ s, Index_ l) {
+            tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(p, row, s, l);
                 std::vector<Value_> buffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
@@ -416,7 +416,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
             }, dim, ropt.num_threads);
 
         } else {
-            tatami::parallelize([&](int thread, Index_ s, Index_ l) {
+            tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(p, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> buffer(l);
 

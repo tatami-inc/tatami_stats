@@ -79,7 +79,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
 
                     internal::nanable_ifelse<Value_>(
                         sopt.skip_nan,
-                        [&]() {
+                        [&]() -> void {
                             for (int j = 0; j < range.number; ++j) {
                                 auto val = range.value[j];
                                 if (!std::isnan(val)) {
@@ -87,7 +87,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                                 }
                             }
                         },
-                        [&]() {
+                        [&]() -> void {
                             for (int j = 0; j < range.number; ++j) {
                                 tmp[group[range.index[j]]] += range.value[j];
                             }
@@ -146,7 +146,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
 
                     internal::nanable_ifelse<Value_>(
                         sopt.skip_nan,
-                        [&]() {
+                        [&]() -> void {
                             for (Index_ j = 0; j < otherdim; ++j) {
                                 auto val = ptr[j];
                                 if (!std::isnan(val)) {
@@ -154,7 +154,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                                 }
                             }
                         },
-                        [&]() {
+                        [&]() -> void {
                             for (Index_ j = 0; j < otherdim; ++j) {
                                 tmp[group[j]] += ptr[j];
                             }

@@ -82,12 +82,12 @@ template<typename Output_ = double, typename Value_, typename Index_>
 Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
-        [&]() {
+        [&]() -> void {
             auto lost = internal::translocate_nans(ptr, num);
             ptr += lost;
             num -= lost;
         },
-        [&]() {}
+        []() -> void {}
     );
 
     if (num == 0) {
@@ -145,13 +145,13 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
 
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
-        [&]() {
+        [&]() -> void {
             auto lost = internal::translocate_nans(value, num_nonzero);
             value += lost;
             num_nonzero -= lost;
             num_all -= lost;
         },
-        [&]() {}
+        []() -> void {}
     );
 
     // Is the number of non-zeros less than the number of zeros?
