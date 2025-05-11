@@ -87,17 +87,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
         }
 
     } else {
-        num_threads = subpar::sanitize_num_workers(num_threads, otherdim); // provides some protection against silly num_threads iputs.
-        std::vector<Output_*> threaded_output_ptrs(num_threads, output);
-        std::vector<std::vector<Output_> > threaded_output;
-        if (num_threads > 1) {
-            threaded_output.resize(num_threads - 1);
-            for (int t = 1; t < num_threads; ++t) {
-                auto& curout = threaded_output[t - 1];
-                curout.resize(dim);
-                threaded_output_ptrs[t] = curout.data();
-            }
-        }
+        std::vector<std::vector<Output_> > threaded_output(num_threads > 0 ? num_threads - 1 : 0);
 
         if (p->sparse()) {
             tatami::Options opt;
@@ -109,7 +99,12 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
                 std::vector<Index_> ibuffer(dim);
                 auto ext = tatami::consecutive_extractor<true>(p, !row, start, len, opt);
 
-                auto curoutput = threaded_output_ptrs[thread];
+                auto curoutput = output;
+                if (thread) {
+                    auto& outvec = threaded_output[thread - 1];
+                    outvec.resize(dim);
+                    curoutput = outvec.data();
+                }
                 std::vector<Index_> nonzeros(dim);
 
                 for (Index_ x = 0; x < len; ++x) {
@@ -132,7 +127,13 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
             tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(dim);
                 auto ext = tatami::consecutive_extractor<false>(p, !row, start, len);
-                auto curoutput = threaded_output_ptrs[thread];
+
+                auto curoutput = output;
+                if (thread) {
+                    auto& outvec = threaded_output[thread - 1];
+                    outvec.resize(dim);
+                    curoutput = outvec.data();
+                }
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto ptr = ext->fetch(xbuffer.data());
@@ -143,10 +144,11 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
             }, otherdim, num_threads);
         }
 
-        for (int t = 1; t < num_threads; ++t) {
-            auto curoutput = threaded_output_ptrs[t];
-            for (Index_ d = 0; d < dim; ++d) {
-                output[d] += curoutput[d];
+        for (const auto& curout : threaded_output) {
+            if (!curout.empty()) {
+                for (Index_ d = 0; d < dim; ++d) {
+                    output[d] += curout[d];
+                }
             }
         }
     }
