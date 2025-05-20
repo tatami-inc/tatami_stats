@@ -121,21 +121,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a25ec363f447893672cc1794d5a92fb3b" id="r_a25ec363f447893672cc1794d5a92fb3b"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
 <tr class="memitem:a25ec363f447893672cc1794d5a92fb3b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a25ec363f447893672cc1794d5a92fb3b">direct</a> (const Value_ *value, const Index_ *index, Index_ num_nonzero, const Group_ *group, size_t num_groups, const Index_ *group_size, Output_ *output_means, Output_ *output_variances, Index_ *output_nonzero, bool skip_nan, Index_ *valid_group_size)</td></tr>
 <tr class="separator:a25ec363f447893672cc1794d5a92fb3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb7e174ad083e8f081e53e5454f02a0b" id="r_afb7e174ad083e8f081e53e5454f02a0b"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:afb7e174ad083e8f081e53e5454f02a0b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#afb7e174ad083e8f081e53e5454f02a0b">apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *p, const Group_ *group, size_t num_groups, const Index_ *group_size, Output_ **output, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
-<tr class="separator:afb7e174ad083e8f081e53e5454f02a0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d36990c883e143bb7b034e45d59eb42" id="r_a7d36990c883e143bb7b034e45d59eb42"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
-<tr class="memitem:a7d36990c883e143bb7b034e45d59eb42"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a7d36990c883e143bb7b034e45d59eb42">by_row</a> (const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *p, const Group_ *group, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
-<tr class="separator:a7d36990c883e143bb7b034e45d59eb42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada707945d46bf7c8e0013df9329dadd4" id="r_ada707945d46bf7c8e0013df9329dadd4"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
-<tr class="memitem:ada707945d46bf7c8e0013df9329dadd4"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ada707945d46bf7c8e0013df9329dadd4">by_row</a> (const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *p, const Group_ *group)</td></tr>
-<tr class="separator:ada707945d46bf7c8e0013df9329dadd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8da66e302c25e09114cb3cd4d943c665" id="r_a8da66e302c25e09114cb3cd4d943c665"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
-<tr class="memitem:a8da66e302c25e09114cb3cd4d943c665"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a8da66e302c25e09114cb3cd4d943c665">by_column</a> (const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *p, const Group_ *group, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
-<tr class="separator:a8da66e302c25e09114cb3cd4d943c665"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20b60121a4232037c908be8e72f99b2c" id="r_a20b60121a4232037c908be8e72f99b2c"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
-<tr class="memitem:a20b60121a4232037c908be8e72f99b2c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a20b60121a4232037c908be8e72f99b2c">by_column</a> (const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *p, const Group_ *group)</td></tr>
-<tr class="separator:a20b60121a4232037c908be8e72f99b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6245677f6c03776287b9640ac5136b7" id="r_ae6245677f6c03776287b9640ac5136b7"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
+<tr class="memitem:ae6245677f6c03776287b9640ac5136b7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae6245677f6c03776287b9640ac5136b7">apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, size_t num_groups, const Index_ *group_size, Output_ **output, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
+<tr class="separator:ae6245677f6c03776287b9640ac5136b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd3490a0beece305c896f35cc86f53e6" id="r_abd3490a0beece305c896f35cc86f53e6"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
+<tr class="memitem:abd3490a0beece305c896f35cc86f53e6"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#abd3490a0beece305c896f35cc86f53e6">by_row</a> (const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
+<tr class="separator:abd3490a0beece305c896f35cc86f53e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47d05526a9980d64b58152a2d7db6fa2" id="r_a47d05526a9980d64b58152a2d7db6fa2"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
+<tr class="memitem:a47d05526a9980d64b58152a2d7db6fa2"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a47d05526a9980d64b58152a2d7db6fa2">by_column</a> (const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
+<tr class="separator:a47d05526a9980d64b58152a2d7db6fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions for computing dimension-wise grouped variances. </p>
@@ -316,8 +310,8 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
 
 </div>
 </div>
-<a id="afb7e174ad083e8f081e53e5454f02a0b" name="afb7e174ad083e8f081e53e5454f02a0b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afb7e174ad083e8f081e53e5454f02a0b">&#9670;&#160;</a></span>apply()</h2>
+<a id="ae6245677f6c03776287b9640ac5136b7" name="ae6245677f6c03776287b9640ac5136b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6245677f6c03776287b9640ac5136b7">&#9670;&#160;</a></span>apply()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -332,7 +326,7 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -374,7 +368,7 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute variances for the rows. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns (if <code>row = true</code>) or rows (otherwise). Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., \(N\). This can be determined by calling <code><a class="el" href="namespacetatami__stats.html#ac2384fe2de19a933c735ce79f9bc1b89">tatami_stats::total_groups()</a></code> on <code>group</code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">group_size</td><td>Pointer to an array of length <code>num_groups</code>, containing the size of each group. </td></tr>
@@ -386,8 +380,8 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
 
 </div>
 </div>
-<a id="a7d36990c883e143bb7b034e45d59eb42" name="a7d36990c883e143bb7b034e45d59eb42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d36990c883e143bb7b034e45d59eb42">&#9670;&#160;</a></span>by_row() <span class="overload">[1/2]</span></h2>
+<a id="abd3490a0beece305c896f35cc86f53e6" name="abd3490a0beece305c896f35cc86f53e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd3490a0beece305c896f35cc86f53e6">&#9670;&#160;</a></span>by_row()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -397,7 +391,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
         <tr>
           <td class="memname">std::vector&lt; std::vector&lt; Output_ &gt; &gt; tatami_stats::grouped_variances::by_row </td>
           <td>(</td>
-          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -411,7 +405,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Wrapper around <code><a class="el" href="#afb7e174ad083e8f081e53e5454f02a0b">apply()</a></code> for row-wise grouped variances.</p>
+<p>Wrapper around <code><a class="el" href="#ae6245677f6c03776287b9640ac5136b7">apply()</a></code> for row-wise grouped variances.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Output_</td><td>Type of the output. </td></tr>
@@ -423,7 +417,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns. Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">sopt</td><td>Summation options.</td></tr>
   </table>
@@ -433,49 +427,8 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 
 </div>
 </div>
-<a id="ada707945d46bf7c8e0013df9329dadd4" name="ada707945d46bf7c8e0013df9329dadd4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada707945d46bf7c8e0013df9329dadd4">&#9670;&#160;</a></span>by_row() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::vector&lt; Output_ &gt; &gt; tatami_stats::grouped_variances::by_row </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Group_ *</td>          <td class="paramname"><span class="paramname"><em>group</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Overload with default options.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Group_</td><td>Type of the group assignments for each column.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns. Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Vector of length equal to the number of groups. Each entry is a vector of length equal to the number of rows, containing the row-wise variances for the corresponding group. </dd></dl>
-
-</div>
-</div>
-<a id="a8da66e302c25e09114cb3cd4d943c665" name="a8da66e302c25e09114cb3cd4d943c665"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8da66e302c25e09114cb3cd4d943c665">&#9670;&#160;</a></span>by_column() <span class="overload">[1/2]</span></h2>
+<a id="a47d05526a9980d64b58152a2d7db6fa2" name="a47d05526a9980d64b58152a2d7db6fa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47d05526a9980d64b58152a2d7db6fa2">&#9670;&#160;</a></span>by_column()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -485,7 +438,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
         <tr>
           <td class="memname">std::vector&lt; std::vector&lt; Output_ &gt; &gt; tatami_stats::grouped_variances::by_column </td>
           <td>(</td>
-          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -499,7 +452,7 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Wrapper around <code><a class="el" href="#afb7e174ad083e8f081e53e5454f02a0b">apply()</a></code> for column-wise grouped variances.</p>
+<p>Wrapper around <code><a class="el" href="#ae6245677f6c03776287b9640ac5136b7">apply()</a></code> for column-wise grouped variances.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Output_</td><td>Type of the output. </td></tr>
@@ -511,50 +464,9 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of rows. Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">sopt</td><td>Summation options.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Vector of length equal to the number of groups. Each entry is a vector of length equal to the number of columns, containing the column-wise variances for the corresponding group. </dd></dl>
-
-</div>
-</div>
-<a id="a20b60121a4232037c908be8e72f99b2c" name="a20b60121a4232037c908be8e72f99b2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20b60121a4232037c908be8e72f99b2c">&#9670;&#160;</a></span>by_column() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::vector&lt; Output_ &gt; &gt; tatami_stats::grouped_variances::by_column </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Group_ *</td>          <td class="paramname"><span class="paramname"><em>group</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Overload with default options.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the column/column indices. </td></tr>
-    <tr><td class="paramname">Group_</td><td>Type of the group assignments for each column.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p</td><td>Pointer to a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of rows. Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups.</td></tr>
   </table>
   </dd>
 </dl>
