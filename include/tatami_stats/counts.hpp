@@ -33,7 +33,7 @@ namespace counts {
  *
  * @param row Whether to perform the count within each row.
  * If false, the count is performed within each column instead.
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column variances.
  * @param num_threads Number of threads to use, for parallelization via `tatami::parallelize()`.
@@ -41,13 +41,13 @@ namespace counts {
  * This function is also responsible for handling any NaNs that might be present in `p`.
  */
 template<typename Value_, typename Index_, typename Output_, class Condition_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, int num_threads, Condition_ condition) {
-    auto dim = (row ? p->nrow() : p->ncol());
-    auto otherdim = (row ? p->ncol() : p->nrow());
+void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, int num_threads, Condition_ condition) {
+    auto dim = (row ? mat.nrow() : mat.ncol());
+    auto otherdim = (row ? mat.ncol() : mat.nrow());
     std::fill(output, output + dim, 0);
 
-    if (p->prefer_rows() == row) {
-        if (p->sparse()) {
+    if (mat.prefer_rows() == row) {
+        if (mat.sparse()) {
             tatami::Options opt;
             opt.sparse_ordered_index = false;
             bool count_zero = condition(0);
@@ -55,7 +55,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(otherdim);
                 std::vector<Index_> ibuffer(otherdim);
-                auto ext = tatami::consecutive_extractor<true>(p, row, start, len, opt);
+                auto ext = tatami::consecutive_extractor<true>(mat, row, start, len, opt);
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
@@ -73,7 +73,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
         } else {
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(otherdim);
-                auto ext = tatami::consecutive_extractor<false>(p, row, start, len);
+                auto ext = tatami::consecutive_extractor<false>(mat, row, start, len);
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto ptr = ext->fetch(xbuffer.data());
@@ -89,7 +89,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
     } else {
         std::vector<std::vector<Output_> > threaded_output(num_threads > 0 ? num_threads - 1 : 0);
 
-        if (p->sparse()) {
+        if (mat.sparse()) {
             tatami::Options opt;
             opt.sparse_ordered_index = false;
             bool count_zero = condition(0);
@@ -97,7 +97,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
             tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(dim);
                 std::vector<Index_> ibuffer(dim);
-                auto ext = tatami::consecutive_extractor<true>(p, !row, start, len, opt);
+                auto ext = tatami::consecutive_extractor<true>(mat, !row, start, len, opt);
 
                 auto curoutput = output;
                 if (thread) {
@@ -126,7 +126,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
         } else {
             tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
                 std::vector<Value_> xbuffer(dim);
-                auto ext = tatami::consecutive_extractor<false>(p, !row, start, len);
+                auto ext = tatami::consecutive_extractor<false>(mat, !row, start, len);
 
                 auto curoutput = output;
                 if (thread) {
@@ -155,6 +155,18 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, i
 }
 
 /**
+ * @cond
+ */
+// Back-compatibility only.
+template<typename Value_, typename Index_, typename Output_, class Condition_>
+void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, int num_threads, Condition_ condition) {
+    apply(row, *p, output, num_threads, std::move(condition));
+}
+/**
+ * @endcond
+ */
+
+/**
  * @brief Functions for counting NaNs on each dimension.
  * @namespace tatami_stats::counts::nan
  */
@@ -169,6 +181,7 @@ struct Options {
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
+
 };
 
 /**
@@ -178,15 +191,27 @@ struct Options {
  * This should be at least large enough to hold the dimensions of `p`.
  *
  * @param row Whether to obtain a count for each row.
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows.
  * On output, this will store the number of NaNs in each row.
  * @param nopt Counting options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const Options& nopt) {
-    counts::apply(row, p, output, nopt.num_threads, [](Value_ x) -> bool { return std::isnan(x); });
+void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& nopt) {
+    counts::apply(row, mat, output, nopt.num_threads, [](Value_ x) -> bool { return std::isnan(x); });
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility only.
+template<typename Value_, typename Index_, typename Output_>
+void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const Options& nopt) {
+    apply(row, *p, output, nopt);
+}
+/**
+ * @endcond
+ */
 
 /**
  * Wrapper around `apply()` for row NaN counts.
@@ -195,17 +220,29 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param nopt Counting options.
  *
  * @return A vector of length equal to the number of rows, containing the number of NaNs in each row.
  */
 template<typename Output_ = int, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& nopt) {
-    std::vector<Output_> output(p->nrow());
-    apply(true, p, output.data(), nopt);
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& nopt) {
+    std::vector<Output_> output(mat.nrow());
+    apply(true, mat, output.data(), nopt);
     return output;
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility only.
+template<typename Output_ = int, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& nopt) {
+    return by_row<Output_>(*p, nopt);
+}
+/**
+ * @endcond
+ */
 
 /**
  * Overload with default options.
@@ -214,13 +251,25 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Optio
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @return A vector of length equal to the number of rows, containing the number of NaNs in each row.
  */
 template<typename Output_ = int, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
-    return by_row(p, Options());
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat) {
+    return by_row<Output_>(mat, Options());
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility only.
+template<typename Output_ = int, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
+    return by_row<Output_>(*p);
+}
+/**
+ * @endcond
+ */
 
 /**
  * Wrapper around `apply()` for column NaN counts.
@@ -230,17 +279,29 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param nopt Counting options.
  *
  * @return A vector of length equal to the number of columns, containing the number of NaNs in each column.
  */
 template<typename Output_ = int, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& nopt) {
-    std::vector<Output_> output(p->ncol());
-    apply(false, p, output.data(), nopt);
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& nopt) {
+    std::vector<Output_> output(mat.ncol());
+    apply(false, mat, output.data(), nopt);
     return output;
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility only.
+template<typename Output_ = int, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& nopt) {
+    return by_column<Output_>(*p, nopt);
+}
+/**
+ * @endcond
+ */
 
 /**
  * Overload with default options.
@@ -250,14 +311,26 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Op
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  *
  * @return A vector of length equal to the number of columns, containing the number of NaNs in each column.
  */
 template<typename Output_ = int, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
-    return by_column(p, Options());
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat) {
+    return by_column<Output_>(mat, Options());
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility only.
+template<typename Output_ = int, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
+    return by_column<Output_>(*p);
+}
+/**
+ * @endcond
+ */
 
 }
 
@@ -285,15 +358,27 @@ struct Options {
  * This should be at least large enough to hold the dimensions of `p`.
  *
  * @param row Whether to obtain a count for each row.
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows.
  * On output, this will store the number of zeros in each row.
  * @param zopt Counting options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const Options& zopt) {
-    counts::apply(row, p, output, zopt.num_threads, [](Value_ x) -> bool { return x == 0; });
+void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& zopt) {
+    counts::apply(row, mat, output, zopt.num_threads, [](Value_ x) -> bool { return x == 0; });
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility.
+template<typename Value_, typename Index_, typename Output_>
+void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const Options& zopt) {
+    apply(row, *p, output, zopt);
+}
+/**
+ * @endcond
+ */
 
 /**
  * Wrapper around `apply()` for row-wise zero counts.
@@ -303,15 +388,27 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
  * @tparam Output_ Type of the output value.
  * This should be at least large enough to hold the dimensions of `p`.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param zopt Counting options.
  */
 template<typename Output_ = int, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& zopt) {
-    std::vector<Output_> output(p->nrow());
-    apply(true, p, output.data(), zopt);
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& zopt) {
+    std::vector<Output_> output(mat.nrow());
+    apply(true, mat, output.data(), zopt);
     return output;
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility.
+template<typename Output_ = int, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& zopt) {
+    return by_row<Output_>(*p, zopt);
+}
+/**
+ * @endcond
+ */
 
 /**
  * Overload with default options. 
@@ -321,14 +418,26 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Optio
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  *
  * @return A vector of length equal to the number of rows, containing the number of zeros in each row.
  */
 template<typename Output_ = int, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
-    return by_row(p, Options());
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat) {
+    return by_row<Output_>(mat, Options());
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility.
+template<typename Output_ = int, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
+    return by_row<Output_>(*p);
+}
+/**
+ * @endcond
+ */
 
 /**
  * Wrapper around `apply()` for column-wise zero counts.
@@ -338,17 +447,29 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param zopt Counting options.
  *
  * @return A vector of length equal to the number of columns, containing the number of zeros in each column.
  */
 template<typename Output_ = int, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& zopt) {
-    std::vector<Output_> output(p->ncol());
-    apply(false, p, output.data(), zopt);
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& zopt) {
+    std::vector<Output_> output(mat.ncol());
+    apply(false, mat, output.data(), zopt);
     return output;
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility.
+template<typename Output_ = int, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& zopt) {
+    return by_column<Output_>(*p, zopt);
+}
+/**
+ * @endcond
+ */
 
 /**
  * @tparam Output_ Type of the output value.
@@ -356,14 +477,26 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Op
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  *
  * @return A vector of length equal to the number of columns, containing the number of zeros in each column.
  */
 template<typename Output_ = int, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
-    return by_column(p, Options());
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat) {
+    return by_column<Output_>(mat, Options());
 }
+
+/**
+ * @cond
+ */
+// Back-compatibility.
+template<typename Output_ = int, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
+    return by_column<Output_>(*p);
+}
+/**
+ * @endcond
+ */
 
 }
 

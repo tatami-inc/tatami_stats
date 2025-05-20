@@ -389,23 +389,23 @@ private:
  *
  * @param row Whether to compute the variance for each row.
  * If false, the variance is computed for each column instead.
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column variances.
  * @param vopt Variance calculation options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const Options& vopt) {
-    auto dim = (row ? p->nrow() : p->ncol());
-    auto otherdim = (row ? p->ncol() : p->nrow());
-    const bool direct = p->prefer_rows() == row;
+void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& vopt) {
+    auto dim = (row ? mat.nrow() : mat.ncol());
+    auto otherdim = (row ? mat.ncol() : mat.nrow());
+    const bool direct = mat.prefer_rows() == row;
 
-    if (p->sparse()) {
+    if (mat.sparse()) {
         if (direct) {
             tatami::Options opt;
             opt.sparse_extract_index = false;
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<true>(p, row, s, l);
+                auto ext = tatami::consecutive_extractor<true>(mat, row, s, l);
                 std::vector<Value_> vbuffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(vbuffer.data(), NULL);
@@ -415,7 +415,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 
         } else {
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<true>(p, !row, static_cast<Index_>(0), otherdim, s, l);
+                auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
 
@@ -436,7 +436,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
     } else {
         if (direct) {
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<false>(p, row, s, l);
+                auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
                 std::vector<Value_> buffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(buffer.data());
@@ -446,7 +446,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 
         } else {
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<false>(p, !row, static_cast<Index_>(0), otherdim, s, l);
+                auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> buffer(l);
 
                 std::vector<Output_> running_means(l);
@@ -465,40 +465,57 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 }
 
 /**
+ * @cond
+ */
+// Back-compatibility.
+template<typename Value_, typename Index_, typename Output_>
+void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const Options& vopt) {
+    apply(row, *p, output, vopt);
+}
+/**
+ * @endcond
+ */
+
+/**
  * Wrapper around `apply()` for column variances.
  *
  * @tparam Output_ Type of the output value.
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param vopt Variance calculation options.
  *
  * @return A vector of length equal to the number of columns, containing the column variances.
  */
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& vopt) {
+    std::vector<Output_> output(mat.ncol());
+    apply(false, mat, output.data(), vopt);
+    return output;
+}
+
+/**
+ * @cond
+ */
+// Back-compatibility.
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& vopt) {
-    std::vector<Output_> output(p->ncol());
-    apply(false, p, output.data(), vopt);
-    return output;
+    return by_column<Output_>(*p, vopt);
 }
 
-/**
- * Overload with default options.
- *
- * @tparam Output_ Type of the output value.
- * @tparam Value_ Type of the matrix value, should be numeric.
- * @tparam Index_ Type of the row/column indices.
- *
- * @param p Pointer to a `tatami::Matrix`.
- *
- * @return A vector of length equal to the number of columns, containing the column variances.
- */
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat) {
+    return by_column<Output_>(mat, {});
+}
+
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
-    Options vopt;
-    return by_column(p, vopt);
+    return by_column<Output_>(*p);
 }
+/**
+ * @endcond
+ */
 
 /**
  * Wrapper around `apply()` for column variances.
@@ -507,34 +524,39 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
  * @tparam Value_ Type of the matrix value, should be numeric.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param vopt Variance calculation options.
  *
  * @return A vector of length equal to the number of rows, containing the row variances.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& vopt) {
-    std::vector<Output_> output(p->nrow());
-    apply(true, p, output.data(), vopt);
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& vopt) {
+    std::vector<Output_> output(mat.nrow());
+    apply(true, mat, output.data(), vopt);
     return output;
 }
 
 /**
- * Overload with default options.
- *
- * @tparam Output_ Type of the output value.
- * @tparam Value_ Type of the matrix value, should be numeric.
- * @tparam Index_ Type of the row/column indices.
- *
- * @param p Pointer to a `tatami::Matrix`.
- *
- * @return A vector of length equal to the number of rows, containing the row variances.
+ * @cond
  */
+// Back-compatibility.
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& vopt) {
+    return by_row<Output_>(*p, vopt);
+}
+
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat) {
+    return by_row<Output_>(mat, {});
+}
+
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
-    Options vopt;
-    return by_row(p, vopt);
+    return by_row<Output_>(*p);
 }
+/**
+ * @endcond
+ */
 
 }
 

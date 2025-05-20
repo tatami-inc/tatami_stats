@@ -265,7 +265,7 @@ void direct(
  * This should be floating-point to store potential averages.
  *
  * @param row Whether to compute variances for the rows.
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of columns (if `row = true`) or rows (otherwise).
  * Each value should be an integer that specifies the group assignment.
  * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
@@ -278,14 +278,14 @@ void direct(
  * @param sopt Summation options.
  */
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* group, size_t num_groups, const Index_* group_size, Output_** output, const Options& sopt) {
-    Index_ dim = (row ? p->nrow() : p->ncol());
-    Index_ otherdim = (row ? p->ncol() : p->nrow());
+void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* group, size_t num_groups, const Index_* group_size, Output_** output, const Options& sopt) {
+    Index_ dim = (row ? mat.nrow() : mat.ncol());
+    Index_ otherdim = (row ? mat.ncol() : mat.nrow());
 
-    if (p->sparse()) {
-        if (p->prefer_rows() == row) {
+    if (mat.sparse()) {
+        if (mat.prefer_rows() == row) {
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
-                auto ext = tatami::consecutive_extractor<true>(p, row, start, len);
+                auto ext = tatami::consecutive_extractor<true>(mat, row, start, len);
                 std::vector<Value_> xbuffer(otherdim);
                 std::vector<Index_> ibuffer(otherdim);
 
@@ -337,7 +337,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                     runners.emplace_back(len, local_mean_output.back().data(), local_var_output.back().data(), sopt.skip_nan, start);
                 }
 
-                auto ext = tatami::consecutive_extractor<true>(p, !row, static_cast<Index_>(0), otherdim, start, len, opt);
+                auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, start, len, opt);
                 std::vector<Value_> xbuffer(len);
                 std::vector<Index_> ibuffer(len);
 
@@ -354,9 +354,9 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
         }
 
     } else {
-        if (p->prefer_rows() == row) {
+        if (mat.prefer_rows() == row) {
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
-                auto ext = tatami::consecutive_extractor<false>(p, row, start, len);
+                auto ext = tatami::consecutive_extractor<false>(mat, row, start, len);
                 std::vector<Value_> xbuffer(otherdim);
                 std::vector<Output_> tmp_means(num_groups);
                 std::vector<Output_> output_variances(num_groups);
@@ -398,7 +398,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
                 }
 
                 std::vector<Value_> xbuffer(len);
-                auto ext = tatami::consecutive_extractor<false>(p, !row, static_cast<Index_>(0), otherdim, start, len);
+                auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, start, len);
 
                 for (Index_ i = 0; i < otherdim; ++i) {
                     auto ptr = ext->fetch(xbuffer.data());
@@ -415,6 +415,18 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
 }
 
 /**
+ * @cond
+ */
+// Back-compatibility.
+template<typename Value_, typename Index_, typename Group_, typename Output_>
+void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* group, size_t num_groups, const Index_* group_size, Output_** output, const Options& sopt) {
+    apply(row, *p, group, num_groups, group_size, output, sopt);
+}
+/**
+ * @endcond
+ */
+
+/**
  * Wrapper around `apply()` for row-wise grouped variances.
  *
  * @tparam Output_ Type of the output.
@@ -422,7 +434,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
  * @tparam Index_ Type of the row/column indices.
  * @tparam Group_ Type of the group assignments for each row.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of columns.
  * Each value should be an integer that specifies the group assignment.
  * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
@@ -432,9 +444,9 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
  * Each entry is a vector of length equal to the number of rows, containing the row-wise variances for the corresponding group.
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
-std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* p, const Group_* group, const Options& sopt) {
-    size_t mydim = p->nrow();
-    auto group_size = tabulate_groups(group, p->ncol());
+std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>& mat, const Group_* group, const Options& sopt) {
+    size_t mydim = mat.nrow();
+    auto group_size = tabulate_groups(group, mat.ncol());
     size_t ngroup = group_size.size();
 
     std::vector<std::vector<Output_> > output(ngroup);
@@ -445,30 +457,31 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* 
         ptrs.push_back(o.data());
     }
 
-    apply(true, p, group, ngroup, group_size.data(), ptrs.data(), sopt);
+    apply(true, mat, group, ngroup, group_size.data(), ptrs.data(), sopt);
     return output;
 }
 
 /**
- * Overload with default options.
- *
- * @tparam Output_ Type of the output.
- * @tparam Value_ Type of the matrix value.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Group_ Type of the group assignments for each column.
- *
- * @param p Pointer to a `tatami::Matrix`.
- * @param[in] group Pointer to an array of length equal to the number of columns.
- * Each value should be an integer that specifies the group assignment.
- * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
- *
- * @return Vector of length equal to the number of groups.
- * Each entry is a vector of length equal to the number of rows, containing the row-wise variances for the corresponding group.
+ * @cond
  */
+// Back-compatibility.
+template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
+std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* p, const Group_* group, const Options& sopt) {
+    return by_row<Output_>(*p, group, sopt);
+}
+
+template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
+std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>& mat, const Group_* group) {
+    return by_row<Output_>(mat, group, Options());
+}
+
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
 std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* p, const Group_* group) {
-    return by_row(p, group, Options());
+    return by_row<Output_>(*p, group);
 }
+/**
+ * @endcond
+ */
 
 /**
  * Wrapper around `apply()` for column-wise grouped variances.
@@ -478,7 +491,7 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* 
  * @tparam Index_ Type of the column/column indices.
  * @tparam Group_ Type of the group assignments for each column.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of rows.
  * Each value should be an integer that specifies the group assignment.
  * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
@@ -488,9 +501,9 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* 
  * Each entry is a vector of length equal to the number of columns, containing the column-wise variances for the corresponding group.
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
-std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_>* p, const Group_* group, const Options& sopt) {
-    size_t mydim = p->ncol();
-    auto group_size = tabulate_groups(group, p->nrow());
+std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_>& mat, const Group_* group, const Options& sopt) {
+    size_t mydim = mat.ncol();
+    auto group_size = tabulate_groups(group, mat.nrow());
     size_t ngroup = group_size.size();
 
     std::vector<std::vector<Output_> > output(ngroup);
@@ -501,30 +514,31 @@ std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_
         ptrs.push_back(o.data());
     }
 
-    apply(false, p, group, ngroup, group_size.data(), ptrs.data(), sopt);
+    apply(false, mat, group, ngroup, group_size.data(), ptrs.data(), sopt);
     return output;
 }
 
 /**
- * Overload with default options.
- *
- * @tparam Output_ Type of the output.
- * @tparam Value_ Type of the matrix value.
- * @tparam Index_ Type of the column/column indices.
- * @tparam Group_ Type of the group assignments for each column.
- *
- * @param p Pointer to a `tatami::Matrix`.
- * @param[in] group Pointer to an array of length equal to the number of rows.
- * Each value should be an integer that specifies the group assignment.
- * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
- *
- * @return Vector of length equal to the number of groups.
- * Each entry is a vector of length equal to the number of columns, containing the column-wise variances for the corresponding group.
+ * @cond
  */
+// Back-compatibility.
+template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
+std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_>* p, const Group_* group, const Options& sopt) {
+    return by_column<Output_>(*p, group, sopt);
+}
+
+template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
+std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_>& mat, const Group_* group) {
+    return by_column<Output_>(mat, group, Options());
+}
+
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
 std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_>* p, const Group_* group) {
-    return by_column(p, group, Options());
+    return by_column<Output_>(*p, group);
 }
+/**
+ * @endcond
+ */
 
 }
 

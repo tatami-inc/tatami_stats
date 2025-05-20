@@ -198,24 +198,24 @@ private:
  *
  * @param row Whether to compute the sum for each row.
  * If false, the sum is computed for each column instead.
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column variances.
  * @param sopt Summation options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const Options& sopt) {
-    auto dim = (row ? p->nrow() : p->ncol());
-    auto otherdim = (row ? p->ncol() : p->nrow());
-    const bool direct = p->prefer_rows() == row;
+void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& sopt) {
+    auto dim = (row ? mat.nrow() : mat.ncol());
+    auto otherdim = (row ? mat.ncol() : mat.nrow());
+    const bool direct = mat.prefer_rows() == row;
 
-    if (p->sparse()) {
+    if (mat.sparse()) {
         if (direct) {
             tatami::Options opt;
             opt.sparse_extract_index = false;
 
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<true>(p, row, s, l, opt);
+                auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
                 std::vector<Value_> vbuffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(vbuffer.data(), NULL);
@@ -228,7 +228,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
             opt.sparse_ordered_index = false;
 
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<true>(p, !row, static_cast<Index_>(0), otherdim, s, l, opt);
+                auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, s, l, opt);
                 std::vector<Value_> vbuffer(l);
                 std::vector<Index_> ibuffer(l);
 
@@ -247,7 +247,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
     } else {
         if (direct) {
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<false>(p, row, s, l);
+                auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
                 std::vector<Value_> buffer(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(buffer.data());
@@ -257,7 +257,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 
         } else {
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<false>(p, !row, static_cast<Index_>(0), otherdim, s, l);
+                auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
                 std::vector<Value_> buffer(l);
 
                 LocalOutputBuffer<Output_> local_output(thread, s, l, output);
@@ -277,37 +277,56 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 }
 
 /**
+ * @cond
+ */
+// Back-compatibility.
+template<typename Value_, typename Index_, typename Output_>
+void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const Options& sopt) {
+    apply(row, *p, output, sopt);
+}
+/**
+ * @endcond
+ */
+
+/**
  * Wrapper around `apply()` for column sums.
  *
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  * @tparam Output_ Type of the output value.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param sopt Summation options.
  * @return Vector containing the sum for each column.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& sopt) {
-    std::vector<Output_> output(p->ncol());
-    apply(false, p, output.data(), sopt);
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& sopt) {
+    std::vector<Output_> output(mat.ncol());
+    apply(false, mat, output.data(), sopt);
     return output;
 }
 
 /**
- * Overload with default options.
- *
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Output_ Type of the output value.
- *
- * @param p Pointer to a `tatami::Matrix`.
- * @return Vector containing the sum for each column.
+ * @cond
  */
+// Back-compatibility.
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& sopt) {
+    return by_column<Output_>(*p, sopt);
+}
+
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat) {
+    return by_column<Output_>(mat, {}); 
+}
+
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
-    return by_column(p, Options());
+    return by_column<Output_>(*p);
 }
+/**
+ * @endcond
+ */
 
 /**
  * Wrapper around `apply()` for row sums.
@@ -316,31 +335,38 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
  * @tparam Value_ Type of the matrix value, should be summable.
  * @tparam Index_ Type of the row/column indices.
  *
- * @param p Pointer to a `tatami::Matrix`.
+ * @param mat Instance of a `tatami::Matrix`.
  * @param sopt Summation options.
  * @return Vector containing the sum of each row.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& sopt) {
-    std::vector<Output_> output(p->nrow());
-    apply(true, p, output.data(), sopt);
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& sopt) {
+    std::vector<Output_> output(mat.nrow());
+    apply(true, mat, output.data(), sopt);
     return output;
 }
 
 /**
- * Overload with default options.
- *
- * @tparam Output_ Type of the output value.
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
- *
- * @param p Pointer to a `tatami::Matrix`.
- * @return Vector containing the sum of each row.
+ * @cond
  */
+// Back-compatibility.
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& sopt) {
+    return by_row<Output_>(*p, sopt);
+}
+
+template<typename Output_ = double, typename Value_, typename Index_>
+std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat) {
+    return by_row<Output_>(mat, {});
+}
+
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
-    return by_row(p, Options());
+    return by_row<Output_>(*p);
 }
+/**
+ * @endcond
+ */
 
 }
 
