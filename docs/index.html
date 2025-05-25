@@ -172,7 +172,8 @@ $(function(){ initResizable(false); });
 <div class="line"> </div>
 <div class="line"># For libaries</div>
 <div class="line">target_link_libraries(mylib INTERFACE tatami_stats)</div>
-</div><!-- fragment --><h2>CMake with <code>find_package()</code></h2>
+</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. Applications are advised to pin the versions of these dependencies themselves - see <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> for suggested (minimum) versions. If you want to install them manually, use <code>-DTATAMI_STATS_FETCH_EXTERN=OFF</code>.</p>
+<h2>CMake with <code>find_package()</code></h2>
 <p>You can install the library by cloning a suitable version of this repository and running the following commands:</p>
 <div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
 <div class="line">cmake .. -DTATAMI_STATS_TESTS=OFF</div>
@@ -180,8 +181,9 @@ $(function(){ initResizable(false); });
 </div><!-- fragment --><p>Then you can use <code>find_package()</code> as usual:</p>
 <div class="fragment"><div class="line">find_package(tatami_tatami_stats CONFIG REQUIRED)</div>
 <div class="line">target_link_libraries(mylib INTERFACE tatami::tatami_stats)</div>
-</div><!-- fragment --><h2>Manual</h2>
-<p>If you're not using CMake, the simple approach is to just copy the files the <code>include/</code> subdirectory - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. You'll need to include the transitive dependencies yourself, check out <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> for a list. </p>
+</div><!-- fragment --><p>Again, this will use <code>FetchContent</code> to retrieve dependencies, see advice above.</p>
+<h2>Manual</h2>
+<p>If you're not using CMake, the simple approach is to just copy the files the <code>include/</code> subdirectory - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. This also requires the dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>. </p>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->
