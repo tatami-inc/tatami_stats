@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats::ranges::RunningSparse&lt; minimum_, Output_, Value_, Index_ &gt; Class Template Reference</title>
+<title>tatami_stats: tatami_stats::ranges::RunningSparse&lt; Output_, Value_, Index_ &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -100,7 +100,7 @@ $(function(){ initResizable(false); });
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classtatami__stats_1_1ranges_1_1RunningSparse-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats::ranges::RunningSparse&lt; minimum_, Output_, Value_, Index_ &gt; Class Template Reference</div></div>
+  <div class="headertitle"><div class="title">tatami_stats::ranges::RunningSparse&lt; Output_, Value_, Index_ &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -111,20 +111,19 @@ $(function(){ initResizable(false); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a410d814eb15f0488357a57831e64321e" id="r_a410d814eb15f0488357a57831e64321e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a410d814eb15f0488357a57831e64321e">RunningSparse</a> (Index_ num, Output_ *store, bool skip_nan, Index_ subtract=0)</td></tr>
-<tr class="separator:a410d814eb15f0488357a57831e64321e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab1432179521651b5e238b04f70ba522" id="r_aab1432179521651b5e238b04f70ba522"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab1432179521651b5e238b04f70ba522">add</a> (const Value_ *value, const Index_ *index, Index_ number)</td></tr>
-<tr class="separator:aab1432179521651b5e238b04f70ba522"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37f92e38af89b69bd0b6b6afb21ba5cc" id="r_a37f92e38af89b69bd0b6b6afb21ba5cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37f92e38af89b69bd0b6b6afb21ba5cc">finish</a> ()</td></tr>
-<tr class="separator:a37f92e38af89b69bd0b6b6afb21ba5cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac58f2377e5f55cece93f70d36ae0ae9d" id="r_ac58f2377e5f55cece93f70d36ae0ae9d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac58f2377e5f55cece93f70d36ae0ae9d">RunningSparse</a> (Index_ num, Output_ *store_min, Output_ *store_max, bool skip_nan, Index_ subtract=0)</td></tr>
+<tr class="separator:ac58f2377e5f55cece93f70d36ae0ae9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a867b0713e62d612b37fcea2fa8b43f71" id="r_a867b0713e62d612b37fcea2fa8b43f71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a867b0713e62d612b37fcea2fa8b43f71">add</a> (const Value_ *value, const Index_ *index, Index_ number)</td></tr>
+<tr class="separator:a867b0713e62d612b37fcea2fa8b43f71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b239b04439652337df9db6cecad1e0" id="r_a57b239b04439652337df9db6cecad1e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57b239b04439652337df9db6cecad1e0">finish</a> ()</td></tr>
+<tr class="separator:a57b239b04439652337df9db6cecad1e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;bool minimum_, typename Output_, typename Value_, typename Index_&gt;<br />
-class tatami_stats::ranges::RunningSparse&lt; minimum_, Output_, Value_, Index_ &gt;</div><p>Running minima/maxima from sparse data. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_, typename Value_, typename Index_&gt;<br />
+class tatami_stats::ranges::RunningSparse&lt; Output_, Value_, Index_ &gt;</div><p>Running minima/maxima from sparse data. </p>
 <p>Compute running minima and maximuma from sparse data. This does the same as <code><a class="el" href="classtatami__stats_1_1ranges_1_1RunningDense.html" title="Running minima/maxima from dense data.">RunningDense</a></code> but for sparse observed vectors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">minimum_</td><td>Whether to compute the minimum. If false, the maximum is computed instead. </td></tr>
     <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the input value. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
@@ -132,26 +131,31 @@ class tatami_stats::ranges::RunningSparse&lt; minimum_, Output_, Value_, Index_ 
   </dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a410d814eb15f0488357a57831e64321e" name="a410d814eb15f0488357a57831e64321e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a410d814eb15f0488357a57831e64321e">&#9670;&#160;</a></span>RunningSparse()</h2>
+<a id="ac58f2377e5f55cece93f70d36ae0ae9d" name="ac58f2377e5f55cece93f70d36ae0ae9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac58f2377e5f55cece93f70d36ae0ae9d">&#9670;&#160;</a></span>RunningSparse()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ &gt; </div>
+template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classtatami__stats_1_1ranges_1_1RunningSparse.html">tatami_stats::ranges::RunningSparse</a>&lt; minimum_, Output_, Value_, Index_ &gt;::RunningSparse </td>
+          <td class="memname"><a class="el" href="classtatami__stats_1_1ranges_1_1RunningSparse.html">tatami_stats::ranges::RunningSparse</a>&lt; Output_, Value_, Index_ &gt;::RunningSparse </td>
           <td>(</td>
           <td class="paramtype">Index_</td>          <td class="paramname"><span class="paramname"><em>num</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Output_ *</td>          <td class="paramname"><span class="paramname"><em>store</em></span>, </td>
+          <td class="paramtype">Output_ *</td>          <td class="paramname"><span class="paramname"><em>store_min</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Output_ *</td>          <td class="paramname"><span class="paramname"><em>store_max</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -173,7 +177,8 @@ template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ 
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of objective vectors. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">store</td><td>Pointer to an output array of length <code>num</code>. After <code><a class="el" href="#a37f92e38af89b69bd0b6b6afb21ba5cc">finish()</a></code> is called, this will contain the minimum/maximum for each objective vector. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">store_min</td><td>Pointer to an output array of length <code>num</code>. After <code><a class="el" href="#a57b239b04439652337df9db6cecad1e0">finish()</a></code> is called, this will contain the minimum for each objective vector. If <code>NULL</code>, no minimum is reported. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">store_max</td><td>Pointer to an output array of length <code>num</code>. After <code><a class="el" href="#a57b239b04439652337df9db6cecad1e0">finish()</a></code> is called, this will contain the maximum for each objective vector. If <code>NULL</code>, no maximum is reported. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1ranges_1_1Options.html#a15b5deec811e94c441d714abdad16692">Options::skip_nan</a></code> for details. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">subtract</td><td>Offset to subtract from each element of <code>index</code> before using it to index into <code>store</code>. Only relevant if <code>store</code> holds statistics for a contiguous subset of objective vectors, e.g., during task allocation for parallelization. </td></tr>
   </table>
@@ -183,19 +188,19 @@ template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aab1432179521651b5e238b04f70ba522" name="aab1432179521651b5e238b04f70ba522"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab1432179521651b5e238b04f70ba522">&#9670;&#160;</a></span>add()</h2>
+<a id="a867b0713e62d612b37fcea2fa8b43f71" name="a867b0713e62d612b37fcea2fa8b43f71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a867b0713e62d612b37fcea2fa8b43f71">&#9670;&#160;</a></span>add()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ &gt; </div>
+template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classtatami__stats_1_1ranges_1_1RunningSparse.html">tatami_stats::ranges::RunningSparse</a>&lt; minimum_, Output_, Value_, Index_ &gt;::add </td>
+          <td class="memname">void <a class="el" href="classtatami__stats_1_1ranges_1_1RunningSparse.html">tatami_stats::ranges::RunningSparse</a>&lt; Output_, Value_, Index_ &gt;::add </td>
           <td>(</td>
           <td class="paramtype">const Value_ *</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
         </tr>
@@ -227,19 +232,19 @@ template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ 
 
 </div>
 </div>
-<a id="a37f92e38af89b69bd0b6b6afb21ba5cc" name="a37f92e38af89b69bd0b6b6afb21ba5cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37f92e38af89b69bd0b6b6afb21ba5cc">&#9670;&#160;</a></span>finish()</h2>
+<a id="a57b239b04439652337df9db6cecad1e0" name="a57b239b04439652337df9db6cecad1e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57b239b04439652337df9db6cecad1e0">&#9670;&#160;</a></span>finish()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ &gt; </div>
+template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classtatami__stats_1_1ranges_1_1RunningSparse.html">tatami_stats::ranges::RunningSparse</a>&lt; minimum_, Output_, Value_, Index_ &gt;::finish </td>
+          <td class="memname">void <a class="el" href="classtatami__stats_1_1ranges_1_1RunningSparse.html">tatami_stats::ranges::RunningSparse</a>&lt; Output_, Value_, Index_ &gt;::finish </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -251,7 +256,7 @@ template&lt;bool minimum_, typename Output_ , typename Value_ , typename Index_ 
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Finish the min/max calculation once all observed vectors have been passed to <code><a class="el" href="#aab1432179521651b5e238b04f70ba522">add()</a></code>. </p>
+<p>Finish the min/max calculation once all observed vectors have been passed to <code><a class="el" href="#a867b0713e62d612b37fcea2fa8b43f71">add()</a></code>. </p>
 
 </div>
 </div>

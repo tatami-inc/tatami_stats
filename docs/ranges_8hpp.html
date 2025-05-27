@@ -115,10 +115,10 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1ranges_1_1Options.html">tatami_stats::ranges::Options</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Range calculation options.  <a href="structtatami__stats_1_1ranges_1_1Options.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtatami__stats_1_1ranges_1_1RunningDense.html">tatami_stats::ranges::RunningDense&lt; minimum_, Output_, Value_, Index_ &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtatami__stats_1_1ranges_1_1RunningDense.html">tatami_stats::ranges::RunningDense&lt; Output_, Value_, Index_ &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Running minima/maxima from dense data.  <a href="classtatami__stats_1_1ranges_1_1RunningDense.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtatami__stats_1_1ranges_1_1RunningSparse.html">tatami_stats::ranges::RunningSparse&lt; minimum_, Output_, Value_, Index_ &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtatami__stats_1_1ranges_1_1RunningSparse.html">tatami_stats::ranges::RunningSparse&lt; Output_, Value_, Index_ &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Running minima/maxima from sparse data.  <a href="classtatami__stats_1_1ranges_1_1RunningSparse.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -133,12 +133,12 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7c7085e3a6cd07db268d44d9a137d6ce" id="r_a7c7085e3a6cd07db268d44d9a137d6ce"><td class="memTemplParams" colspan="2">template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a7c7085e3a6cd07db268d44d9a137d6ce"><td class="memTemplItemLeft" align="right" valign="top">Value_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1ranges.html#a7c7085e3a6cd07db268d44d9a137d6ce">tatami_stats::ranges::direct</a> (const Value_ *ptr, Index_ num, bool skip_nan)</td></tr>
-<tr class="separator:a7c7085e3a6cd07db268d44d9a137d6ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9de5202984cb0179bc97102397d7d917" id="r_a9de5202984cb0179bc97102397d7d917"><td class="memTemplParams" colspan="2">template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a9de5202984cb0179bc97102397d7d917"><td class="memTemplItemLeft" align="right" valign="top">Value_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1ranges.html#a9de5202984cb0179bc97102397d7d917">tatami_stats::ranges::direct</a> (const Value_ *value, Index_ num_nonzero, Index_ num_all, bool skip_nan)</td></tr>
-<tr class="separator:a9de5202984cb0179bc97102397d7d917"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac651411beec3c6ed51df1c5ff4680551" id="r_ac651411beec3c6ed51df1c5ff4680551"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:ac651411beec3c6ed51df1c5ff4680551"><td class="memTemplItemLeft" align="right" valign="top">Value_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1ranges.html#ac651411beec3c6ed51df1c5ff4680551">tatami_stats::ranges::direct</a> (const Value_ *ptr, Index_ num, bool minimum, bool skip_nan)</td></tr>
+<tr class="separator:ac651411beec3c6ed51df1c5ff4680551"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebe6fbfef688e635402bcaf1298dacff" id="r_aebe6fbfef688e635402bcaf1298dacff"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:aebe6fbfef688e635402bcaf1298dacff"><td class="memTemplItemLeft" align="right" valign="top">Value_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1ranges.html#aebe6fbfef688e635402bcaf1298dacff">tatami_stats::ranges::direct</a> (const Value_ *value, Index_ num_nonzero, Index_ num_all, bool minimum, bool skip_nan)</td></tr>
+<tr class="separator:aebe6fbfef688e635402bcaf1298dacff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5804f697bfa2e7a3e9b5fdc9c59a561b" id="r_a5804f697bfa2e7a3e9b5fdc9c59a561b"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
 <tr class="memitem:a5804f697bfa2e7a3e9b5fdc9c59a561b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1ranges.html#a5804f697bfa2e7a3e9b5fdc9c59a561b">tatami_stats::ranges::apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, Output_ *min_out, Output_ *max_out, const <a class="el" href="structtatami__stats_1_1ranges_1_1Options.html">Options</a> &amp;ropt)</td></tr>
 <tr class="separator:a5804f697bfa2e7a3e9b5fdc9c59a561b"><td class="memSeparator" colspan="2">&#160;</td></tr>

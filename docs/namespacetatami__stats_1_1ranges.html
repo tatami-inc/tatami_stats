@@ -121,12 +121,12 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7c7085e3a6cd07db268d44d9a137d6ce" id="r_a7c7085e3a6cd07db268d44d9a137d6ce"><td class="memTemplParams" colspan="2">template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a7c7085e3a6cd07db268d44d9a137d6ce"><td class="memTemplItemLeft" align="right" valign="top">Value_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a7c7085e3a6cd07db268d44d9a137d6ce">direct</a> (const Value_ *ptr, Index_ num, bool skip_nan)</td></tr>
-<tr class="separator:a7c7085e3a6cd07db268d44d9a137d6ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9de5202984cb0179bc97102397d7d917" id="r_a9de5202984cb0179bc97102397d7d917"><td class="memTemplParams" colspan="2">template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a9de5202984cb0179bc97102397d7d917"><td class="memTemplItemLeft" align="right" valign="top">Value_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a9de5202984cb0179bc97102397d7d917">direct</a> (const Value_ *value, Index_ num_nonzero, Index_ num_all, bool skip_nan)</td></tr>
-<tr class="separator:a9de5202984cb0179bc97102397d7d917"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac651411beec3c6ed51df1c5ff4680551" id="r_ac651411beec3c6ed51df1c5ff4680551"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:ac651411beec3c6ed51df1c5ff4680551"><td class="memTemplItemLeft" align="right" valign="top">Value_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac651411beec3c6ed51df1c5ff4680551">direct</a> (const Value_ *ptr, Index_ num, bool minimum, bool skip_nan)</td></tr>
+<tr class="separator:ac651411beec3c6ed51df1c5ff4680551"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebe6fbfef688e635402bcaf1298dacff" id="r_aebe6fbfef688e635402bcaf1298dacff"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:aebe6fbfef688e635402bcaf1298dacff"><td class="memTemplItemLeft" align="right" valign="top">Value_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aebe6fbfef688e635402bcaf1298dacff">direct</a> (const Value_ *value, Index_ num_nonzero, Index_ num_all, bool minimum, bool skip_nan)</td></tr>
+<tr class="separator:aebe6fbfef688e635402bcaf1298dacff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5804f697bfa2e7a3e9b5fdc9c59a561b" id="r_a5804f697bfa2e7a3e9b5fdc9c59a561b"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
 <tr class="memitem:a5804f697bfa2e7a3e9b5fdc9c59a561b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5804f697bfa2e7a3e9b5fdc9c59a561b">apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, Output_ *min_out, Output_ *max_out, const <a class="el" href="structtatami__stats_1_1ranges_1_1Options.html">Options</a> &amp;ropt)</td></tr>
 <tr class="separator:a5804f697bfa2e7a3e9b5fdc9c59a561b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -140,13 +140,13 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions for computing dimension-wise ranges. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a7c7085e3a6cd07db268d44d9a137d6ce" name="a7c7085e3a6cd07db268d44d9a137d6ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c7085e3a6cd07db268d44d9a137d6ce">&#9670;&#160;</a></span>direct() <span class="overload">[1/2]</span></h2>
+<a id="ac651411beec3c6ed51df1c5ff4680551" name="ac651411beec3c6ed51df1c5ff4680551"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac651411beec3c6ed51df1c5ff4680551">&#9670;&#160;</a></span>direct() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </div>
+template&lt;typename Value_ , typename Index_ &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">Value_ tatami_stats::ranges::direct </td>
@@ -161,6 +161,11 @@ template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>minimum</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>skip_nan</em></span>&#160;)</td>
         </tr>
       </table>
@@ -168,7 +173,6 @@ template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </div>
 <p>Directly compute the minimum or maximum of a dense objective vector.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">minimum_</td><td>Whether to compute the minimum. If false, the maximum is computed instead. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
   </table>
@@ -178,21 +182,22 @@ template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>Pointer to an array of length <code>num</code>, containing the values of the objective vector. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num</td><td>Length of the objective vector, i.e., length of the array at <code>ptr</code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">minimum</td><td>Whether to compute the minimum. If false, the maximum is computed instead. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1ranges_1_1Options.html#a15b5deec811e94c441d714abdad16692">Options::skip_nan</a></code> for details.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The minimum or maximum value, depending on <code>minimum_</code>. If <code>num = 0</code> or (if <code>skip_nan_ = true</code>) there are no non-NaN values, a placeholder value is returned instead that is never less than (if <code>minimum_ true</code>) or greater than (otherwise) any non-NaN value of type <code>Value_</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The minimum or maximum value, depending on <code>minimum</code>. If <code>num = 0</code> or (if <code>skip_nan = true</code>) there are no non-NaN values, a placeholder value is returned instead that is never less than (if <code>minimum true</code>) or greater than (otherwise) any non-NaN value of type <code>Value_</code>. </dd></dl>
 
 </div>
 </div>
-<a id="a9de5202984cb0179bc97102397d7d917" name="a9de5202984cb0179bc97102397d7d917"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9de5202984cb0179bc97102397d7d917">&#9670;&#160;</a></span>direct() <span class="overload">[2/2]</span></h2>
+<a id="aebe6fbfef688e635402bcaf1298dacff" name="aebe6fbfef688e635402bcaf1298dacff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebe6fbfef688e635402bcaf1298dacff">&#9670;&#160;</a></span>direct() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </div>
+template&lt;typename Value_ , typename Index_ &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">Value_ tatami_stats::ranges::direct </td>
@@ -212,6 +217,11 @@ template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>minimum</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>skip_nan</em></span>&#160;)</td>
         </tr>
       </table>
@@ -219,7 +229,6 @@ template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </div>
 <p>Compute the extremes of a sparse objective vector.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">minimum_</td><td>Whether to compute the minimum. If false, the maximum is computed instead. </td></tr>
     <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
     <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
   </table>
@@ -230,11 +239,22 @@ template&lt;bool minimum_, typename Value_ , typename Index_ &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Pointer to an array of length <code>num_nonzero</code>, containing the values of the structural non-zeros. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_nonzero</td><td>Number of structural non-zeros in the objective vector. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_all</td><td>Length of the objective vector, including the structural zeros not in <code>value</code>. This should be greater than or equal to <code>num_nonzero</code>. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1ranges_1_1Options.html#a15b5deec811e94c441d714abdad16692">Options::skip_nan</a></code> for details.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The minimum or maximum value, depending on <code>minimum_</code>. If <code>num_all = 0</code> or (if <code>skip_nan_ = true</code>) there are no non-NaN values, a placeholder value is returned instead that is never less than (if <code>minimum_ true</code>) or greater than (otherwise) any non-NaN value of type <code>Value_</code>. </dd></dl>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">minimum</td><td>Whether to compute the minimum. If false, the maximum is computed instead. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1ranges_1_1Options.html#a15b5deec811e94c441d714abdad16692">Options::skip_nan</a></code> for details.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The minimum or maximum value, depending on <code>minimum</code>. If <code>num_all = 0</code> or (if <code>skip_nan = true</code>) there are no non-NaN values, a placeholder value is returned instead that is never less than (if <code>minimum true</code>) or greater than (otherwise) any non-NaN value of type <code>Value_</code>. </dd></dl>
 
 </div>
 </div>

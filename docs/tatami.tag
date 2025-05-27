@@ -340,7 +340,6 @@
   <compound kind="class">
     <name>tatami_stats::ranges::RunningDense</name>
     <filename>classtatami__stats_1_1ranges_1_1RunningDense.html</filename>
-    <templarg>bool minimum_</templarg>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
     <templarg>typename Index_</templarg>
@@ -348,21 +347,21 @@
       <type></type>
       <name>RunningDense</name>
       <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
-      <anchor>a8a7b0887feb925b9e5d47ce372f9aa29</anchor>
-      <arglist>(Index_ num, Output_ *store, bool skip_nan)</arglist>
+      <anchor>add07104bcd5b8a8c8417ef087643a36e</anchor>
+      <arglist>(Index_ num, Output_ *store_min, Output_ *store_max, bool skip_nan)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>add</name>
       <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
-      <anchor>af6aa418d2d28dec63a58109c5d879aa0</anchor>
+      <anchor>a31eb613e1eb32ab3ec0e6033d1c7cf4e</anchor>
       <arglist>(const Value_ *ptr)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>finish</name>
       <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
-      <anchor>a3c6298041d7f986ab68a645ad2c5e636</anchor>
+      <anchor>a4c62d8472891293e434e329cad403454</anchor>
       <arglist>()</arglist>
     </member>
   </compound>
@@ -418,7 +417,6 @@
   <compound kind="class">
     <name>tatami_stats::ranges::RunningSparse</name>
     <filename>classtatami__stats_1_1ranges_1_1RunningSparse.html</filename>
-    <templarg>bool minimum_</templarg>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
     <templarg>typename Index_</templarg>
@@ -426,21 +424,21 @@
       <type></type>
       <name>RunningSparse</name>
       <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
-      <anchor>a410d814eb15f0488357a57831e64321e</anchor>
-      <arglist>(Index_ num, Output_ *store, bool skip_nan, Index_ subtract=0)</arglist>
+      <anchor>ac58f2377e5f55cece93f70d36ae0ae9d</anchor>
+      <arglist>(Index_ num, Output_ *store_min, Output_ *store_max, bool skip_nan, Index_ subtract=0)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>add</name>
       <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
-      <anchor>aab1432179521651b5e238b04f70ba522</anchor>
+      <anchor>a867b0713e62d612b37fcea2fa8b43f71</anchor>
       <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>finish</name>
       <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
-      <anchor>a37f92e38af89b69bd0b6b6afb21ba5cc</anchor>
+      <anchor>a57b239b04439652337df9db6cecad1e0</anchor>
       <arglist>()</arglist>
     </member>
   </compound>
@@ -756,15 +754,15 @@
       <type>Value_</type>
       <name>direct</name>
       <anchorfile>namespacetatami__stats_1_1ranges.html</anchorfile>
-      <anchor>a7c7085e3a6cd07db268d44d9a137d6ce</anchor>
-      <arglist>(const Value_ *ptr, Index_ num, bool skip_nan)</arglist>
+      <anchor>ac651411beec3c6ed51df1c5ff4680551</anchor>
+      <arglist>(const Value_ *ptr, Index_ num, bool minimum, bool skip_nan)</arglist>
     </member>
     <member kind="function">
       <type>Value_</type>
       <name>direct</name>
       <anchorfile>namespacetatami__stats_1_1ranges.html</anchorfile>
-      <anchor>a9de5202984cb0179bc97102397d7d917</anchor>
-      <arglist>(const Value_ *value, Index_ num_nonzero, Index_ num_all, bool skip_nan)</arglist>
+      <anchor>aebe6fbfef688e635402bcaf1298dacff</anchor>
+      <arglist>(const Value_ *value, Index_ num_nonzero, Index_ num_all, bool minimum, bool skip_nan)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
