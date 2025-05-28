@@ -6,6 +6,7 @@
 #include "sums.hpp"
 #include <vector>
 #include <algorithm>
+#include <cstddef>
 
 /**
  * @file grouped_sums.hpp
@@ -61,7 +62,7 @@ struct Options {
  * @param sopt Summation options.
  */
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* group, size_t num_groups, Output_** output, const Options& sopt) {
+void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* group, std::size_t num_groups, Output_** output, const Options& sopt) {
     Index_ dim = (row ? mat.nrow() : mat.ncol());
     Index_ otherdim = (row ? mat.ncol() : mat.nrow());
 
@@ -94,7 +95,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                         }
                     );
 
-                    for (size_t g = 0; g < num_groups; ++g) {
+                    for (decltype(num_groups) g = 0; g < num_groups; ++g) {
                         output[g][i + start] = tmp[g];
                     }
                 }
@@ -113,7 +114,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                 std::vector<LocalOutputBuffer<Output_> > local_output;
                 local_output.reserve(num_groups);
 
-                for (size_t g = 0; g < num_groups; ++g) {
+                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
                     local_output.emplace_back(thread, start, len, output[g]);
                     runners.emplace_back(local_output.back().data(), sopt.skip_nan, start);
                 }
@@ -127,7 +128,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     runners[group[i]].add(range.value, range.index, range.number);
                 }
 
-                for (size_t g = 0; g < num_groups; ++g) {
+                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
                     local_output[g].transfer();
                 }
             }, dim, sopt.num_threads);
@@ -161,7 +162,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                         }
                     );
 
-                    for (size_t g = 0; g < num_groups; ++g) {
+                    for (decltype(num_groups) g = 0; g < num_groups; ++g) {
                         output[g][i + start] = tmp[g];
                     }
                 }
@@ -174,7 +175,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                 std::vector<LocalOutputBuffer<Output_> > local_output;
                 local_output.reserve(num_groups);
 
-                for (size_t g = 0; g < num_groups; ++g) {
+                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
                     local_output.emplace_back(thread, start, len, output[g]);
                     runners.emplace_back(len, local_output.back().data(), sopt.skip_nan);
                 }
@@ -187,7 +188,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     runners[group[i]].add(ptr);
                 }
 
-                for (size_t g = 0; g < num_groups; ++g) {
+                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
                     local_output[g].transfer();
                 }
             }, dim, sopt.num_threads);
@@ -200,7 +201,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
  */
 // Back-compatibility.
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* group, size_t num_groups, Output_** output, const Options& sopt) {
+void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* group, std::size_t num_groups, Output_** output, const Options& sopt) {
     apply(row, *p, group, num_groups, output, sopt);
 }
 /**
@@ -226,7 +227,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
 std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>& mat, const Group_* group, const Options& sopt) {
-    size_t mydim = mat.nrow();
+    auto mydim = mat.nrow();
     auto ngroup = total_groups(group, mat.ncol());
 
     std::vector<std::vector<Output_> > output(ngroup);
@@ -282,7 +283,7 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* 
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
 std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_>& mat, const Group_* group, const Options& sopt) {
-    size_t mydim = mat.ncol();
+    auto mydim = mat.ncol();
     auto ngroup = total_groups(group, mat.nrow());
 
     std::vector<std::vector<Output_> > output(ngroup);

@@ -94,7 +94,7 @@ Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
         return std::numeric_limits<Output_>::quiet_NaN();
     }
 
-    size_t halfway = num / 2;
+    Index_ halfway = num / 2;
     bool is_even = (num % 2 == 0);
 
     std::nth_element(ptr, ptr + halfway, ptr + num);
@@ -161,11 +161,11 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
         return 0;
     } 
     
-    size_t halfway = num_all / 2;
+    Index_ halfway = num_all / 2;
     bool is_even = (num_all % 2 == 0);
 
-    size_t num_zero = num_all - num_nonzero;
-    size_t num_negative = 0;
+    Index_ num_zero = num_all - num_nonzero;
+    Index_ num_negative = 0;
     for (Index_ i = 0; i < num_nonzero; ++i) {
         num_negative += (value[i] < 0);
     }
@@ -176,7 +176,7 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
             return value[halfway];
 
         } else if (halfway >= num_negative + num_zero) {
-            size_t skip_zeros = halfway - num_zero;
+            Index_ skip_zeros = halfway - num_zero;
             std::nth_element(value, value + skip_zeros, value + num_nonzero);
             return value[skip_zeros];
 
@@ -192,7 +192,7 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
         other = *(std::max_element(value, value + halfway)); // max_element gets the sorted value at halfway - 1, see explanation for the dense case.
 
     } else if (num_negative == halfway) { // the upper half is guaranteed to be zero.
-        size_t below_halfway = halfway - 1;
+        Index_ below_halfway = halfway - 1;
         std::nth_element(value, value + below_halfway, value + num_nonzero);
         other = value[below_halfway]; // set to other so that addition/subtraction of a zero baseline has no effect on precision. 
 
@@ -200,12 +200,12 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
         ;
 
     } else if (num_negative + num_zero == halfway) { // the lower half is guaranteed to be zero.
-        size_t skip_zeros = halfway - num_zero;
+        Index_ skip_zeros = halfway - num_zero;
         std::nth_element(value, value + skip_zeros, value + num_nonzero);
         other = value[skip_zeros]; // set to other so that addition/subtraction of a zero baseline has no effect on precision. 
 
     } else { // both halves of the median are non-negative.
-        size_t skip_zeros = halfway - num_zero;
+        Index_ skip_zeros = halfway - num_zero;
         std::nth_element(value, value + skip_zeros, value + num_nonzero);
         baseline = value[skip_zeros];
         other = *(std::max_element(value, value + skip_zeros)); // max_element gets the sorted value at skip_zeros - 1, see explanation for the dense case.

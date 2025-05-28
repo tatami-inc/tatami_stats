@@ -69,9 +69,9 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
     tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
         std::vector<Value_> xbuffer(otherdim);
 
-        size_t ngroups = group_sizes.size();
+        auto ngroups = group_sizes.size();
         std::vector<std::vector<double> > workspace(ngroups);
-        for (size_t g = 0; g < ngroups; ++g) {
+        for (decltype(ngroups) g = 0; g < ngroups; ++g) {
             workspace[g].reserve(group_sizes[g]);
         }
 
@@ -87,9 +87,9 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     workspace[group[range.index[j]]].push_back(range.value[j]);
                 }
 
-                for (size_t g = 0; g < ngroups; ++g) {
+                for (decltype(ngroups) g = 0; g < ngroups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = medians::direct(w.data(), w.size(), static_cast<size_t>(group_sizes[g]), mopt.skip_nan);
+                    output[g][i + start] = medians::direct(w.data(), static_cast<Index_>(w.size()), group_sizes[g], mopt.skip_nan);
                     w.clear();
                 }
             }
@@ -102,7 +102,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     workspace[group[j]].push_back(ptr[j]);
                 }
 
-                for (size_t g = 0; g < ngroups; ++g) {
+                for (decltype(ngroups) g = 0; g < ngroups; ++g) {
                     auto& w = workspace[g];
                     output[g][i + start] = medians::direct(w.data(), w.size(), mopt.skip_nan);
                     w.clear();
@@ -143,7 +143,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
 std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>& mat, const Group_* group, const Options& mopt) {
-    size_t mydim = mat.nrow();
+    auto mydim = mat.nrow();
     auto group_sizes = tabulate_groups(group, mat.ncol());
 
     std::vector<std::vector<Output_> > output(group_sizes.size());
@@ -198,7 +198,7 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* 
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
 std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_>& mat, const Group_* group, const Options& mopt) {
-    size_t mydim = mat.ncol();
+    auto mydim = mat.ncol();
     auto group_sizes = tabulate_groups(group, mat.nrow());
 
     std::vector<std::vector<Output_> > output(group_sizes.size());

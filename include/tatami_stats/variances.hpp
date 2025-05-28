@@ -9,6 +9,7 @@
 #include <numeric>
 #include <limits>
 #include <algorithm>
+#include <cstddef>
 
 /**
  * @file variances.hpp
@@ -63,8 +64,8 @@ void add_welford_zeros(Output_& mean, Output_& sumsq, Index_ num_nonzero, Index_
 // Avoid problems from interactions between constexpr/lambda/std::conditional. 
 template<typename Index_>
 struct MockVector {
-    MockVector(size_t) {}
-    Index_& operator[](size_t) { return out; }
+    MockVector(std::size_t) {}
+    Index_& operator[](std::size_t) { return out; }
     Index_ out = 0;
 };
 
