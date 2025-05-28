@@ -156,7 +156,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> std::numeric_limits&lt;Output_&gt;::quiet_NaN();</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">size_t</span> halfway = num / 2;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    Index_ halfway = num / 2;</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">bool</span> is_even = (num % 2 == 0);</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    std::nth_element(ptr, ptr + halfway, ptr + num);</div>
@@ -208,11 +208,11 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    } </div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    </div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">size_t</span> halfway = num_all / 2;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    Index_ halfway = num_all / 2;</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordtype">bool</span> is_even = (num_all % 2 == 0);</div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordtype">size_t</span> num_zero = num_all - num_nonzero;</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordtype">size_t</span> num_negative = 0;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    Index_ num_zero = num_all - num_nonzero;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    Index_ num_negative = 0;</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">for</span> (Index_ i = 0; i &lt; num_nonzero; ++i) {</div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        num_negative += (value[i] &lt; 0);</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    }</div>
@@ -223,7 +223,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            <span class="keywordflow">return</span> value[halfway];</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (halfway &gt;= num_negative + num_zero) {</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keywordtype">size_t</span> skip_zeros = halfway - num_zero;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            Index_ skip_zeros = halfway - num_zero;</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            std::nth_element(value, value + skip_zeros, value + num_nonzero);</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            <span class="keywordflow">return</span> value[skip_zeros];</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
@@ -239,7 +239,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        other = *(std::max_element(value, value + halfway)); <span class="comment">// max_element gets the sorted value at halfway - 1, see explanation for the dense case.</span></div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (num_negative == halfway) { <span class="comment">// the upper half is guaranteed to be zero.</span></div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="keywordtype">size_t</span> below_halfway = halfway - 1;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        Index_ below_halfway = halfway - 1;</div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        std::nth_element(value, value + below_halfway, value + num_nonzero);</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        other = value[below_halfway]; <span class="comment">// set to other so that addition/subtraction of a zero baseline has no effect on precision. </span></div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
@@ -247,12 +247,12 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        ;</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (num_negative + num_zero == halfway) { <span class="comment">// the lower half is guaranteed to be zero.</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordtype">size_t</span> skip_zeros = halfway - num_zero;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        Index_ skip_zeros = halfway - num_zero;</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        std::nth_element(value, value + skip_zeros, value + num_nonzero);</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        other = value[skip_zeros]; <span class="comment">// set to other so that addition/subtraction of a zero baseline has no effect on precision. </span></div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    } <span class="keywordflow">else</span> { <span class="comment">// both halves of the median are non-negative.</span></div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordtype">size_t</span> skip_zeros = halfway - num_zero;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        Index_ skip_zeros = halfway - num_zero;</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        std::nth_element(value, value + skip_zeros, value + num_nonzero);</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        baseline = value[skip_zeros];</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        other = *(std::max_element(value, value + skip_zeros)); <span class="comment">// max_element gets the sorted value at skip_zeros - 1, see explanation for the dense case.</span></div>

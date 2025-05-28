@@ -95,15 +95,15 @@
       <type></type>
       <name>LocalOutputBuffer</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
-      <anchor>a25a3f87da56ab90796f207b37508f8e7</anchor>
-      <arglist>(size_t thread, Index_ start, Index_ length, Output_ *output, Output_ fill)</arglist>
+      <anchor>adf9491eb22741367c4aa2ccc1cd13487</anchor>
+      <arglist>(std::size_t thread, Index_ start, Index_ length, Output_ *output, Output_ fill)</arglist>
     </member>
     <member kind="function">
       <type></type>
       <name>LocalOutputBuffer</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
-      <anchor>af1f9f07457ec2d43b0b6debd2657814d</anchor>
-      <arglist>(size_t thread, Index_ start, Index_ length, Output_ *output)</arglist>
+      <anchor>af34eec4db79da3550fb3326024ec6246</anchor>
+      <arglist>(std::size_t thread, Index_ start, Index_ length, Output_ *output)</arglist>
     </member>
     <member kind="function">
       <type></type>
@@ -143,15 +143,15 @@
       <type></type>
       <name>LocalOutputBuffers</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>afaad1036df6e6c82485f1375377973b1</anchor>
-      <arglist>(size_t thread, size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</arglist>
+      <anchor>a10ceb3fe5c08bd6bf82a3fb28a51884d</anchor>
+      <arglist>(std::size_t thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</arglist>
     </member>
     <member kind="function">
       <type></type>
       <name>LocalOutputBuffers</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>a8298dcaaa57f7db497b1476d5a644557</anchor>
-      <arglist>(size_t thread, size_t number, Index_ start, Index_ length, GetOutput_ outfun)</arglist>
+      <anchor>ad08acff7257b3df3febbe042672432f9</anchor>
+      <arglist>(std::size_t thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun)</arglist>
     </member>
     <member kind="function">
       <type></type>
@@ -161,25 +161,25 @@
       <arglist>()=default</arglist>
     </member>
     <member kind="function">
-      <type>size_t</type>
+      <type>std::size_t</type>
       <name>size</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>aad16d06a5c102f48ce95697c5056c402</anchor>
+      <anchor>a4d6a7228d8b4295466eeb7fdb629b59a</anchor>
       <arglist>() const</arglist>
     </member>
     <member kind="function">
       <type>Output_ *</type>
       <name>data</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>afade6cb0c028336df221c7d624782a1f</anchor>
-      <arglist>(size_t i)</arglist>
+      <anchor>a534438174bda372d62582d39c575cd64</anchor>
+      <arglist>(std::size_t i)</arglist>
     </member>
     <member kind="function">
       <type>const Output_ *</type>
       <name>data</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>a64ad2eb5863d63ebbe8dbcdf94fdf700</anchor>
-      <arglist>(size_t i) const</arglist>
+      <anchor>a344bb901aad5d25440d48bb1ad9116a3</anchor>
+      <arglist>(std::size_t i) const</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -505,11 +505,11 @@
     <class kind="class">tatami_stats::LocalOutputBuffer</class>
     <class kind="class">tatami_stats::LocalOutputBuffers</class>
     <member kind="function">
-      <type>size_t</type>
+      <type>std::size_t</type>
       <name>total_groups</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>ac2384fe2de19a933c735ce79f9bc1b89</anchor>
-      <arglist>(const Group_ *group, size_t n)</arglist>
+      <anchor>a020f3eb0fea95ecf56df74c6a6cd672d</anchor>
+      <arglist>(const Group_ *group, std::size_t n)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; Size_ &gt;</type>
@@ -646,8 +646,8 @@
       <type>void</type>
       <name>apply</name>
       <anchorfile>namespacetatami__stats_1_1grouped__sums.html</anchorfile>
-      <anchor>ac9c311785a3faf29e97ac174a1489ddf</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, size_t num_groups, Output_ **output, const Options &amp;sopt)</arglist>
+      <anchor>adc7822ac6ec40105185d06a2b83d283e</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, Output_ **output, const Options &amp;sopt)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
@@ -672,22 +672,22 @@
       <type>void</type>
       <name>direct</name>
       <anchorfile>namespacetatami__stats_1_1grouped__variances.html</anchorfile>
-      <anchor>a51cbdb71e6e73b0072854f476e00ad99</anchor>
-      <arglist>(const Value_ *ptr, Index_ num, const Group_ *group, size_t num_groups, const Index_ *group_size, Output_ *output_means, Output_ *output_variances, bool skip_nan, Index_ *valid_group_size)</arglist>
+      <anchor>a0ca9d67874e780b6c83dfc77a252f567</anchor>
+      <arglist>(const Value_ *ptr, Index_ num, const Group_ *group, std::size_t num_groups, const Index_ *group_size, Output_ *output_means, Output_ *output_variances, bool skip_nan, Index_ *valid_group_size)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>direct</name>
       <anchorfile>namespacetatami__stats_1_1grouped__variances.html</anchorfile>
-      <anchor>a25ec363f447893672cc1794d5a92fb3b</anchor>
-      <arglist>(const Value_ *value, const Index_ *index, Index_ num_nonzero, const Group_ *group, size_t num_groups, const Index_ *group_size, Output_ *output_means, Output_ *output_variances, Index_ *output_nonzero, bool skip_nan, Index_ *valid_group_size)</arglist>
+      <anchor>a5949219e7545b96e549fe12bf02e29c4</anchor>
+      <arglist>(const Value_ *value, const Index_ *index, Index_ num_nonzero, const Group_ *group, std::size_t num_groups, const Index_ *group_size, Output_ *output_means, Output_ *output_variances, Index_ *output_nonzero, bool skip_nan, Index_ *valid_group_size)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>apply</name>
       <anchorfile>namespacetatami__stats_1_1grouped__variances.html</anchorfile>
-      <anchor>ae6245677f6c03776287b9640ac5136b7</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, size_t num_groups, const Index_ *group_size, Output_ **output, const Options &amp;sopt)</arglist>
+      <anchor>a3eac3787693b4533e2afa7a7c01852eb</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, const Index_ *group_size, Output_ **output, const Options &amp;sopt)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
