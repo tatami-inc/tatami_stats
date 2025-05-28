@@ -70,7 +70,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
         std::vector<Value_> xbuffer(otherdim);
 
         auto ngroups = group_sizes.size();
-        std::vector<std::vector<double> > workspace(ngroups);
+        std::vector<std::vector<Value_> > workspace(ngroups);
         for (decltype(ngroups) g = 0; g < ngroups; ++g) {
             workspace[g].reserve(group_sizes[g]);
         }
@@ -89,7 +89,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
 
                 for (decltype(ngroups) g = 0; g < ngroups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = medians::direct(w.data(), static_cast<Index_>(w.size()), group_sizes[g], mopt.skip_nan);
+                    output[g][i + start] = medians::direct<Output_, Value_, Index_>(w.data(), w.size(), group_sizes[g], mopt.skip_nan);
                     w.clear();
                 }
             }
@@ -104,7 +104,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
 
                 for (decltype(ngroups) g = 0; g < ngroups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = medians::direct(w.data(), w.size(), mopt.skip_nan);
+                    output[g][i + start] = medians::direct<Output_, Value_, Index_>(w.data(), w.size(), mopt.skip_nan);
                     w.clear();
                 }
             }
