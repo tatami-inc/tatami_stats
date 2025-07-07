@@ -1,12 +1,13 @@
 #ifndef TATAMI_STATS_RANGES_HPP
 #define TATAMI_STATS_RANGES_HPP
 
-#include "tatami/tatami.hpp"
 #include "utils.hpp"
 
 #include <vector>
 #include <algorithm>
 #include <type_traits>
+
+#include "tatami/tatami.hpp"
 
 /**
  * @file ranges.hpp
@@ -330,7 +331,7 @@ public:
      */
     void add(const Value_* value, const Index_* index, Index_ number) {
         if (my_count == 0) {
-            my_nonzero.resize(my_num);
+            tatami::resize_container_to_Index_size(my_nonzero, my_num);
 
             if (my_store_min) {
                 std::fill_n(my_store_min, my_num, internal::choose_minimum_placeholder<Value_>());
@@ -453,7 +454,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* min_out
             opt.sparse_extract_index = false;
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
-                std::vector<Value_> vbuffer(otherdim);
+                auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(vbuffer.data(), NULL);
                     if (store_min) {
@@ -468,8 +469,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* min_out
         } else {
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, s, l, opt);
-                std::vector<Value_> vbuffer(l);
-                std::vector<Index_> ibuffer(l);
+                auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(l);
+                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(l);
 
                 auto local_min = (store_min ? LocalOutputBuffer<Output_>(thread, s, l, min_out) : LocalOutputBuffer<Output_>());
                 auto local_max = (store_max ? LocalOutputBuffer<Output_>(thread, s, l, max_out) : LocalOutputBuffer<Output_>());
@@ -494,7 +495,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* min_out
         if (direct) {
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
-                std::vector<Value_> buffer(otherdim);
+                auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto ptr = ext->fetch(buffer.data());
                     if (store_min) {
@@ -509,7 +510,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* min_out
         } else {
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
-                std::vector<Value_> buffer(l);
+                auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(l);
 
                 auto local_min = (store_min ? LocalOutputBuffer<Output_>(thread, s, l, min_out) : LocalOutputBuffer<Output_>());
                 auto local_max = (store_max ? LocalOutputBuffer<Output_>(thread, s, l, max_out) : LocalOutputBuffer<Output_>());
@@ -561,7 +562,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* min_out, 
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 std::pair<std::vector<Output_>, std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& ropt) {
-    std::vector<Output_> mins(mat.ncol()), maxs(mat.ncol());
+    auto mins = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.ncol());
+    auto maxs = mins;
     apply(false, mat, mins.data(), maxs.data(), ropt);
     return std::make_pair(std::move(mins), std::move(maxs));
 }
@@ -603,7 +605,8 @@ std::pair<std::vector<Output_>, std::vector<Output_> > by_column(const tatami::M
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 std::pair<std::vector<Output_>, std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& ropt) {
-    std::vector<Output_> mins(mat.nrow()), maxs(mat.nrow());
+    auto mins = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.nrow());
+    auto maxs = mins;
     apply(true, mat, mins.data(), maxs.data(), ropt);
     return std::make_pair(std::move(mins), std::move(maxs));
 }

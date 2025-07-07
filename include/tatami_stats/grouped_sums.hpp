@@ -2,11 +2,14 @@
 #define TATAMI_STATS_GROUPED_SUMS_HPP
 
 #include "utils.hpp"
-#include "tatami/tatami.hpp"
 #include "sums.hpp"
+
 #include <vector>
 #include <algorithm>
 #include <cstddef>
+
+#include "tatami/tatami.hpp"
+#include "sanisizer/sanisizer.hpp"
 
 /**
  * @file grouped_sums.hpp
@@ -70,9 +73,9 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
         if (mat.prefer_rows() == row) {
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
                 auto ext = tatami::consecutive_extractor<true>(mat, row, start, len);
-                std::vector<Value_> xbuffer(otherdim);
-                std::vector<Index_> ibuffer(otherdim);
-                std::vector<Output_> tmp(num_groups);
+                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(otherdim);
+                auto tmp = sanisizer::create<std::vector<Output_> >(num_groups);
 
                 for (Index_ i = 0; i < len; ++i) {
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
@@ -120,8 +123,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                 }
 
                 auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, start, len, opt);
-                std::vector<Value_> xbuffer(len);
-                std::vector<Index_> ibuffer(len);
+                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(len);
+                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(len);
 
                 for (int i = 0; i < otherdim; ++i) {
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
@@ -138,8 +141,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
         if (mat.prefer_rows() == row) {
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
                 auto ext = tatami::consecutive_extractor<false>(mat, row, start, len);
-                std::vector<Value_> xbuffer(otherdim);
-                std::vector<Output_> tmp(num_groups);
+                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+                auto tmp = sanisizer::create<std::vector<Output_> >(num_groups);
 
                 for (Index_ i = 0; i < len; ++i) {
                     auto ptr = ext->fetch(xbuffer.data());
@@ -180,7 +183,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     runners.emplace_back(len, local_output.back().data(), sopt.skip_nan);
                 }
 
-                std::vector<Value_> xbuffer(len);
+                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(len);
                 auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, start, len);
 
                 for (int i = 0; i < otherdim; ++i) {
@@ -230,7 +233,7 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>& 
     auto mydim = mat.nrow();
     auto ngroup = total_groups(group, mat.ncol());
 
-    std::vector<std::vector<Output_> > output(ngroup);
+    auto output = sanisizer::create<std::vector<std::vector<Output_> > >(ngroup);
     std::vector<Output_*> ptrs;
     ptrs.reserve(output.size());
     for (auto& o : output) {
@@ -286,7 +289,7 @@ std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_
     auto mydim = mat.ncol();
     auto ngroup = total_groups(group, mat.nrow());
 
-    std::vector<std::vector<Output_> > output(ngroup);
+    auto output = sanisizer::create<std::vector<std::vector<Output_> > >(ngroup);
     std::vector<Output_*> ptrs;
     ptrs.reserve(output.size());
     for (auto& o : output) {

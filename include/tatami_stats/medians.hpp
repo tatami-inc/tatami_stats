@@ -1,14 +1,15 @@
 #ifndef TATAMI_STATS__MEDIANS_HPP
 #define TATAMI_STATS__MEDIANS_HPP
 
-#include "tatami/tatami.hpp"
 #include "utils.hpp"
 
 #include <cmath>
 #include <vector>
 #include <algorithm>
 #include <limits>
-#include <iostream>
+
+#include "tatami/tatami.hpp"
+#include "sanisizer/sanisizer.hpp"
 
 /**
  * @file medians.hpp
@@ -245,7 +246,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
 
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
             auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
-            std::vector<Value_> buffer(otherdim);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             auto vbuffer = buffer.data();
             for (Index_ x = 0; x < l; ++x) {
                 auto range = ext->fetch(vbuffer, NULL);
@@ -256,7 +257,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-            std::vector<Value_> buffer(otherdim);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
             for (Index_ x = 0; x < l; ++x) {
                 auto ptr = ext->fetch(buffer.data());
@@ -294,7 +295,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& mopt) {
-    std::vector<Output_> output(mat.ncol());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.ncol());
     apply(false, mat, output.data(), mopt);
     return output;
 }
@@ -336,7 +337,7 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& mopt) {
-    std::vector<Output_> output(mat.nrow());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.nrow());
     apply(true, mat, output.data(), mopt);
     return output;
 }

@@ -1,12 +1,13 @@
 #ifndef TATAMI_STATS__SUMS_HPP
 #define TATAMI_STATS__SUMS_HPP
 
-#include "tatami/tatami.hpp"
 #include "utils.hpp"
 
 #include <vector>
 #include <numeric>
 #include <algorithm>
+
+#include "tatami/tatami.hpp"
 
 /**
  * @file sums.hpp
@@ -216,7 +217,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
 
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
-                std::vector<Value_> vbuffer(otherdim);
+                auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(vbuffer.data(), NULL);
                     output[x + s] = sums::direct(out.value, out.number, sopt.skip_nan);
@@ -229,8 +230,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
 
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, s, l, opt);
-                std::vector<Value_> vbuffer(l);
-                std::vector<Index_> ibuffer(l);
+                auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(l);
+                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(l);
 
                 LocalOutputBuffer<Output_> local_output(thread, s, l, output);
                 sums::RunningSparse<Output_, Value_, Index_> runner(local_output.data(), sopt.skip_nan, s);
@@ -248,7 +249,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
         if (direct) {
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
-                std::vector<Value_> buffer(otherdim);
+                auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(buffer.data());
                     output[x + s] = sums::direct(out, otherdim, sopt.skip_nan);
@@ -258,7 +259,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
         } else {
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
-                std::vector<Value_> buffer(l);
+                auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(l);
 
                 LocalOutputBuffer<Output_> local_output(thread, s, l, output);
                 sums::RunningDense<Output_, Value_, Index_> runner(l, local_output.data(), sopt.skip_nan);
@@ -301,7 +302,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& sopt) {
-    std::vector<Output_> output(mat.ncol());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.ncol());
     apply(false, mat, output.data(), sopt);
     return output;
 }
@@ -341,7 +342,7 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& sopt) {
-    std::vector<Output_> output(mat.nrow());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.nrow());
     apply(true, mat, output.data(), sopt);
     return output;
 }

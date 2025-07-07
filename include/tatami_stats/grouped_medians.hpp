@@ -2,10 +2,13 @@
 #define TATAMI_STATS_GROUPED_MEDIANS_HPP
 
 #include "utils.hpp"
-#include "tatami/tatami.hpp"
 #include "medians.hpp"
+
 #include <vector>
 #include <algorithm>
+
+#include "tatami/tatami.hpp"
+#include "sanisizer/sanisizer.hpp"
 
 /**
  * @file grouped_medians.hpp
@@ -67,10 +70,10 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
     Index_ otherdim = (row ? mat.ncol() : mat.nrow());
 
     tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
-        std::vector<Value_> xbuffer(otherdim);
+        auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
 
         auto ngroups = group_sizes.size();
-        std::vector<std::vector<Value_> > workspace(ngroups);
+        auto workspace = sanisizer::create<std::vector<std::vector<Value_> > >(ngroups);
         for (decltype(ngroups) g = 0; g < ngroups; ++g) {
             workspace[g].reserve(group_sizes[g]);
         }
@@ -80,7 +83,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
             opt.sparse_ordered_index = false;
 
             auto ext = tatami::consecutive_extractor<true>(mat, row, start, len, opt);
-            std::vector<Index_> ibuffer(otherdim);
+            auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(otherdim);
             for (Index_ i = 0; i < len; ++i) {
                 auto range = ext->fetch(xbuffer.data(), ibuffer.data());
                 for (Index_ j = 0; j < range.number; ++j) {
@@ -146,7 +149,7 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>& 
     auto mydim = mat.nrow();
     auto group_sizes = tabulate_groups(group, mat.ncol());
 
-    std::vector<std::vector<Output_> > output(group_sizes.size());
+    auto output = sanisizer::create<std::vector<std::vector<Output_> > >(group_sizes.size());
     std::vector<Output_*> ptrs;
     ptrs.reserve(output.size());
     for (auto& o : output) {
@@ -201,7 +204,7 @@ std::vector<std::vector<Output_> > by_column(const tatami::Matrix<Value_, Index_
     auto mydim = mat.ncol();
     auto group_sizes = tabulate_groups(group, mat.nrow());
 
-    std::vector<std::vector<Output_> > output(group_sizes.size());
+    auto output = sanisizer::create<std::vector<std::vector<Output_> > >(group_sizes.size());
     std::vector<Output_*> ptrs;
     ptrs.reserve(output.size());
     for (auto& o : output) {

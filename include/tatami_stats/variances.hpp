@@ -1,7 +1,6 @@
 #ifndef TATAMI_STATS_VARS_HPP
 #define TATAMI_STATS_VARS_HPP
 
-#include "tatami/tatami.hpp"
 #include "utils.hpp"
 
 #include <vector>
@@ -10,6 +9,8 @@
 #include <limits>
 #include <algorithm>
 #include <cstddef>
+
+#include "tatami/tatami.hpp"
 
 /**
  * @file variances.hpp
@@ -66,6 +67,7 @@ template<typename Index_>
 struct MockVector {
     MockVector(std::size_t) {}
     Index_& operator[](std::size_t) { return out; }
+    std::size_t size() { return 0; }
     Index_ out = 0;
 };
 
@@ -201,7 +203,12 @@ public:
      * @param skip_nan See `Options::skip_nan` for details.
      */
     RunningDense(Index_ num, Output_* mean, Output_* variance, bool skip_nan) : 
-        my_num(num), my_mean(mean), my_variance(variance), my_skip_nan(skip_nan), my_ok_count(skip_nan ? num : 0) {}
+        my_num(num),
+        my_mean(mean),
+        my_variance(variance),
+        my_skip_nan(skip_nan),
+        my_ok_count(skip_nan ? tatami::can_cast_Index_to_container_size<decltype(my_ok_count)>(num) : static_cast<Index_>(0))
+    {}
 
     /**
      * Add the next observed vector to the variance calculation.
@@ -295,7 +302,14 @@ public:
      * e.g., during task allocation for parallelization.
      */
     RunningSparse(Index_ num, Output_* mean, Output_* variance, bool skip_nan, Index_ subtract = 0) : 
-        my_num(num), my_mean(mean), my_variance(variance), my_nonzero(num), my_skip_nan(skip_nan), my_subtract(subtract), my_nan(skip_nan ? num : 0) {}
+        my_num(num),
+        my_mean(mean),
+        my_variance(variance),
+        my_nonzero(tatami::can_cast_Index_to_container_size<decltype(my_nonzero)>(num)),
+        my_skip_nan(skip_nan),
+        my_subtract(subtract),
+        my_nan(skip_nan ? tatami::can_cast_Index_to_container_size<decltype(my_nan)>(num) : static_cast<Index_>(0))
+    {}
 
     /**
      * Add the next observed vector to the variance calculation.
@@ -407,7 +421,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             opt.sparse_extract_index = false;
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(mat, row, s, l);
-                std::vector<Value_> vbuffer(otherdim);
+                auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(vbuffer.data(), NULL);
                     output[x + s] = variances::direct<Output_>(out.value, out.number, otherdim, vopt.skip_nan).second;
@@ -417,10 +431,10 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
         } else {
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
-                std::vector<Value_> vbuffer(l);
-                std::vector<Index_> ibuffer(l);
+                auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(l);
+                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(l);
 
-                std::vector<Output_> running_means(l);
+                auto running_means = tatami::create_container_of_Index_size<std::vector<Output_> >(l);
                 LocalOutputBuffer<Output_> local_output(thread, s, l, output);
                 variances::RunningSparse<Output_, Value_, Index_> runner(l, running_means.data(), local_output.data(), vopt.skip_nan, s);
 
@@ -438,7 +452,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
         if (direct) {
             tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
-                std::vector<Value_> buffer(otherdim);
+                auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
                 for (Index_ x = 0; x < l; ++x) {
                     auto out = ext->fetch(buffer.data());
                     output[x + s] = variances::direct<Output_>(out, otherdim, vopt.skip_nan).second;
@@ -448,9 +462,9 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
         } else {
             tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
                 auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
-                std::vector<Value_> buffer(l);
+                auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(l);
 
-                std::vector<Output_> running_means(l);
+                auto running_means = tatami::create_container_of_Index_size<std::vector<Output_> >(l);
                 LocalOutputBuffer<Output_> local_output(thread, s, l, output);
                 variances::RunningDense<Output_, Value_, Index_> runner(l, running_means.data(), local_output.data(), vopt.skip_nan);
 
@@ -491,7 +505,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& vopt) {
-    std::vector<Output_> output(mat.ncol());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.ncol());
     apply(false, mat, output.data(), vopt);
     return output;
 }
@@ -532,7 +546,7 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& vopt) {
-    std::vector<Output_> output(mat.nrow());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.nrow());
     apply(true, mat, output.data(), vopt);
     return output;
 }

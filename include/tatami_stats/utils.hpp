@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <cstddef>
 
+#include "sanisizer/sanisizer.hpp"
+#include "tatami/tatami.hpp"
+
 /**
  * @file utils.hpp
  *
@@ -28,7 +31,7 @@ namespace tatami_stats {
 template<typename Group_>
 std::size_t total_groups(const Group_* group, std::size_t n) {
     if (n) {
-        return static_cast<std::size_t>(*std::max_element(group, group + n)) + 1;
+        return sanisizer::sum<std::size_t>(*std::max_element(group, group + n), 1);
     } else {
         return 0;
     }
@@ -87,7 +90,11 @@ public:
      * @param fill Initial value to fill the buffer.
      */
     template<typename Index_>
-    LocalOutputBuffer(std::size_t thread, Index_ start, Index_ length, Output_* output, Output_ fill) : my_output(output + start), use_local(thread > 0), my_buffer(use_local ? length : 0, fill) {
+    LocalOutputBuffer(std::size_t thread, Index_ start, Index_ length, Output_* output, Output_ fill) : 
+        my_output(output + start),
+        use_local(thread > 0),
+        my_buffer(use_local ? tatami::can_cast_Index_to_container_size<decltype(my_buffer)>(length) : static_cast<Index_>(0), fill)
+    {
         if (!use_local) {
             // Setting to zero to match the initial behavior of 'my_buffer' when 'use_local = true'.
             std::fill_n(my_output, length, fill);
@@ -183,7 +190,7 @@ public:
         } else {
             my_buffers.reserve(my_number);
             for (decltype(my_number) i = 0; i < my_number; ++i) {
-                my_buffers.emplace_back(length, fill);
+                my_buffers.emplace_back(tatami::can_cast_Index_to_container_size<typename decltype(my_buffers)::value_type>(length), fill);
             }
         }
     }

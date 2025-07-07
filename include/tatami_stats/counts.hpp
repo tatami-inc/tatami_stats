@@ -1,13 +1,13 @@
 #ifndef TATAMI_STATS_COUNTS_HPP
 #define TATAMI_STATS_COUNTS_HPP
 
-#include "tatami/tatami.hpp"
-#include "subpar/subpar.hpp"
-
 #include <vector>
 #include <algorithm>
 #include <cmath>
 #include <type_traits>
+
+#include "tatami/tatami.hpp"
+#include "sanisizer/sanisizer.hpp"
 
 /**
  * @file counts.hpp
@@ -53,8 +53,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             bool count_zero = condition(0);
 
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
-                std::vector<Value_> xbuffer(otherdim);
-                std::vector<Index_> ibuffer(otherdim);
+                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(otherdim);
                 auto ext = tatami::consecutive_extractor<true>(mat, row, start, len, opt);
 
                 for (Index_ x = 0; x < len; ++x) {
@@ -72,7 +72,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
 
         } else {
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
-                std::vector<Value_> xbuffer(otherdim);
+                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
                 auto ext = tatami::consecutive_extractor<false>(mat, row, start, len);
 
                 for (Index_ x = 0; x < len; ++x) {
@@ -87,7 +87,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
         }
 
     } else {
-        std::vector<std::vector<Output_> > threaded_output(num_threads > 0 ? num_threads - 1 : 0);
+        auto threaded_output = sanisizer::create<std::vector<std::vector<Output_> > >(num_threads > 0 ? num_threads - 1 : 0);
 
         if (mat.sparse()) {
             tatami::Options opt;
@@ -95,8 +95,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             bool count_zero = condition(0);
 
             tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
-                std::vector<Value_> xbuffer(dim);
-                std::vector<Index_> ibuffer(dim);
+                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
                 auto ext = tatami::consecutive_extractor<true>(mat, !row, start, len, opt);
 
                 auto curoutput = output;
@@ -105,7 +105,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
                     outvec.resize(dim);
                     curoutput = outvec.data();
                 }
-                std::vector<Index_> nonzeros(dim);
+                auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto range = ext->fetch(xbuffer.data(), ibuffer.data());
@@ -125,7 +125,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
 
         } else {
             tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
-                std::vector<Value_> xbuffer(dim);
+                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
                 auto ext = tatami::consecutive_extractor<false>(mat, !row, start, len);
 
                 auto curoutput = output;
@@ -227,7 +227,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
  */
 template<typename Output_ = int, typename Value_, typename Index_>
 std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& nopt) {
-    std::vector<Output_> output(mat.nrow());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.nrow());
     apply(true, mat, output.data(), nopt);
     return output;
 }
@@ -286,7 +286,7 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
  */
 template<typename Output_ = int, typename Value_, typename Index_>
 std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& nopt) {
-    std::vector<Output_> output(mat.ncol());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.ncol());
     apply(false, mat, output.data(), nopt);
     return output;
 }
@@ -393,7 +393,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
  */
 template<typename Output_ = int, typename Value_, typename Index_>
 std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& zopt) {
-    std::vector<Output_> output(mat.nrow());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.nrow());
     apply(true, mat, output.data(), zopt);
     return output;
 }
@@ -454,7 +454,7 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
  */
 template<typename Output_ = int, typename Value_, typename Index_>
 std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& zopt) {
-    std::vector<Output_> output(mat.ncol());
+    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.ncol());
     apply(false, mat, output.data(), zopt);
     return output;
 }
