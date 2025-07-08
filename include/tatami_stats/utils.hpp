@@ -90,7 +90,7 @@ public:
      * @param fill Initial value to fill the buffer.
      */
     template<typename Index_>
-    LocalOutputBuffer(std::size_t thread, Index_ start, Index_ length, Output_* output, Output_ fill) : 
+    LocalOutputBuffer(int thread, Index_ start, Index_ length, Output_* output, Output_ fill) : 
         my_output(output + start),
         use_local(thread > 0),
         my_buffer(use_local ? tatami::can_cast_Index_to_container_size<decltype(my_buffer)>(length) : static_cast<Index_>(0), fill)
@@ -111,7 +111,7 @@ public:
      * @param[out] output Pointer to the global output buffer.
      */
     template<typename Index_>
-    LocalOutputBuffer(std::size_t thread, Index_ start, Index_ length, Output_* output) : LocalOutputBuffer(thread, start, length, output, 0) {}
+    LocalOutputBuffer(int thread, Index_ start, Index_ length, Output_* output) : LocalOutputBuffer(thread, start, length, output, 0) {}
 
     /**
      * Default constructor.
@@ -152,7 +152,6 @@ private:
     std::vector<Output_> my_buffer;
 };
 
-
 /**
  * @brief Local output buffers for running calculations.
  *
@@ -172,13 +171,13 @@ public:
      * @param number Number of output buffers.
      * @param start Index of the first objective vector in the contiguous block for this thread.
      * @param length Number of objective vectors in the contiguous block for this thread.
-     * @param outfun Function that accepts an `Index_` specifying the index of an output buffer in `[0, number)` and returns a `Output_*` pointer to that buffer.
+     * @param outfun Function that accepts an `std::size_t` specifying the index of an output buffer in `[0, number)` and returns a `Output_*` pointer to that buffer.
      * @param fill Initial value to fill the buffer.
      */
     template<typename Index_>
-    LocalOutputBuffers(std::size_t thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill) : 
+    LocalOutputBuffers(int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill) : 
         my_number(number),
-        my_start(start),
+        my_start(start), // Remember, Index_ is assumed to always be castable to std::size_t in a tatami context, otherwise fetch() wouldn't work.
         my_use_local(thread > 0),
         my_getter(std::move(outfun))
     {
@@ -206,7 +205,7 @@ public:
      * @param outfun Function that accepts an `Index_` specifying the index of an output buffer in `[0, number)` and returns a `Output_*` pointer to that buffer.
      */
     template<typename Index_>
-    LocalOutputBuffers(std::size_t thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun) :
+    LocalOutputBuffers(int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun) :
         LocalOutputBuffers(thread, number, start, length, std::move(outfun), 0) {}
 
     /**
