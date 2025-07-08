@@ -95,15 +95,15 @@
       <type></type>
       <name>LocalOutputBuffer</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
-      <anchor>adf9491eb22741367c4aa2ccc1cd13487</anchor>
-      <arglist>(std::size_t thread, Index_ start, Index_ length, Output_ *output, Output_ fill)</arglist>
+      <anchor>ae5cff78f4665bf32d196c74d22d2b0cc</anchor>
+      <arglist>(int thread, Index_ start, Index_ length, Output_ *output, Output_ fill)</arglist>
     </member>
     <member kind="function">
       <type></type>
       <name>LocalOutputBuffer</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffer.html</anchorfile>
-      <anchor>af34eec4db79da3550fb3326024ec6246</anchor>
-      <arglist>(std::size_t thread, Index_ start, Index_ length, Output_ *output)</arglist>
+      <anchor>a05d3c69fb856cdfb78a65802f4d854d3</anchor>
+      <arglist>(int thread, Index_ start, Index_ length, Output_ *output)</arglist>
     </member>
     <member kind="function">
       <type></type>
@@ -143,15 +143,15 @@
       <type></type>
       <name>LocalOutputBuffers</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>a10ceb3fe5c08bd6bf82a3fb28a51884d</anchor>
-      <arglist>(std::size_t thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</arglist>
+      <anchor>a5f5ee745820b377a73cce5dbc5fa8a3b</anchor>
+      <arglist>(int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</arglist>
     </member>
     <member kind="function">
       <type></type>
       <name>LocalOutputBuffers</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>ad08acff7257b3df3febbe042672432f9</anchor>
-      <arglist>(std::size_t thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun)</arglist>
+      <anchor>a92dcfd9afa1fe381971bfc24caaa7b6c</anchor>
+      <arglist>(int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun)</arglist>
     </member>
     <member kind="function">
       <type></type>

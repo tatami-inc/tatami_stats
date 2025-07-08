@@ -111,12 +111,12 @@ $(function(){ initResizable(false); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a10ceb3fe5c08bd6bf82a3fb28a51884d" id="r_a10ceb3fe5c08bd6bf82a3fb28a51884d"><td class="memTemplParams" colspan="2">template&lt;typename Index_ &gt; </td></tr>
-<tr class="memitem:a10ceb3fe5c08bd6bf82a3fb28a51884d"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a10ceb3fe5c08bd6bf82a3fb28a51884d">LocalOutputBuffers</a> (std::size_t thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</td></tr>
-<tr class="separator:a10ceb3fe5c08bd6bf82a3fb28a51884d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad08acff7257b3df3febbe042672432f9" id="r_ad08acff7257b3df3febbe042672432f9"><td class="memTemplParams" colspan="2">template&lt;typename Index_ &gt; </td></tr>
-<tr class="memitem:ad08acff7257b3df3febbe042672432f9"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ad08acff7257b3df3febbe042672432f9">LocalOutputBuffers</a> (std::size_t thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun)</td></tr>
-<tr class="separator:ad08acff7257b3df3febbe042672432f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f5ee745820b377a73cce5dbc5fa8a3b" id="r_a5f5ee745820b377a73cce5dbc5fa8a3b"><td class="memTemplParams" colspan="2">template&lt;typename Index_ &gt; </td></tr>
+<tr class="memitem:a5f5ee745820b377a73cce5dbc5fa8a3b"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5f5ee745820b377a73cce5dbc5fa8a3b">LocalOutputBuffers</a> (int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</td></tr>
+<tr class="separator:a5f5ee745820b377a73cce5dbc5fa8a3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92dcfd9afa1fe381971bfc24caaa7b6c" id="r_a92dcfd9afa1fe381971bfc24caaa7b6c"><td class="memTemplParams" colspan="2">template&lt;typename Index_ &gt; </td></tr>
+<tr class="memitem:a92dcfd9afa1fe381971bfc24caaa7b6c"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a92dcfd9afa1fe381971bfc24caaa7b6c">LocalOutputBuffers</a> (int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun)</td></tr>
+<tr class="separator:a92dcfd9afa1fe381971bfc24caaa7b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4c4db4f4578f881b95b7482b4d54ca1" id="r_af4c4db4f4578f881b95b7482b4d54ca1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af4c4db4f4578f881b95b7482b4d54ca1">LocalOutputBuffers</a> ()=default</td></tr>
 <tr class="separator:af4c4db4f4578f881b95b7482b4d54ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d6a7228d8b4295466eeb7fdb629b59a" id="r_a4d6a7228d8b4295466eeb7fdb629b59a"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d6a7228d8b4295466eeb7fdb629b59a">size</a> () const</td></tr>
@@ -140,8 +140,8 @@ class tatami_stats::LocalOutputBuffers&lt; Output_, GetOutput_ &gt;</div><p>Loca
   </dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a10ceb3fe5c08bd6bf82a3fb28a51884d" name="a10ceb3fe5c08bd6bf82a3fb28a51884d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a10ceb3fe5c08bd6bf82a3fb28a51884d">&#9670;&#160;</a></span>LocalOutputBuffers() <span class="overload">[1/3]</span></h2>
+<a id="a5f5ee745820b377a73cce5dbc5fa8a3b" name="a5f5ee745820b377a73cce5dbc5fa8a3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f5ee745820b377a73cce5dbc5fa8a3b">&#9670;&#160;</a></span>LocalOutputBuffers() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -156,7 +156,7 @@ template&lt;typename Index_ &gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classtatami__stats_1_1LocalOutputBuffers.html">tatami_stats::LocalOutputBuffers</a>&lt; Output_, GetOutput_ &gt;::LocalOutputBuffers </td>
           <td>(</td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -202,7 +202,7 @@ template&lt;typename Index_ &gt; </div>
     <tr><td class="paramname">number</td><td>Number of output buffers. </td></tr>
     <tr><td class="paramname">start</td><td>Index of the first objective vector in the contiguous block for this thread. </td></tr>
     <tr><td class="paramname">length</td><td>Number of objective vectors in the contiguous block for this thread. </td></tr>
-    <tr><td class="paramname">outfun</td><td>Function that accepts an <code>Index_</code> specifying the index of an output buffer in <code>[0, number)</code> and returns a <code>Output_*</code> pointer to that buffer. </td></tr>
+    <tr><td class="paramname">outfun</td><td>Function that accepts an <code>std::size_t</code> specifying the index of an output buffer in <code>[0, number)</code> and returns a <code>Output_*</code> pointer to that buffer. </td></tr>
     <tr><td class="paramname">fill</td><td>Initial value to fill the buffer. </td></tr>
   </table>
   </dd>
@@ -210,8 +210,8 @@ template&lt;typename Index_ &gt; </div>
 
 </div>
 </div>
-<a id="ad08acff7257b3df3febbe042672432f9" name="ad08acff7257b3df3febbe042672432f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad08acff7257b3df3febbe042672432f9">&#9670;&#160;</a></span>LocalOutputBuffers() <span class="overload">[2/3]</span></h2>
+<a id="a92dcfd9afa1fe381971bfc24caaa7b6c" name="a92dcfd9afa1fe381971bfc24caaa7b6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92dcfd9afa1fe381971bfc24caaa7b6c">&#9670;&#160;</a></span>LocalOutputBuffers() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -226,7 +226,7 @@ template&lt;typename Index_ &gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classtatami__stats_1_1LocalOutputBuffers.html">tatami_stats::LocalOutputBuffers</a>&lt; Output_, GetOutput_ &gt;::LocalOutputBuffers </td>
           <td>(</td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
