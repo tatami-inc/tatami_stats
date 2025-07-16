@@ -143,15 +143,15 @@
       <type></type>
       <name>LocalOutputBuffers</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>a5f5ee745820b377a73cce5dbc5fa8a3b</anchor>
-      <arglist>(int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</arglist>
+      <anchor>a22463ea9a1598290159d45fd37675ca9</anchor>
+      <arglist>(int thread, Number_ number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</arglist>
     </member>
     <member kind="function">
       <type></type>
       <name>LocalOutputBuffers</name>
       <anchorfile>classtatami__stats_1_1LocalOutputBuffers.html</anchorfile>
-      <anchor>a92dcfd9afa1fe381971bfc24caaa7b6c</anchor>
-      <arglist>(int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun)</arglist>
+      <anchor>aee1914c1fabb9176a81c674f974f5b91</anchor>
+      <arglist>(int thread, Number_ number, Index_ start, Index_ length, GetOutput_ outfun)</arglist>
     </member>
     <member kind="function">
       <type></type>

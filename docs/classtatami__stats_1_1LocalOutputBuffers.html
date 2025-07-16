@@ -111,12 +111,12 @@ $(function(){ initResizable(false); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5f5ee745820b377a73cce5dbc5fa8a3b" id="r_a5f5ee745820b377a73cce5dbc5fa8a3b"><td class="memTemplParams" colspan="2">template&lt;typename Index_ &gt; </td></tr>
-<tr class="memitem:a5f5ee745820b377a73cce5dbc5fa8a3b"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5f5ee745820b377a73cce5dbc5fa8a3b">LocalOutputBuffers</a> (int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</td></tr>
-<tr class="separator:a5f5ee745820b377a73cce5dbc5fa8a3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92dcfd9afa1fe381971bfc24caaa7b6c" id="r_a92dcfd9afa1fe381971bfc24caaa7b6c"><td class="memTemplParams" colspan="2">template&lt;typename Index_ &gt; </td></tr>
-<tr class="memitem:a92dcfd9afa1fe381971bfc24caaa7b6c"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a92dcfd9afa1fe381971bfc24caaa7b6c">LocalOutputBuffers</a> (int thread, std::size_t number, Index_ start, Index_ length, GetOutput_ outfun)</td></tr>
-<tr class="separator:a92dcfd9afa1fe381971bfc24caaa7b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22463ea9a1598290159d45fd37675ca9" id="r_a22463ea9a1598290159d45fd37675ca9"><td class="memTemplParams" colspan="2">template&lt;typename Number_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:a22463ea9a1598290159d45fd37675ca9"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a22463ea9a1598290159d45fd37675ca9">LocalOutputBuffers</a> (int thread, Number_ number, Index_ start, Index_ length, GetOutput_ outfun, Output_ fill)</td></tr>
+<tr class="separator:a22463ea9a1598290159d45fd37675ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee1914c1fabb9176a81c674f974f5b91" id="r_aee1914c1fabb9176a81c674f974f5b91"><td class="memTemplParams" colspan="2">template&lt;typename Number_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:aee1914c1fabb9176a81c674f974f5b91"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aee1914c1fabb9176a81c674f974f5b91">LocalOutputBuffers</a> (int thread, Number_ number, Index_ start, Index_ length, GetOutput_ outfun)</td></tr>
+<tr class="separator:aee1914c1fabb9176a81c674f974f5b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4c4db4f4578f881b95b7482b4d54ca1" id="r_af4c4db4f4578f881b95b7482b4d54ca1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af4c4db4f4578f881b95b7482b4d54ca1">LocalOutputBuffers</a> ()=default</td></tr>
 <tr class="separator:af4c4db4f4578f881b95b7482b4d54ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d6a7228d8b4295466eeb7fdb629b59a" id="r_a4d6a7228d8b4295466eeb7fdb629b59a"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d6a7228d8b4295466eeb7fdb629b59a">size</a> () const</td></tr>
@@ -140,15 +140,15 @@ class tatami_stats::LocalOutputBuffers&lt; Output_, GetOutput_ &gt;</div><p>Loca
   </dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5f5ee745820b377a73cce5dbc5fa8a3b" name="a5f5ee745820b377a73cce5dbc5fa8a3b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5f5ee745820b377a73cce5dbc5fa8a3b">&#9670;&#160;</a></span>LocalOutputBuffers() <span class="overload">[1/3]</span></h2>
+<a id="a22463ea9a1598290159d45fd37675ca9" name="a22463ea9a1598290159d45fd37675ca9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22463ea9a1598290159d45fd37675ca9">&#9670;&#160;</a></span>LocalOutputBuffers() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename Output_ , class GetOutput_ &gt; </div>
 <div class="memtemplate">
-template&lt;typename Index_ &gt; </div>
+template&lt;typename Number_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -161,7 +161,7 @@ template&lt;typename Index_ &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>number</em></span>, </td>
+          <td class="paramtype">Number_</td>          <td class="paramname"><span class="paramname"><em>number</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -192,7 +192,8 @@ template&lt;typename Index_ &gt; </div>
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Index_</td><td>Type of the start index and length. </td></tr>
+    <tr><td class="paramname">Number_</td><td>Integer type of the number of buffers. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the start index and length.</td></tr>
   </table>
   </dd>
 </dl>
@@ -210,15 +211,15 @@ template&lt;typename Index_ &gt; </div>
 
 </div>
 </div>
-<a id="a92dcfd9afa1fe381971bfc24caaa7b6c" name="a92dcfd9afa1fe381971bfc24caaa7b6c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92dcfd9afa1fe381971bfc24caaa7b6c">&#9670;&#160;</a></span>LocalOutputBuffers() <span class="overload">[2/3]</span></h2>
+<a id="aee1914c1fabb9176a81c674f974f5b91" name="aee1914c1fabb9176a81c674f974f5b91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee1914c1fabb9176a81c674f974f5b91">&#9670;&#160;</a></span>LocalOutputBuffers() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename Output_ , class GetOutput_ &gt; </div>
 <div class="memtemplate">
-template&lt;typename Index_ &gt; </div>
+template&lt;typename Number_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -231,7 +232,7 @@ template&lt;typename Index_ &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>number</em></span>, </td>
+          <td class="paramtype">Number_</td>          <td class="paramname"><span class="paramname"><em>number</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -258,7 +259,8 @@ template&lt;typename Index_ &gt; </div>
 <p>Overloaded constructor that sets the default <code>fill = 0</code>.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Index_</td><td>Type of the start index and length. </td></tr>
+    <tr><td class="paramname">Number_</td><td>Integer type of the number of buffers. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the start index and length.</td></tr>
   </table>
   </dd>
 </dl>
