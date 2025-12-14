@@ -208,7 +208,7 @@ public:
         my_mean(mean),
         my_variance(variance),
         my_skip_nan(skip_nan),
-        my_ok_count(skip_nan ? tatami::can_cast_Index_to_container_size<decltype(my_ok_count)>(num) : static_cast<Index_>(0))
+        my_ok_count(skip_nan ? tatami::can_cast_Index_to_container_size<I<decltype(my_ok_count)> >(num) : static_cast<Index_>(0))
     {}
 
     /**
@@ -308,10 +308,10 @@ public:
         my_num(num),
         my_mean(mean),
         my_variance(variance),
-        my_nonzero(tatami::can_cast_Index_to_container_size<decltype(my_nonzero)>(num)),
+        my_nonzero(tatami::can_cast_Index_to_container_size<I<decltype(my_nonzero)> >(num)),
         my_skip_nan(skip_nan),
         my_subtract(subtract),
-        my_nan(skip_nan ? tatami::can_cast_Index_to_container_size<decltype(my_nan)>(num) : static_cast<Index_>(0))
+        my_nan(skip_nan ? tatami::can_cast_Index_to_container_size<I<decltype(my_nan)> >(num) : static_cast<Index_>(0))
     {}
 
     /**

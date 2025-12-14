@@ -98,7 +98,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                         }
                     );
 
-                    for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                    for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                         output[g][i + start] = tmp[g];
                     }
                 }
@@ -117,7 +117,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                 std::vector<LocalOutputBuffer<Output_> > local_output;
                 local_output.reserve(num_groups);
 
-                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     local_output.emplace_back(thread, start, len, output[g]);
                     runners.emplace_back(local_output.back().data(), sopt.skip_nan, start);
                 }
@@ -131,7 +131,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     runners[group[i]].add(range.value, range.index, range.number);
                 }
 
-                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     local_output[g].transfer();
                 }
             }, dim, sopt.num_threads);
@@ -165,7 +165,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                         }
                     );
 
-                    for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                    for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                         output[g][i + start] = tmp[g];
                     }
                 }
@@ -178,7 +178,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                 std::vector<LocalOutputBuffer<Output_> > local_output;
                 local_output.reserve(num_groups);
 
-                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     local_output.emplace_back(thread, start, len, output[g]);
                     runners.emplace_back(len, local_output.back().data(), sopt.skip_nan);
                 }
@@ -191,7 +191,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     runners[group[i]].add(ptr);
                 }
 
-                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     local_output[g].transfer();
                 }
             }, dim, sopt.num_threads);

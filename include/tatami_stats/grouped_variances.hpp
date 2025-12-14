@@ -49,7 +49,7 @@ namespace internal {
 
 template<typename Index_, typename Output_>
 void finish_means(std::size_t num_groups, const Index_* group_size, Output_* output_means) {
-    for (decltype(num_groups) b = 0; b < num_groups; ++b) {
+    for (I<decltype(num_groups)> b = 0; b < num_groups; ++b) {
         if (group_size[b]) {
             output_means[b] /= group_size[b];
         } else {
@@ -60,7 +60,7 @@ void finish_means(std::size_t num_groups, const Index_* group_size, Output_* out
 
 template<typename Index_, typename Output_>
 void finish_variances(std::size_t num_groups, const Index_* group_size, Output_* output_variances) {
-    for (decltype(num_groups) b = 0; b < num_groups; ++b) {
+    for (I<decltype(num_groups)> b = 0; b < num_groups; ++b) {
         if (group_size[b] > 1) {
             output_variances[b] /= group_size[b] - 1;
         } else {
@@ -233,7 +233,7 @@ void direct(
                     output_variances[b] += delta * delta;
                 }
             }
-            for (decltype(num_groups) b = 0; b < num_groups; ++b) {
+            for (I<decltype(num_groups)> b = 0; b < num_groups; ++b) {
                 output_variances[b] += output_means[b] * output_means[b] * (valid_group_size[b] - output_nonzero[b]);
             }
             internal::finish_variances(num_groups, valid_group_size, output_variances);
@@ -251,7 +251,7 @@ void direct(
                 auto delta = value[j] - output_means[b];
                 output_variances[b] += delta * delta;
             }
-            for (decltype(num_groups) b = 0; b < num_groups; ++b) {
+            for (I<decltype(num_groups)> b = 0; b < num_groups; ++b) {
                 output_variances[b] += output_means[b] * output_means[b] * (group_size[b] - output_nonzero[b]);
             }
             internal::finish_variances(num_groups, group_size, output_variances);
@@ -314,7 +314,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                         valid_group_size.data()
                     );
 
-                    for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                    for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                         output[g][i + start] = output_variances[g];
                     }
                 }
@@ -335,7 +335,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                 std::vector<std::vector<Output_> > local_mean_output;
                 local_mean_output.reserve(num_groups);
 
-                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     local_var_output.emplace_back(thread, start, len, output[g]);
                     local_mean_output.emplace_back(len);
                     runners.emplace_back(len, local_mean_output.back().data(), local_var_output.back().data(), sopt.skip_nan, start);
@@ -350,7 +350,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     runners[group[i]].add(range.value, range.index, range.number);
                 }
 
-                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     runners[g].finish();
                     local_var_output[g].transfer();
                 }
@@ -381,7 +381,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                         valid_group_size.data()
                     );
 
-                    for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                    for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                         output[g][i + start] = output_variances[g];
                     }
                 }
@@ -396,7 +396,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                 std::vector<std::vector<Output_> > local_mean_output;
                 local_mean_output.reserve(num_groups);
 
-                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     local_var_output.emplace_back(thread, start, len, output[g]);
                     local_mean_output.emplace_back(len);
                     runners.emplace_back(len, local_mean_output.back().data(), local_var_output.back().data(), sopt.skip_nan);
@@ -410,7 +410,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     runners[group[i]].add(ptr);
                 }
 
-                for (decltype(num_groups) g = 0; g < num_groups; ++g) {
+                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     runners[g].finish();
                     local_var_output[g].transfer();
                 }

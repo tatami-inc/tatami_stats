@@ -74,7 +74,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
 
         auto ngroups = group_sizes.size();
         auto workspace = sanisizer::create<std::vector<std::vector<Value_> > >(ngroups);
-        for (decltype(ngroups) g = 0; g < ngroups; ++g) {
+        for (I<decltype(ngroups)> g = 0; g < ngroups; ++g) {
             workspace[g].reserve(group_sizes[g]);
         }
 
@@ -90,7 +90,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     workspace[group[range.index[j]]].push_back(range.value[j]);
                 }
 
-                for (decltype(ngroups) g = 0; g < ngroups; ++g) {
+                for (I<decltype(ngroups)> g = 0; g < ngroups; ++g) {
                     auto& w = workspace[g];
                     output[g][i + start] = medians::direct<Output_, Value_, Index_>(w.data(), w.size(), group_sizes[g], mopt.skip_nan);
                     w.clear();
@@ -105,7 +105,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
                     workspace[group[j]].push_back(ptr[j]);
                 }
 
-                for (decltype(ngroups) g = 0; g < ngroups; ++g) {
+                for (I<decltype(ngroups)> g = 0; g < ngroups; ++g) {
                     auto& w = workspace[g];
                     output[g][i + start] = medians::direct<Output_, Value_, Index_>(w.data(), w.size(), mopt.skip_nan);
                     w.clear();
