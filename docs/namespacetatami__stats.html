@@ -142,9 +142,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a020f3eb0fea95ecf56df74c6a6cd672d" id="r_a020f3eb0fea95ecf56df74c6a6cd672d"><td class="memTemplParams" colspan="2">template&lt;typename Group_ &gt; </td></tr>
-<tr class="memitem:a020f3eb0fea95ecf56df74c6a6cd672d"><td class="memTemplItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a020f3eb0fea95ecf56df74c6a6cd672d">total_groups</a> (const Group_ *group, std::size_t n)</td></tr>
-<tr class="separator:a020f3eb0fea95ecf56df74c6a6cd672d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1c45653a7d1b140a6fcdd76ceffe32a" id="r_af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memTemplParams" colspan="2">template&lt;typename Number_  = std::size_t, typename Group_ &gt; </td></tr>
+<tr class="memitem:af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memTemplItemLeft" align="right" valign="top">Number_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af1c45653a7d1b140a6fcdd76ceffe32a">total_groups</a> (const Group_ *group, std::size_t n)</td></tr>
+<tr class="separator:af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad46c11e3a7611f30d9695e600c5b7dd6" id="r_ad46c11e3a7611f30d9695e600c5b7dd6"><td class="memTemplParams" colspan="2">template&lt;typename Group_ , typename Size_ &gt; </td></tr>
 <tr class="memitem:ad46c11e3a7611f30d9695e600c5b7dd6"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Size_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ad46c11e3a7611f30d9695e600c5b7dd6">tabulate_groups</a> (const Group_ *group, Size_ n)</td></tr>
 <tr class="separator:ad46c11e3a7611f30d9695e600c5b7dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,16 +152,16 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions to compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a020f3eb0fea95ecf56df74c6a6cd672d" name="a020f3eb0fea95ecf56df74c6a6cd672d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a020f3eb0fea95ecf56df74c6a6cd672d">&#9670;&#160;</a></span>total_groups()</h2>
+<a id="af1c45653a7d1b140a6fcdd76ceffe32a" name="af1c45653a7d1b140a6fcdd76ceffe32a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1c45653a7d1b140a6fcdd76ceffe32a">&#9670;&#160;</a></span>total_groups()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Group_ &gt; </div>
+template&lt;typename Number_  = std::size_t, typename Group_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::size_t tatami_stats::total_groups </td>
+          <td class="memname">Number_ tatami_stats::total_groups </td>
           <td>(</td>
           <td class="paramtype">const Group_ *</td>          <td class="paramname"><span class="paramname"><em>group</em></span>, </td>
         </tr>
@@ -175,6 +175,7 @@ template&lt;typename Group_ &gt; </div>
 <p>Count the total number of groups, typically for per-group memory allocations.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
+    <tr><td class="paramname">Number_</td><td>Integer type for the number of groups. </td></tr>
     <tr><td class="paramname">Group_</td><td>Integer type for the group assignments.</td></tr>
   </table>
   </dd>

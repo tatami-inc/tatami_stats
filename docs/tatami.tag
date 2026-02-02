@@ -505,10 +505,10 @@
     <class kind="class">tatami_stats::LocalOutputBuffer</class>
     <class kind="class">tatami_stats::LocalOutputBuffers</class>
     <member kind="function">
-      <type>std::size_t</type>
+      <type>Number_</type>
       <name>total_groups</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a020f3eb0fea95ecf56df74c6a6cd672d</anchor>
+      <anchor>af1c45653a7d1b140a6fcdd76ceffe32a</anchor>
       <arglist>(const Group_ *group, std::size_t n)</arglist>
     </member>
     <member kind="function">
