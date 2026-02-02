@@ -29,6 +29,7 @@ using I = std::remove_reference_t<std::remove_cv_t<Input_> >;
 /**
  * Count the total number of groups, typically for per-group memory allocations.
  *
+ * @tparam Number_ Integer type for the number of groups.
  * @tparam Group_ Integer type for the group assignments.
  *
  * @param[in] group Pointer to an array of group assignments per observation.
@@ -38,10 +39,10 @@ using I = std::remove_reference_t<std::remove_cv_t<Input_> >;
  * @return Total number of groups, i.e., \f$G\f$.
  * Note that not all groups may actually have non-zero occurrences in `group`.
  */
-template<typename Group_>
-std::size_t total_groups(const Group_* group, std::size_t n) {
+template<typename Number_ = std::size_t, typename Group_>
+Number_ total_groups(const Group_* group, std::size_t n) {
     if (n) {
-        return sanisizer::sum<std::size_t>(*std::max_element(group, group + n), 1);
+        return sanisizer::sum<Number_>(*std::max_element(group, group + n), 1);
     } else {
         return 0;
     }
@@ -61,8 +62,8 @@ std::size_t total_groups(const Group_* group, std::size_t n) {
  */
 template<typename Group_, typename Size_>
 std::vector<Size_> tabulate_groups(const Group_* group, Size_ n) {
-    auto ngroups = total_groups(group, n);
-    std::vector<Size_> group_sizes(ngroups);
+    const auto ngroups = total_groups<typename std::vector<Size_>::size_type>(group, n);
+    auto group_sizes = sanisizer::create<std::vector<Size_> >(ngroups);
     for (Size_ r = 0; r < n; ++r) {
         ++(group_sizes[group[r]]);
     }
