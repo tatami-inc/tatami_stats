@@ -45,11 +45,11 @@ struct Options {
 /**
  * Compute per-group sums for each element of a chosen dimension of a `tatami::Matrix`.
  *
- * @tparam Value_ Type of the matrix value, should be numeric.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Group_ Type of the group assignments for each column.
- * @tparam Output_ Type of the output value.
- * This should be floating-point to store potential averages.
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Group_ Integer type of the group assignments for each row.
+ * @tparam Output_ Numeric type of the output value.
+ * It is assumed that this is large enough to store the sums. 
  *
  * @param row Whether to compute group-wise sums within each row.
  * If false, sums are computed within the column instead.
@@ -214,10 +214,11 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, const Group_* grou
 /**
  * Wrapper around `apply()` for row-wise grouped sums.
  *
- * @tparam Output_ Type of the output.
- * @tparam Value_ Type of the matrix value.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Group_ Type of the group assignments for each row.
+ * @tparam Output_ Numeric type of the output value.
+ * It is assumed that this is large enough to store the sums. 
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Group_ Integer type of the group assignments for each row.
  *
  * @param mat Instance of a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of columns.
@@ -270,10 +271,11 @@ std::vector<std::vector<Output_> > by_row(const tatami::Matrix<Value_, Index_>* 
 /**
  * Wrapper around `apply()` for column-wise grouped sums.
  *
- * @tparam Output_ Type of the output.
- * @tparam Value_ Type of the matrix value.
- * @tparam Index_ Type of the column/column indices.
- * @tparam Group_ Type of the group assignments for each column.
+ * @tparam Output_ Numeric type of the output value.
+ * It is assumed that this is large enough to store the sums. 
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Group_ Integer type of the group assignments for each row.
  *
  * @param mat Instance of a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of rows.

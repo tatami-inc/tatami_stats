@@ -26,10 +26,11 @@ namespace counts {
 /**
  * Count the number of values that satisfy the `condition` in each element of a chosen dimension.
  *
- * @tparam Value_ Type of the matrix value, should be numeric.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Output_ Type of the output value.
- * This should be at least large enough to hold the dimensions of `p`.
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`.
+ * @tparam Condition_ Function that accepts a single `Value_` and returns a `bool`.
  *
  * @param row Whether to perform the count within each row.
  * If false, the count is performed within each column instead.
@@ -37,7 +38,7 @@ namespace counts {
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column variances.
  * @param num_threads Number of threads to use, for parallelization via `tatami::parallelize()`.
- * @param condition Function that accepts a `Value_` and returns a boolean.
+ * @param condition Function to indicate whether a value should be counted. 
  * This function is also responsible for handling any NaNs that might be present in `p`.
  */
 template<typename Value_, typename Index_, typename Output_, class Condition_>
@@ -185,10 +186,10 @@ struct Options {
 };
 
 /**
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Output_ Type of the output value.
- * This should be at least large enough to hold the dimensions of `p`.
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
  *
  * @param row Whether to obtain a count for each row.
  * @param mat Instance of a `tatami::Matrix`.
@@ -216,9 +217,10 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 /**
  * Wrapper around `apply()` for row NaN counts.
  *
- * @tparam Output_ Type of the output value.
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
  *
  * @param mat Instance of a `tatami::Matrix`.
  * @param nopt Counting options.
@@ -247,9 +249,10 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Optio
 /**
  * Overload with default options.
  *
- * @tparam Output_ Type of the output value.
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
  *
  * @param mat Instance of a `tatami::Matrix`.
  * @return A vector of length equal to the number of rows, containing the number of NaNs in each row.
@@ -274,10 +277,10 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
 /**
  * Wrapper around `apply()` for column NaN counts.
  *
- * @tparam Output_ Type of the output value.
- * This should be at least large enough to hold the dimensions of `p`.
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
  *
  * @param mat Instance of a `tatami::Matrix`.
  * @param nopt Counting options.
@@ -306,10 +309,10 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Op
 /**
  * Overload with default options.
  *
- * @tparam Output_ Type of the output value.
- * This should be at least large enough to hold the dimensions of `p`.
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
  *
  * @param mat Instance of a `tatami::Matrix`.
  *
@@ -352,10 +355,10 @@ struct Options {
 };
 
 /**
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Output_ Type of the output value.
- * This should be at least large enough to hold the dimensions of `p`.
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
  *
  * @param row Whether to obtain a count for each row.
  * @param mat Instance of a `tatami::Matrix`.
@@ -383,10 +386,10 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, c
 /**
  * Wrapper around `apply()` for row-wise zero counts.
  *
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
- * @tparam Output_ Type of the output value.
- * This should be at least large enough to hold the dimensions of `p`.
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
  *
  * @param mat Instance of a `tatami::Matrix`.
  * @param zopt Counting options.
@@ -413,10 +416,10 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Optio
 /**
  * Overload with default options. 
  *
- * @tparam Output_ Type of the output value.
- * This should be at least large enough to hold the dimensions of `p`.
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
  *
  * @param mat Instance of a `tatami::Matrix`.
  *
@@ -442,10 +445,10 @@ std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
 /**
  * Wrapper around `apply()` for column-wise zero counts.
  *
- * @tparam Output_ Type of the output value.
- * This should be at least large enough to hold the dimensions of `p`.
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
  *
  * @param mat Instance of a `tatami::Matrix`.
  * @param zopt Counting options.
@@ -472,10 +475,11 @@ std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Op
  */
 
 /**
- * @tparam Output_ Type of the output value.
+ * @tparam Output_ Numeric type of the output count.
+ * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`. 
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
  * This should be at least large enough to hold the dimensions of `p`.
- * @tparam Value_ Type of the matrix value, should be summable.
- * @tparam Index_ Type of the row/column indices.
  *
  * @param mat Instance of a `tatami::Matrix`.
  *
