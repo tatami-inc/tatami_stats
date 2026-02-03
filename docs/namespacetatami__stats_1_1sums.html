@@ -165,9 +165,9 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; <
 <p>Compute the sum across an objective vector using naive accumulation. This is best used with a sufficiently high-precision <code>Output_</code>, hence the default of <code>double</code>.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column index.</td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output value. It is assumed that this is large enough to store the sums. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
   </table>
   </dd>
 </dl>
@@ -216,9 +216,9 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
 <p>Compute sums for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. This is done using <code><a class="el" href="#af95ccf6d0eea5492a7ccd6c1c003df92">direct()</a></code>, <code><a class="el" href="classtatami__stats_1_1sums_1_1RunningDense.html" title="Running sums from dense data.">RunningDense</a></code> or <code><a class="el" href="classtatami__stats_1_1sums_1_1RunningSparse.html" title="Running sums from sparse data.">RunningSparse</a></code>, depending on the requested dimension in <code>row</code> and the preferred dimension for access in <code>p</code>. Note that all sums are obtained using naive accumulation, so it is best to use a sufficiently high-precision <code>Output_</code> to mitigate round-off errors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be numeric. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output value. It is assumed that this is large enough to store the sums.</td></tr>
   </table>
   </dd>
 </dl>
@@ -257,9 +257,9 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; <
 <p>Wrapper around <code><a class="el" href="#ae53e59fface3d5ea5cb654598f579af9">apply()</a></code> for column sums.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output value. It is assumed that this is large enough to store the sums.</td></tr>
   </table>
   </dd>
 </dl>
@@ -297,9 +297,9 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; <
 <p>Wrapper around <code><a class="el" href="#ae53e59fface3d5ea5cb654598f579af9">apply()</a></code> for row sums.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output value. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output value. It is assumed that this is large enough to store the sums. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
   </table>
   </dd>
 </dl>

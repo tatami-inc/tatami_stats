@@ -166,9 +166,9 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be at least large enough to hold the dimensions of <code>p</code>.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output count. To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of <code>mat</code>.</td></tr>
   </table>
   </dd>
 </dl>
@@ -207,9 +207,9 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
 <p>Wrapper around <code><a class="el" href="#a817f100b20ceb21ebeac28e6880160f5">apply()</a></code> for row-wise zero counts.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be at least large enough to hold the dimensions of <code>p</code>.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output count. To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of <code>mat</code>.</td></tr>
   </table>
   </dd>
 </dl>
@@ -242,9 +242,9 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
 <p>Overload with default options.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be at least large enough to hold the dimensions of <code>p</code>. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output count. To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of <code>mat</code>.</td></tr>
   </table>
   </dd>
 </dl>
@@ -281,9 +281,9 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
 <p>Wrapper around <code><a class="el" href="#a817f100b20ceb21ebeac28e6880160f5">apply()</a></code> for column-wise zero counts.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be at least large enough to hold the dimensions of <code>p</code>. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output count. To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of <code>mat</code>. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
   </table>
   </dd>
 </dl>
@@ -316,9 +316,9 @@ template&lt;typename Output_  = int, typename Value_ , typename Index_ &gt; </di
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be at least large enough to hold the dimensions of <code>p</code>. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be summable. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output count. To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of <code>mat</code>. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. This should be at least large enough to hold the dimensions of <code>p</code>.</td></tr>
   </table>
   </dd>
 </dl>

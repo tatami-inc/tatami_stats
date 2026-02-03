@@ -192,10 +192,10 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
 <p>Compute the mean and variance from a dense objective vector. This uses the standard two-pass algorithm with naive accumulation of the sum of squared differences; thus, it is best used with a sufficiently high-precision <code>Output_</code> like <code>double</code>.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Integer type of the matrix indices. </td></tr>
-    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output data.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs.</td></tr>
   </table>
   </dd>
 </dl>
@@ -284,10 +284,10 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
 <p>Compute the mean and variance from a sparse objective vector. This uses the standard two-pass algorithm with naive accumulation of the sum of squared differences; thus, it is best used with a sufficiently high-precision <code>Output_</code> like <code>double</code>.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Integer type of the matrix indices. </td></tr>
-    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output data.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs.</td></tr>
   </table>
   </dd>
 </dl>
@@ -358,10 +358,10 @@ template&lt;typename Value_ , typename Index_ , typename Group_ , typename Outpu
 <p>Compute per-group variances for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be numeric. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Group_</td><td>Type of the group assignments for each column. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value. This should be floating-point to store potential averages.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs.</td></tr>
   </table>
   </dd>
 </dl>
@@ -408,10 +408,10 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 <p>Wrapper around <code><a class="el" href="#a3eac3787693b4533e2afa7a7c01852eb">apply()</a></code> for row-wise grouped variances.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Group_</td><td>Type of the group assignments for each row.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs.</td></tr>
   </table>
   </dd>
 </dl>
@@ -455,10 +455,10 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
 <p>Wrapper around <code><a class="el" href="#a3eac3787693b4533e2afa7a7c01852eb">apply()</a></code> for column-wise grouped variances.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the column/column indices. </td></tr>
-    <tr><td class="paramname">Group_</td><td>Type of the group assignments for each column.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs.</td></tr>
   </table>
   </dd>
 </dl>

@@ -123,9 +123,9 @@ class tatami_stats::sums::RunningDense&lt; Output_, Value_, Index_ &gt;</div><p>
 <p>This class uses naive accumulation to obtain the sum for each objective vector. Callers should use a sufficiently high-precision <code>Output_</code> such as <code>double</code> to mitigate round-off errors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the input value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output value. It is assumed that this is large enough to store the sums. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
   </table>
   </dd>
 </dl>

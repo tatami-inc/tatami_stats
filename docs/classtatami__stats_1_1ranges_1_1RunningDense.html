@@ -124,9 +124,9 @@ class tatami_stats::ranges::RunningDense&lt; Output_, Value_, Index_ &gt;</div><
 <p>This considers a scenario with a set of equilength "objective" vectors \([v_1, v_2, v_3, ..., v_n]\), but data are only available for "observed" vectors \([p_1, p_2, p_3, ..., p_m]\), where the \(j\)-th element of \(p_i\) is the \(i\)-th element of \(v_j\). The idea is to repeatedly call <code><a class="el" href="#a31eb613e1eb32ab3ec0e6033d1c7cf4e">add()</a></code> for <code>ptr</code> corresponding to observed vectors from 0 to \(m - 1\), which computes the running minimum/maximum for each objective vector at each invocation.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output data. It is assumed that this is large enough to store the maxima/minima. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
   </table>
   </dd>
 </dl>

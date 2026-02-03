@@ -124,9 +124,9 @@ class tatami_stats::ranges::RunningSparse&lt; Output_, Value_, Index_ &gt;</div>
 <p>Compute running minima and maximuma from sparse data. This does the same as <code><a class="el" href="classtatami__stats_1_1ranges_1_1RunningDense.html" title="Running minima/maxima from dense data.">RunningDense</a></code> but for sparse observed vectors.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Type of the output data. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the input value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output data. It is assumed that this is large enough to store the maxima/minima. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
   </table>
   </dd>
 </dl>

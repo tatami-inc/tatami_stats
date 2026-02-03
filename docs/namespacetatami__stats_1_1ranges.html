@@ -173,8 +173,8 @@ template&lt;typename Value_ , typename Index_ &gt; </div>
 <p>Directly compute the minimum or maximum of a dense objective vector.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
   </table>
   </dd>
 </dl>
@@ -229,8 +229,8 @@ template&lt;typename Value_ , typename Index_ &gt; </div>
 <p>Compute the extremes of a sparse objective vector.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the input data. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
   </table>
   </dd>
 </dl>
@@ -239,18 +239,8 @@ template&lt;typename Value_ , typename Index_ &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Pointer to an array of length <code>num_nonzero</code>, containing the values of the structural non-zeros. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_nonzero</td><td>Number of structural non-zeros in the objective vector. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_all</td><td>Length of the objective vector, including the structural zeros not in <code>value</code>. This should be greater than or equal to <code>num_nonzero</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">minimum</td><td>Whether to compute the minimum. If false, the maximum is computed instead. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1ranges_1_1Options.html#a15b5deec811e94c441d714abdad16692">Options::skip_nan</a></code> for details.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">minimum</td><td>Whether to compute the minimum. If false, the maximum is computed instead. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">skip_nan</td><td>See <code><a class="el" href="structtatami__stats_1_1ranges_1_1Options.html#a15b5deec811e94c441d714abdad16692">Options::skip_nan</a></code> for details.</td></tr>
   </table>
   </dd>
 </dl>
@@ -296,9 +286,9 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
 <p>Compute ranges for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value, should be numeric. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Type of the output value.</td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output data. It is assumed that this is large enough to store the maxima/minima.</td></tr>
   </table>
   </dd>
 </dl>
@@ -338,9 +328,9 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; <
 <p>Wrapper around <code><a class="el" href="#a5804f697bfa2e7a3e9b5fdc9c59a561b">apply()</a></code> for column ranges.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output</td><td>Type of the output value. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output data. It is assumed that this is large enough to store the maxima/minima. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
   </table>
   </dd>
 </dl>
@@ -378,9 +368,9 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; <
 <p>Wrapper around <code><a class="el" href="#a5804f697bfa2e7a3e9b5fdc9c59a561b">apply()</a></code> for row ranges.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output</td><td>Type of the output value. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Type of the matrix value. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Type of the row/column indices.</td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output data. It is assumed that this is large enough to store the maxima/minima. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
   </table>
   </dd>
 </dl>
