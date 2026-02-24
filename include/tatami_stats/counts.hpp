@@ -88,24 +88,27 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
         }
 
     } else {
-        auto threaded_output = sanisizer::create<std::vector<std::vector<Output_> > >(num_threads > 0 ? num_threads - 1 : 0);
+        auto threaded_output = sanisizer::create<std::vector<std::vector<Output_> > >(num_threads - 1);
+        const auto get_output_ptr = [&](const int thread) -> Output_* {
+            if (thread == 0) {
+                return output;
+            }
+            auto& outvec = threaded_output[thread - 1];
+            outvec.resize(dim);
+            return outvec.data();
+        };
 
+        int num_used;
         if (mat.sparse()) {
             tatami::Options opt;
             opt.sparse_ordered_index = false;
             bool count_zero = condition(0);
 
-            tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
+            num_used = tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
                 auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
                 auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
                 auto ext = tatami::consecutive_extractor<true>(mat, !row, start, len, opt);
-
-                auto curoutput = output;
-                if (thread) {
-                    auto& outvec = threaded_output[thread - 1];
-                    outvec.resize(dim);
-                    curoutput = outvec.data();
-                }
+                auto curoutput = get_output_ptr(thread);
                 auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
                 for (Index_ x = 0; x < len; ++x) {
@@ -125,16 +128,10 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             }, otherdim, num_threads);
 
         } else {
-            tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
+            num_used = tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
                 auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
                 auto ext = tatami::consecutive_extractor<false>(mat, !row, start, len);
-
-                auto curoutput = output;
-                if (thread) {
-                    auto& outvec = threaded_output[thread - 1];
-                    outvec.resize(dim);
-                    curoutput = outvec.data();
-                }
+                auto curoutput = get_output_ptr(thread);
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto ptr = ext->fetch(xbuffer.data());
@@ -145,11 +142,10 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             }, otherdim, num_threads);
         }
 
-        for (const auto& curout : threaded_output) {
-            if (!curout.empty()) {
-                for (Index_ d = 0; d < dim; ++d) {
-                    output[d] += curout[d];
-                }
+        for (int thread = 1; thread < num_used; ++thread) {
+            const auto& curout = threaded_output[thread - 1];
+            for (Index_ d = 0; d < dim; ++d) {
+                output[d] += curout[d];
             }
         }
     }
