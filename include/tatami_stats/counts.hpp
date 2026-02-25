@@ -45,13 +45,12 @@ template<typename Value_, typename Index_, typename Output_, class Condition_>
 void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, int num_threads, Condition_ condition) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     const Index_ otherdim = (row ? mat.ncol() : mat.nrow());
-    std::fill(output, output + dim, 0);
 
     if (mat.prefer_rows() == row) {
         if (mat.sparse()) {
             tatami::Options opt;
             opt.sparse_ordered_index = false;
-            bool count_zero = condition(0);
+            const bool count_zero = condition(0);
 
             tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
                 auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
@@ -88,14 +87,20 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
         }
 
     } else {
-        auto threaded_output = sanisizer::create<std::vector<std::vector<Output_> > >(num_threads - 1);
-        const auto get_output_ptr = [&](const int thread) -> Output_* {
-            if (thread == 0) {
+        // Directly write the result to the output buffer for the first thread, everything else goes into these temporary vectors.
+        auto threaded_output = sanisizer::create<std::vector<std::optional<std::vector<Output_> > > >(num_threads <= 1 ? 0 : num_threads - 1);
+        const auto get_output_ptr = [&](const int thread, std::optional<std::vector<Output_> >& tmp_output) -> Output_* {
+            if (thread) {
+                tmp_output.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
+                return tmp_output->data();
+            } else {
                 return output;
             }
-            auto& outvec = threaded_output[thread - 1];
-            outvec.resize(dim);
-            return outvec.data();
+        };
+        const auto save_output = [&](const int thread, std::optional<std::vector<Output_> >& tmp_output) -> void {
+            if (thread) {
+                threaded_output[thread - 1] = std::move(tmp_output);
+            }
         };
 
         int num_used;
@@ -105,10 +110,12 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             bool count_zero = condition(0);
 
             num_used = tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
+                std::optional<std::vector<Output_> > tmp_output;
+                auto curoutput = get_output_ptr(thread, tmp_output);
+
                 auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
                 auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
                 auto ext = tatami::consecutive_extractor<true>(mat, !row, start, len, opt);
-                auto curoutput = get_output_ptr(thread);
                 auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
                 for (Index_ x = 0; x < len; ++x) {
@@ -125,13 +132,17 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
                         curoutput[d] += len - nonzeros[d];
                     }
                 }
+
+                save_output(thread, tmp_output);
             }, otherdim, num_threads);
 
         } else {
             num_used = tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
+                std::optional<std::vector<Output_> > tmp_output;
+                auto curoutput = get_output_ptr(thread, tmp_output);
+
                 auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
                 auto ext = tatami::consecutive_extractor<false>(mat, !row, start, len);
-                auto curoutput = get_output_ptr(thread);
 
                 for (Index_ x = 0; x < len; ++x) {
                     auto ptr = ext->fetch(xbuffer.data());
@@ -139,13 +150,20 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
                         curoutput[j] += condition(ptr[j]);
                     }
                 }
+
+                save_output(thread, tmp_output);
             }, otherdim, num_threads);
         }
 
-        for (int thread = 1; thread < num_used; ++thread) {
-            const auto& curout = threaded_output[thread - 1];
-            for (Index_ d = 0; d < dim; ++d) {
-                output[d] += curout[d];
+        if (num_used == 0) {
+            // Make sure we reset it if no workers were run.
+            std::fill(output, output + dim, 0);
+        } else {
+            for (int thread = 1; thread < num_used; ++thread) {
+                const auto& curout = *(threaded_output[thread - 1]);
+                for (Index_ d = 0; d < dim; ++d) {
+                    output[d] += curout[d];
+                }
             }
         }
     }
