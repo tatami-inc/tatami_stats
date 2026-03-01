@@ -10,7 +10,8 @@ var searchData=
   ['tatami_5fstats_3a_3agrouped_5fsums_7',['grouped_sums',['../namespacetatami__stats_1_1grouped__sums.html',1,'tatami_stats']]],
   ['tatami_5fstats_3a_3agrouped_5fvariances_8',['grouped_variances',['../namespacetatami__stats_1_1grouped__variances.html',1,'tatami_stats']]],
   ['tatami_5fstats_3a_3amedians_9',['medians',['../namespacetatami__stats_1_1medians.html',1,'tatami_stats']]],
-  ['tatami_5fstats_3a_3aranges_10',['ranges',['../namespacetatami__stats_1_1ranges.html',1,'tatami_stats']]],
-  ['tatami_5fstats_3a_3asums_11',['sums',['../namespacetatami__stats_1_1sums.html',1,'tatami_stats']]],
-  ['tatami_5fstats_3a_3avariances_12',['variances',['../namespacetatami__stats_1_1variances.html',1,'tatami_stats']]]
+  ['tatami_5fstats_3a_3aquantiles_10',['quantiles',['../namespacetatami__stats_1_1quantiles.html',1,'tatami_stats']]],
+  ['tatami_5fstats_3a_3aranges_11',['ranges',['../namespacetatami__stats_1_1ranges.html',1,'tatami_stats']]],
+  ['tatami_5fstats_3a_3asums_12',['sums',['../namespacetatami__stats_1_1sums.html',1,'tatami_stats']]],
+  ['tatami_5fstats_3a_3avariances_13',['variances',['../namespacetatami__stats_1_1variances.html',1,'tatami_stats']]]
 ];
