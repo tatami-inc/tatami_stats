@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats::quantiles::SingleQuantileVariableLength&lt; Output_, Value_, Size_ &gt; Class Template Reference</title>
+<title>tatami_stats: tatami_stats::quantiles::SingleQuantileVariableLength&lt; Output_, Value_, Index_ &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -100,52 +100,53 @@ $(function(){ initResizable(false); });
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats::quantiles::SingleQuantileVariableLength&lt; Output_, Value_, Size_ &gt; Class Template Reference</div></div>
+  <div class="headertitle"><div class="title">tatami_stats::quantiles::SingleQuantileVariableLength&lt; Output_, Value_, Index_ &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Calculate a single quantile for arrays of variable length.  
+<p>Calculate a single quantile for a variable number of elements.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="quantiles_8hpp_source.html">quantiles.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7ba252af5bf40e34d6505af6ed975d01" id="r_a7ba252af5bf40e34d6505af6ed975d01"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ba252af5bf40e34d6505af6ed975d01">SingleQuantileVariableLength</a> (Size_ max_len, const double quantile)</td></tr>
-<tr class="separator:a7ba252af5bf40e34d6505af6ed975d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d07ddfeb4b3ce16d20949e54a40ef4d" id="r_a1d07ddfeb4b3ce16d20949e54a40ef4d"><td class="memItemLeft" align="right" valign="top">Output_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d07ddfeb4b3ce16d20949e54a40ef4d">operator()</a> (const Size_ len, Value_ *ptr)</td></tr>
-<tr class="separator:a1d07ddfeb4b3ce16d20949e54a40ef4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa320e83f9fcbba6ca7f7bcaabefb558" id="r_aaa320e83f9fcbba6ca7f7bcaabefb558"><td class="memItemLeft" align="right" valign="top">Output_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa320e83f9fcbba6ca7f7bcaabefb558">operator()</a> (const Size_ len, const Size_ num, Value_ *ptr)</td></tr>
-<tr class="separator:aaa320e83f9fcbba6ca7f7bcaabefb558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6f1bf58eca114f9387f40c9464c9a70" id="r_ab6f1bf58eca114f9387f40c9464c9a70"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6f1bf58eca114f9387f40c9464c9a70">SingleQuantileVariableLength</a> (Index_ max_len, const double quantile)</td></tr>
+<tr class="separator:ab6f1bf58eca114f9387f40c9464c9a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0d279006abcfea0dd78d0291ae7c3dd" id="r_ae0d279006abcfea0dd78d0291ae7c3dd"><td class="memItemLeft" align="right" valign="top">Output_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0d279006abcfea0dd78d0291ae7c3dd">operator()</a> (const Index_ len, Value_ *ptr)</td></tr>
+<tr class="separator:ae0d279006abcfea0dd78d0291ae7c3dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecec1b0562f3a030b9447efff46aa4e9" id="r_aecec1b0562f3a030b9447efff46aa4e9"><td class="memItemLeft" align="right" valign="top">Output_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecec1b0562f3a030b9447efff46aa4e9">operator()</a> (const Index_ len, const Index_ num, Value_ *ptr)</td></tr>
+<tr class="separator:aecec1b0562f3a030b9447efff46aa4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_, typename Value_, typename Size_&gt;<br />
-class tatami_stats::quantiles::SingleQuantileVariableLength&lt; Output_, Value_, Size_ &gt;</div><p>Calculate a single quantile for arrays of variable length. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_, typename Value_, typename Index_&gt;<br />
+class tatami_stats::quantiles::SingleQuantileVariableLength&lt; Output_, Value_, Index_ &gt;</div><p>Calculate a single quantile for a variable number of elements. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Output_</td><td>Floating-point type of the output quantile. </td></tr>
     <tr><td class="paramname">Value_</td><td>Numeric type of the input values. </td></tr>
-    <tr><td class="paramname">Size_</td><td>Integer type of the number of elements.</td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the number of elements.</td></tr>
   </table>
   </dd>
 </dl>
-<p>An instance of this class is constructed once given the maximum number of elements and the desired probability. It can then be re-used to compute quantiles from containers of size less than or equal to the maximum. See <code><a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantile.html" title="Calculate a single quantile from an array of known length.">SingleQuantile</a></code> for more details. </p>
+<p>An instance of this class should be constructed once given the maximum number of elements and the desired probability. It can then be invoked any number of times to compute quantiles from objective vectors of size less than or equal to the maximum. See <code><a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantile.html" title="Calculate a single quantile for a known number of elements.">SingleQuantile</a></code> for more details.</p>
+<p>This class is used by <code><a class="el" href="namespacetatami__stats_1_1quantiles.html#a42d985ea3e2af3e4d4e4dcc37dceb6a2">apply()</a></code> to compute quantiles when iterating through a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code> that might contains NaNs. NaNs are shifted to the front of each array with <code><a class="el" href="namespacetatami__stats.html#a66e149e01c63f446d6d257f68828c453">shift_nans()</a></code> and methods are called on the variable number of remaining non-NaN values. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a7ba252af5bf40e34d6505af6ed975d01" name="a7ba252af5bf40e34d6505af6ed975d01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ba252af5bf40e34d6505af6ed975d01">&#9670;&#160;</a></span>SingleQuantileVariableLength()</h2>
+<a id="ab6f1bf58eca114f9387f40c9464c9a70" name="ab6f1bf58eca114f9387f40c9464c9a70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6f1bf58eca114f9387f40c9464c9a70">&#9670;&#160;</a></span>SingleQuantileVariableLength()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_ , typename Value_ , typename Size_ &gt; </div>
+template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html">tatami_stats::quantiles::SingleQuantileVariableLength</a>&lt; Output_, Value_, Size_ &gt;::SingleQuantileVariableLength </td>
+          <td class="memname"><a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html">tatami_stats::quantiles::SingleQuantileVariableLength</a>&lt; Output_, Value_, Index_ &gt;::SingleQuantileVariableLength </td>
           <td>(</td>
-          <td class="paramtype">Size_</td>          <td class="paramname"><span class="paramname"><em>max_len</em></span>, </td>
+          <td class="paramtype">Index_</td>          <td class="paramname"><span class="paramname"><em>max_len</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -161,7 +162,7 @@ template&lt;typename Output_ , typename Value_ , typename Size_ &gt; </div>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">max_len</td><td>Maximum number of elements in the array. Unlike <code><a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantile.html" title="Calculate a single quantile from an array of known length.">SingleQuantile</a></code>, this may be zero. </td></tr>
+    <tr><td class="paramname">max_len</td><td>Maximum number of elements. Unlike <code><a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantile.html" title="Calculate a single quantile for a known number of elements.">SingleQuantile</a></code>, this may be zero. </td></tr>
     <tr><td class="paramname">quantile</td><td>Quantile to compute, in \([0, 1]\). </td></tr>
   </table>
   </dd>
@@ -170,21 +171,21 @@ template&lt;typename Output_ , typename Value_ , typename Size_ &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1d07ddfeb4b3ce16d20949e54a40ef4d" name="a1d07ddfeb4b3ce16d20949e54a40ef4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d07ddfeb4b3ce16d20949e54a40ef4d">&#9670;&#160;</a></span>operator()() <span class="overload">[1/2]</span></h2>
+<a id="ae0d279006abcfea0dd78d0291ae7c3dd" name="ae0d279006abcfea0dd78d0291ae7c3dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0d279006abcfea0dd78d0291ae7c3dd">&#9670;&#160;</a></span>operator()() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_ , typename Value_ , typename Size_ &gt; </div>
+template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Output_ <a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html">tatami_stats::quantiles::SingleQuantileVariableLength</a>&lt; Output_, Value_, Size_ &gt;::operator() </td>
+          <td class="memname">Output_ <a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html">tatami_stats::quantiles::SingleQuantileVariableLength</a>&lt; Output_, Value_, Index_ &gt;::operator() </td>
           <td>(</td>
-          <td class="paramtype">const Size_</td>          <td class="paramname"><span class="paramname"><em>len</em></span>, </td>
+          <td class="paramtype">const Index_</td>          <td class="paramname"><span class="paramname"><em>len</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -198,38 +199,40 @@ template&lt;typename Output_ , typename Value_ , typename Size_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute the desired quantile from a dense objective vector of length no greater than <code>max_len</code>.</p>
+<p>If any NaNs are present in the objective vector, we recommend shifting them to the front with <code><a class="el" href="namespacetatami__stats.html#a66e149e01c63f446d6d257f68828c453">shift_nans()</a></code>, and then calling this method with <code>len := len - N</code> and <code>ptr := ptr + N</code> where <code>N</code> is the number of NaNs.</p>
+<p>This method is not thread-safe.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">len</td><td>Length of the array. This should be no greater than <code>max_len</code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">len</td><td>Length of the dense objective vector. This should be no greater than <code>max_len</code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>Pointer to an array of length <code>len</code>. This should not contain NaN values. On output, the order of elements in <code>[ptr, ptr + len)</code> may be rearranged.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Quantile for the sequence of elements in <code>[ptr, ptr + len)</code>. If this sequence is empty, NaN is returned.</dd></dl>
-<p>This method is not thread-safe. </p>
+<dl class="section return"><dt>Returns</dt><dd>Quantile of the specified probability. If <code>len = 0</code>, NaN is returned instead. </dd></dl>
 
 </div>
 </div>
-<a id="aaa320e83f9fcbba6ca7f7bcaabefb558" name="aaa320e83f9fcbba6ca7f7bcaabefb558"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa320e83f9fcbba6ca7f7bcaabefb558">&#9670;&#160;</a></span>operator()() <span class="overload">[2/2]</span></h2>
+<a id="aecec1b0562f3a030b9447efff46aa4e9" name="aecec1b0562f3a030b9447efff46aa4e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecec1b0562f3a030b9447efff46aa4e9">&#9670;&#160;</a></span>operator()() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_ , typename Value_ , typename Size_ &gt; </div>
+template&lt;typename Output_ , typename Value_ , typename Index_ &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Output_ <a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html">tatami_stats::quantiles::SingleQuantileVariableLength</a>&lt; Output_, Value_, Size_ &gt;::operator() </td>
+          <td class="memname">Output_ <a class="el" href="classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html">tatami_stats::quantiles::SingleQuantileVariableLength</a>&lt; Output_, Value_, Index_ &gt;::operator() </td>
           <td>(</td>
-          <td class="paramtype">const Size_</td>          <td class="paramname"><span class="paramname"><em>len</em></span>, </td>
+          <td class="paramtype">const Index_</td>          <td class="paramname"><span class="paramname"><em>len</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Size_</td>          <td class="paramname"><span class="paramname"><em>num</em></span>, </td>
+          <td class="paramtype">const Index_</td>          <td class="paramname"><span class="paramname"><em>num</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -243,17 +246,18 @@ template&lt;typename Output_ , typename Value_ , typename Size_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Overload for a sparse vector of length <code>len</code>.</p>
+<p>Compute the desired quantile from a sparse objective vector of length no greater than <code>max_len</code>.</p>
+<p>If any NaNs are present in the array, we recommend shifting them to the front with <code><a class="el" href="namespacetatami__stats.html#a66e149e01c63f446d6d257f68828c453">shift_nans()</a></code>, and then calling this method with <code>len := len - N</code>, <code>num := num - N</code> and <code>ptr := ptr + N</code> where <code>N</code> is the number of NaNs.</p>
+<p>This method is not thread-safe.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">len</td><td>Length of the sparse vector. This should be no greater than <code>max_len</code>. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Size of the array referenced by <code>ptr</code>, i.e., the number of structural non-zero elements. This should be no greater than <code>len</code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">len</td><td>Length of the sparse objective vector. This should be no greater than <code>max_len</code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Number of structural non-zero elements. This should be no greater than <code>len</code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>Pointer to the start of an array of length <code>num</code>. This is expected to contain the values of the structural non-zero elements of the sparse vector. It should not contain any NaN values. On output, the order of elements in <code>[ptr, ptr + num)</code> may be rearranged.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Quantile for a sparse vector of length <code>len</code> that contains the values of <code>ptr</code> along with <code>len - num</code> zero values.</dd></dl>
-<p>This method is not thread-safe. </p>
+<dl class="section return"><dt>Returns</dt><dd>Quantile of the specified probability. If <code>len = 0</code>, NaN is returned instead. </dd></dl>
 
 </div>
 </div>

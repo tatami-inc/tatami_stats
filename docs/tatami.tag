@@ -524,27 +524,27 @@
     <filename>classtatami__stats_1_1quantiles_1_1SingleQuantile.html</filename>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
-    <templarg>typename Size_</templarg>
+    <templarg>typename Index_</templarg>
     <member kind="function">
       <type></type>
       <name>SingleQuantile</name>
       <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantile.html</anchorfile>
-      <anchor>a09b708ffd5314904a40ca002f39cf2f6</anchor>
-      <arglist>(const Size_ len, const double quantile)</arglist>
+      <anchor>a5ea04c11d3f9cd17d3fd8551505b525b</anchor>
+      <arglist>(const Index_ len, const Output_ quantile)</arglist>
     </member>
     <member kind="function">
       <type>Output_</type>
       <name>operator()</name>
       <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantile.html</anchorfile>
-      <anchor>a418ccd52a9b9d536c620946807c53408</anchor>
+      <anchor>a8c9be853882bd39d001e20723cf00b24</anchor>
       <arglist>(Value_ *ptr) const</arglist>
     </member>
     <member kind="function">
       <type>Output_</type>
       <name>operator()</name>
       <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantile.html</anchorfile>
-      <anchor>a2ac9e09fab3bba4a1a3acb037ef08e92</anchor>
-      <arglist>(const Size_ num, Value_ *ptr) const</arglist>
+      <anchor>aec45a8ea4b1b77ea0e455d4852cc541a</anchor>
+      <arglist>(const Index_ num, Value_ *ptr) const</arglist>
     </member>
   </compound>
   <compound kind="class">
@@ -552,27 +552,27 @@
     <filename>classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html</filename>
     <templarg>typename Output_</templarg>
     <templarg>typename Value_</templarg>
-    <templarg>typename Size_</templarg>
+    <templarg>typename Index_</templarg>
     <member kind="function">
       <type></type>
       <name>SingleQuantileVariableLength</name>
       <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html</anchorfile>
-      <anchor>a7ba252af5bf40e34d6505af6ed975d01</anchor>
-      <arglist>(Size_ max_len, const double quantile)</arglist>
+      <anchor>ab6f1bf58eca114f9387f40c9464c9a70</anchor>
+      <arglist>(Index_ max_len, const double quantile)</arglist>
     </member>
     <member kind="function">
       <type>Output_</type>
       <name>operator()</name>
       <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html</anchorfile>
-      <anchor>a1d07ddfeb4b3ce16d20949e54a40ef4d</anchor>
-      <arglist>(const Size_ len, Value_ *ptr)</arglist>
+      <anchor>ae0d279006abcfea0dd78d0291ae7c3dd</anchor>
+      <arglist>(const Index_ len, Value_ *ptr)</arglist>
     </member>
     <member kind="function">
       <type>Output_</type>
       <name>operator()</name>
       <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html</anchorfile>
-      <anchor>aaa320e83f9fcbba6ca7f7bcaabefb558</anchor>
-      <arglist>(const Size_ len, const Size_ num, Value_ *ptr)</arglist>
+      <anchor>aecec1b0562f3a030b9447efff46aa4e9</anchor>
+      <arglist>(const Index_ len, const Index_ num, Value_ *ptr)</arglist>
     </member>
   </compound>
   <compound kind="namespace">
@@ -589,6 +589,13 @@
     <namespace>tatami_stats::variances</namespace>
     <class kind="class">tatami_stats::LocalOutputBuffer</class>
     <class kind="class">tatami_stats::LocalOutputBuffers</class>
+    <member kind="function">
+      <type>Index_</type>
+      <name>shift_nans</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>a66e149e01c63f446d6d257f68828c453</anchor>
+      <arglist>(Value_ *const ptr, const Index_ num)</arglist>
+    </member>
     <member kind="function">
       <type>Number_</type>
       <name>total_groups</name>

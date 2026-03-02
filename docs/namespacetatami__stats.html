@@ -145,6 +145,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a66e149e01c63f446d6d257f68828c453" id="r_a66e149e01c63f446d6d257f68828c453"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:a66e149e01c63f446d6d257f68828c453"><td class="memTemplItemLeft" align="right" valign="top">Index_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a66e149e01c63f446d6d257f68828c453">shift_nans</a> (Value_ *const ptr, const Index_ num)</td></tr>
+<tr class="separator:a66e149e01c63f446d6d257f68828c453"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1c45653a7d1b140a6fcdd76ceffe32a" id="r_af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memTemplParams" colspan="2">template&lt;typename Number_  = std::size_t, typename Group_ &gt; </td></tr>
 <tr class="memitem:af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memTemplItemLeft" align="right" valign="top">Number_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af1c45653a7d1b140a6fcdd76ceffe32a">total_groups</a> (const Group_ *group, std::size_t n)</td></tr>
 <tr class="separator:af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,6 +158,45 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions to compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a66e149e01c63f446d6d257f68828c453" name="a66e149e01c63f446d6d257f68828c453"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66e149e01c63f446d6d257f68828c453">&#9670;&#160;</a></span>shift_nans()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Value_ , typename Index_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">Index_ tatami_stats::shift_nans </td>
+          <td>(</td>
+          <td class="paramtype">Value_ *const</td>          <td class="paramname"><span class="paramname"><em>ptr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Index_</td>          <td class="paramname"><span class="paramname"><em>num</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Shift NaN values to the start of the array.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Value_</td><td>Numeric type of the array contents. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the array size.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ptr</td><td>Pointer to an array, possibly containing NaNs. On output, all NaNs values are moved to the start of the array. All non-NaN values are stored (in arbitrary order) in the array starting at <code>ptr + N</code> where <code>N</code> is the number of NaNs. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num</td><td>Size of the array referenced by <code>ptr</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Number of NaN values, i.e., <code>N</code>. The array of non-NaN values can be obtained at <code>ptr + N</code> and is of length <code>num - N</code>. </dd></dl>
+
+</div>
+</div>
 <a id="af1c45653a7d1b140a6fcdd76ceffe32a" name="af1c45653a7d1b140a6fcdd76ceffe32a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af1c45653a7d1b140a6fcdd76ceffe32a">&#9670;&#160;</a></span>total_groups()</h2>
 
