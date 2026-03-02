@@ -36,6 +36,7 @@ add_executable(
     src/sums.cpp
     src/variances.cpp
     src/medians.cpp
+    src/quantiles.cpp
     src/ranges.cpp
     src/counts.cpp
     src/grouped_medians.cpp

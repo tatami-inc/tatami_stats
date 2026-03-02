@@ -22,4 +22,17 @@ bool is_all_nan(const V_& v) {
     return true;
 }
 
+template<typename Rng_>
+void inject_variable_zeros(std::size_t primary, std::size_t secondary, std::vector<double>& vec, Rng_& rng) {
+    // Turning elements to zero based on its primary dimension index; we get more and more zeros as we get to later dimension elements.
+    // The aim is to check that certain metrics (e.g., medians, quantiles) are computed correctly from sparse data of varying density.
+    for (std::size_t p = 0; p < primary; ++p) {
+        auto vStart = vec.begin() + p * secondary;
+        auto vEnd = vStart + secondary;
+        const std::size_t keep = std::ceil((static_cast<double>(p) / (primary - 1)) * static_cast<double>(secondary));
+        std::fill(vStart, vStart + keep, 0);
+        std::shuffle(vStart, vEnd, rng);
+    }
+}
+
 #endif

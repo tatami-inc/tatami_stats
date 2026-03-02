@@ -1,5 +1,5 @@
-#ifndef TATAMI_STATS__MEDIANS_HPP
-#define TATAMI_STATS__MEDIANS_HPP
+#ifndef TATAMI_STATS_MEDIANS_HPP
+#define TATAMI_STATS_MEDIANS_HPP
 
 #include "utils.hpp"
 
@@ -43,28 +43,6 @@ struct Options {
 };
 
 /**
- * @cond
- */
-namespace internal {
-
-template<typename Value_, typename Index_>
-Index_ translocate_nans(Value_* ptr, Index_& num) {
-    Index_ pos = 0;
-    for (Index_ i = 0; i < num; ++i) {
-        if (std::isnan(ptr[i])) {
-            std::swap(ptr[i], ptr[pos]);
-            ++pos;
-        }
-    }
-    return pos;
-}
-
-}
-/**
- * @endcond
- */
-
-/**
  * Directly compute the median from a dense objective vector.
  *
  * @param[in] ptr Pointer to an array of length `num`, containing the values of the objective vector.
@@ -84,7 +62,7 @@ Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
-            auto lost = internal::translocate_nans(ptr, num);
+            auto lost = shift_nans(ptr, num);
             ptr += lost;
             num -= lost;
         },
@@ -147,7 +125,7 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
-            auto lost = internal::translocate_nans(value, num_nonzero);
+            auto lost = shift_nans(value, num_nonzero);
             value += lost;
             num_nonzero -= lost;
             num_all -= lost;

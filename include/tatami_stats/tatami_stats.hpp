@@ -6,6 +6,7 @@
 #include "grouped_sums.hpp"
 #include "grouped_variances.hpp"
 #include "medians.hpp"
+#include "quantiles.hpp"
 #include "ranges.hpp"
 #include "sums.hpp"
 #include "utils.hpp"

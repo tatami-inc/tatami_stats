@@ -5,6 +5,8 @@
 #include "tatami_stats/medians.hpp"
 #include "tatami_test/tatami_test.hpp"
 
+#include "utils.h"
+
 class ComputeMediansTest : public ::testing::Test {
 protected:
     template<typename Value_>
@@ -219,120 +221,144 @@ TEST_F(ComputeMediansTest, SparseRealistic) {
     }
 }
 
-TEST(ComputingDimMedians, SparseMedians) {
-    size_t NR = 111, NC = 222;
+/***************************************/
 
-    // We use a density of 0.5 so that we some of the median calculations will
-    // need to use the structural zeros.  We also put all non-zero values on
-    // one side of zero, otherwise the structural zeros will dominate the
-    // median; in this case, we choose all-positive values.
-    auto vec = tatami_test::simulate_vector<double>(NR * NC, []{
+class ComputingDimMediansTest : public ::testing::TestWithParam<std::tuple<std::pair<size_t, size_t>, int> > {};
+
+TEST_P(ComputingDimMediansTest, Basic) {
+    auto params = GetParam();
+    auto dims = std::get<0>(params);
+    auto NR = dims.first, NC = dims.second;
+    auto status = std::get<1>(params);
+
+    auto vec = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
-        opt.density = 0.5;
-        opt.lower = 1;
-        opt.upper = 10;
-        opt.seed = 734686273;
+
+        if (status == -1) {
+            opt.lower = -10;
+            opt.upper = -1;
+        } else if (status == 0) {
+            opt.lower = -10;
+            opt.upper = 10;
+        } else {
+            opt.lower = 1;
+            opt.upper = 10;
+        }
+
+        opt.seed = NR * NC + status;
         return opt;
     }());
 
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, vec));
-    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
-    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
-    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
-
-    auto rref = tatami_stats::medians::by_row(dense_row.get());
-    EXPECT_EQ(rref.size(), NR);
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(dense_column.get()));
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_row.get()));
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_column.get()));
-
-    auto cref = tatami_stats::medians::by_column(dense_row.get());
-    EXPECT_EQ(cref.size(), NC);
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(dense_column.get()));
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_row.get()));
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_column.get()));
-
-    // Checking that the parallel code is the same.
-    tatami_stats::medians::Options mopt;
-    mopt.num_threads = 3;
-
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(dense_row.get(), mopt));
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(dense_column.get(), mopt));
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_row.get(), mopt));
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_column.get(), mopt));
-
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(dense_row.get(), mopt));
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(dense_column.get(), mopt));
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_row.get(), mopt));
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_column.get(), mopt));
-
-    // Checking same results from matrices that can yield unsorted indices.
-    std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(unsorted_row.get()));
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(unsorted_row.get()));
-    std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    EXPECT_EQ(rref, tatami_stats::medians::by_row(unsorted_column.get()));
-    EXPECT_EQ(cref, tatami_stats::medians::by_column(unsorted_column.get()));
-}
-
-TEST(ComputingMedians, WithNan) {
-    size_t NR = 152, NC = 183;
+    std::mt19937_64 rng(NR * NC + 20 + status);
 
     {
-        auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
-            tatami_test::SimulateVectorOptions opt;
-            opt.density = 0.5; // using a density of 0.5 with all-positive values to make things interesting, see above.
-            opt.lower = 1;
-            opt.upper = 5;
-            opt.seed = 182761;
-            return opt;
-        }());
-        for (size_t c = 0; c < NC; ++c) { // Injecting an NaN at the start of each column.
-            dump[c] = std::numeric_limits<double>::quiet_NaN();
-        }
+        auto vecr = vec;
+        inject_variable_zeros(NR, NC, vecr, rng);
 
-        auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
+        auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(vecr)));
         auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
         auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
         auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
-        std::vector<double> skip(dump.begin() + NC, dump.end());
-        auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR - 1, NC, std::move(skip)));
-        auto cref = tatami_stats::medians::by_column(ref.get());
+        auto rref = tatami_stats::medians::by_row(dense_row.get());
+        EXPECT_EQ(rref.size(), NR);
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(dense_column.get()));
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_row.get()));
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_column.get()));
+
+        // Checking that the parallel code is the same.
+        tatami_stats::medians::Options mopt;
+        mopt.num_threads = 3;
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(dense_row.get(), mopt));
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(dense_column.get(), mopt));
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_row.get(), mopt));
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_column.get(), mopt));
+
+        // Checking same results from matrices that can yield unsorted indices.
+        std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(unsorted_row.get()));
+        std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
+        EXPECT_EQ(rref, tatami_stats::medians::by_row(unsorted_column.get()));
+    }
+
+    {
+        auto vecc = vec;
+        inject_variable_zeros(NC, NR, vecc, rng);
+
+        auto dense_column = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseColumnMatrix<double, int>(NR, NC, std::move(vecc)));
+        auto dense_row = tatami::convert_to_dense(dense_column.get(), true);
+        auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+        auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
+
+        auto cref = tatami_stats::medians::by_column(dense_row.get());
+        EXPECT_EQ(cref.size(), NC);
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(dense_column.get()));
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_row.get()));
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_column.get()));
 
         tatami_stats::medians::Options mopt;
-        mopt.skip_nan = true;
+        mopt.num_threads = 3;
         EXPECT_EQ(cref, tatami_stats::medians::by_column(dense_row.get(), mopt));
         EXPECT_EQ(cref, tatami_stats::medians::by_column(dense_column.get(), mopt));
         EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_row.get(), mopt));
         EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_column.get(), mopt));
-    }
 
-    {
-        auto dump = tatami_test::simulate_vector<double>(NR * NC, []{ 
-            tatami_test::SimulateVectorOptions opt;
-            opt.density = 0.5; // using a density of 0.5 with all-negative values to make things interesting, see above.
+        std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(unsorted_row.get()));
+        std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(unsorted_column.get()));
+    }
+}
+
+TEST_P(ComputingDimMediansTest, WithNan) {
+    auto params = GetParam();
+    auto dims = std::get<0>(params);
+    auto NR = dims.first, NC = dims.second;
+    auto status = std::get<1>(params);
+
+    auto vec = tatami_test::simulate_vector<double>(NR * NC, [&]{
+        tatami_test::SimulateVectorOptions opt;
+
+        if (status == -1) {
             opt.lower = -10;
-            opt.upper = -2;
-            opt.seed = 19988;
-            return opt;
-        }());
-        for (size_t r = 0; r < NR; ++r) { // Injecting an NaN at the start of each row.
-            dump[r * NC] = std::numeric_limits<double>::quiet_NaN();
+            opt.upper = -1;
+        } else if (status == 0) {
+            opt.lower = -10;
+            opt.upper = 10;
+        } else {
+            opt.lower = 1;
+            opt.upper = 10;
         }
 
-        auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
+        opt.seed = NR * NC + status;
+        return opt;
+    }());
+
+    std::mt19937_64 rng(NR * NC + 20 + status);
+
+    {
+        auto copy = vec;
+        inject_variable_zeros(NR, NC, vec, rng);
+
+        for (size_t r = 0; r < NR; ++r) { // Injecting an NaN randomly into each row.
+            const auto failed = rng() % NC;
+            copy[failed + r * NC] = std::numeric_limits<double>::quiet_NaN();
+        }
+
+        std::vector<double> skip;
+        skip.reserve(NR * (NC - 1));
+        for (auto x : copy) {
+            if (!std::isnan(x)) {
+                skip.push_back(x);
+            }
+        }
+
+        auto dense_row = std::make_unique<tatami::DenseRowMatrix<double, int> >(NR, NC, std::move(copy));
         auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
         auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
         auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
-        std::vector<double> skip;
-        skip.reserve(NR * (NC - 1));
-        for (size_t r = 0; r < NR; ++r) {
-            auto start = dump.begin() + r * NC;
-            skip.insert(skip.end(), start + 1, start + NC);
-        }
-        auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC - 1, std::move(skip)));
+        auto ref = std::make_unique<tatami::DenseRowMatrix<double, int> >(NR, NC - 1, std::move(skip));
         auto rref = tatami_stats::medians::by_row(ref.get());
 
         tatami_stats::medians::Options mopt;
@@ -342,7 +368,56 @@ TEST(ComputingMedians, WithNan) {
         EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_row.get(), mopt));
         EXPECT_EQ(rref, tatami_stats::medians::by_row(sparse_column.get(), mopt));
     }
+
+    {
+        auto copy = vec;
+        inject_variable_zeros(NC, NR, vec, rng);
+
+        for (size_t c = 0; c < NC; ++c) { // Injecting an NaN randomly into each column.
+            const auto failed = rng() % NR;
+            copy[c * NR + failed] = std::numeric_limits<double>::quiet_NaN();
+        }
+
+        std::vector<double> skip;
+        skip.reserve((NR - 1) * NC);
+        for (auto x : copy) {
+            if (!std::isnan(x)) {
+                skip.push_back(x);
+            }
+        }
+
+        auto dense_column = std::make_unique<tatami::DenseColumnMatrix<double, int> >(NR, NC, std::move(copy));
+        auto dense_row = tatami::convert_to_dense(dense_column.get(), true);
+        auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
+        auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
+
+        auto ref = std::make_unique<tatami::DenseColumnMatrix<double, int> >(NR - 1, NC, std::move(skip));
+        auto cref = tatami_stats::medians::by_column(ref.get());
+
+        tatami_stats::medians::Options mopt;
+        mopt.skip_nan = true;
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(dense_row.get(), mopt));
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(dense_column.get(), mopt));
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_row.get(), mopt));
+        EXPECT_EQ(cref, tatami_stats::medians::by_column(sparse_column.get(), mopt));
+    }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ComputingDimMedians,
+    ComputingDimMediansTest,
+    ::testing::Combine(
+        ::testing::Values(
+            std::make_pair<size_t, size_t>(121, 220), // mix of evens and odds here.
+            std::make_pair<size_t, size_t>(150, 131),
+            std::make_pair<size_t, size_t>(178, 144),
+            std::make_pair<size_t, size_t>(201, 179)
+        ),
+        ::testing::Values(-1, 0, 1)
+    )
+);
+
+/***************************************/
 
 TEST(ComputingDimMedians, AllZero) {
     size_t NR = 55, NC = 22;
@@ -364,118 +439,7 @@ TEST(ComputingDimMedians, AllZero) {
     EXPECT_EQ(ref, tatami_stats::medians::by_column(sparse_column.get()));
 }
 
-/* Lots of additional checks necessary to account for the 
- * many conditional branches in the sparse case. We create
- * a triangular matrix to ensure that we get some good coverage
- * of all possible zero/non-zero combinations.
- */
-
-class MedianTriangularTest : public ::testing::TestWithParam<int> {
-protected:
-    void triangularize(size_t order, std::vector<double>& values) {
-        for (size_t r = 0; r < order; ++r) {
-            for (size_t c = r + 1; c < order; ++c) {
-                values[r * order + c] = 0; // wiping out the upper triangular.
-            }
-        }
-    }
-};
-
-TEST_P(MedianTriangularTest, Positive) {
-    size_t order = GetParam();
-    auto dump = tatami_test::simulate_vector<double>(order * order, [&]{
-        tatami_test::SimulateVectorOptions opt;
-        opt.lower = 1; // all non-zeros are positive.
-        opt.upper = 5;
-        opt.seed = 191874 + order;
-        return opt;
-    }());
-    triangularize(order, dump);
-
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(order, order, dump));
-    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
-    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
-    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
-
-    auto ref = tatami_stats::medians::by_row(dense_row.get());
-    EXPECT_EQ(ref.size(), order);
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(sparse_column.get()));
-
-    ref = tatami_stats::medians::by_column(dense_row.get());
-    EXPECT_EQ(ref.size(), order);
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(sparse_column.get()));
-}
-
-TEST_P(MedianTriangularTest, Negative) {
-    size_t order = GetParam();
-    auto dump = tatami_test::simulate_vector<double>(order * order, [&]{
-        tatami_test::SimulateVectorOptions opt;
-        opt.lower = -2;
-        opt.upper = -0.1; // Seeing what happens if all non-zeros are less than zero.
-        opt.seed = 812763 + order;
-        return opt;
-    }());
-    triangularize(order, dump);
-
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(order, order, dump));
-    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
-    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
-    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
-
-    auto ref = tatami_stats::medians::by_row(dense_row.get());
-    EXPECT_EQ(ref.size(), order);
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(sparse_column.get()));
-
-    ref = tatami_stats::medians::by_column(dense_row.get());
-    EXPECT_EQ(ref.size(), order);
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(sparse_column.get()));
-}
-
-TEST_P(MedianTriangularTest, Mixed) {
-    size_t order = GetParam();
-    auto dump = tatami_test::simulate_vector<double>(order * order, [&]{
-        tatami_test::SimulateVectorOptions opt;
-        // Mixing up the ratios of non-zeros on both sides of zero.
-        opt.lower = -2;
-        opt.upper = 2;
-        opt.seed = 283764283 + order;
-        return opt;
-    }());
-    triangularize(order, dump);
-
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(order, order, dump));
-    auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
-    auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
-    auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
-
-    auto ref = tatami_stats::medians::by_row(dense_row.get());
-    EXPECT_EQ(ref.size(), order);
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_row(sparse_column.get()));
-
-    ref = tatami_stats::medians::by_column(dense_row.get());
-    EXPECT_EQ(ref.size(), order);
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(dense_column.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(sparse_row.get()));
-    EXPECT_EQ(ref, tatami_stats::medians::by_column(sparse_column.get()));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ComputingDimMedians,
-    MedianTriangularTest,
-    ::testing::Values(13, 22, 51, 80) // mix of even and odd numbers
-);
-
-TEST(ComputingDimMedians, RowMediansNaN) {
+TEST(ComputingDimMedians, Empty) {
     auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(111, 0, std::vector<double>()));
 
     auto cref = tatami_stats::medians::by_column(dense.get());

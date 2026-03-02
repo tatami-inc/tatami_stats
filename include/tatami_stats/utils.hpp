@@ -22,6 +22,18 @@ namespace tatami_stats {
  */
 template<typename Input_>
 using I = std::remove_cv_t<std::remove_reference_t<Input_> >;
+
+template<typename Value_, typename Index_>
+Index_ shift_nans(Value_* const ptr, const Index_ num) {
+    Index_ pos = 0;
+    for (Index_ i = 0; i < num; ++i) {
+        if (std::isnan(ptr[i])) {
+            std::swap(ptr[i], ptr[pos]);
+            ++pos;
+        }
+    }
+    return pos;
+}
 /**
  * @endcond
  */
