@@ -48,8 +48,6 @@
     <path>tatami_stats/</path>
     <filename>quantiles_8hpp.html</filename>
     <class kind="struct">tatami_stats::quantiles::Options</class>
-    <class kind="class">tatami_stats::quantiles::SingleQuantile</class>
-    <class kind="class">tatami_stats::quantiles::SingleQuantileVariableLength</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::quantiles</namespace>
   </compound>
@@ -519,62 +517,6 @@
       <arglist>()</arglist>
     </member>
   </compound>
-  <compound kind="class">
-    <name>tatami_stats::quantiles::SingleQuantile</name>
-    <filename>classtatami__stats_1_1quantiles_1_1SingleQuantile.html</filename>
-    <templarg>typename Output_</templarg>
-    <templarg>typename Value_</templarg>
-    <templarg>typename Index_</templarg>
-    <member kind="function">
-      <type></type>
-      <name>SingleQuantile</name>
-      <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantile.html</anchorfile>
-      <anchor>a5ea04c11d3f9cd17d3fd8551505b525b</anchor>
-      <arglist>(const Index_ len, const Output_ quantile)</arglist>
-    </member>
-    <member kind="function">
-      <type>Output_</type>
-      <name>operator()</name>
-      <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantile.html</anchorfile>
-      <anchor>a8c9be853882bd39d001e20723cf00b24</anchor>
-      <arglist>(Value_ *ptr) const</arglist>
-    </member>
-    <member kind="function">
-      <type>Output_</type>
-      <name>operator()</name>
-      <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantile.html</anchorfile>
-      <anchor>aec45a8ea4b1b77ea0e455d4852cc541a</anchor>
-      <arglist>(const Index_ num, Value_ *ptr) const</arglist>
-    </member>
-  </compound>
-  <compound kind="class">
-    <name>tatami_stats::quantiles::SingleQuantileVariableLength</name>
-    <filename>classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html</filename>
-    <templarg>typename Output_</templarg>
-    <templarg>typename Value_</templarg>
-    <templarg>typename Index_</templarg>
-    <member kind="function">
-      <type></type>
-      <name>SingleQuantileVariableLength</name>
-      <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html</anchorfile>
-      <anchor>ab6f1bf58eca114f9387f40c9464c9a70</anchor>
-      <arglist>(Index_ max_len, const double quantile)</arglist>
-    </member>
-    <member kind="function">
-      <type>Output_</type>
-      <name>operator()</name>
-      <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html</anchorfile>
-      <anchor>ae0d279006abcfea0dd78d0291ae7c3dd</anchor>
-      <arglist>(const Index_ len, Value_ *ptr)</arglist>
-    </member>
-    <member kind="function">
-      <type>Output_</type>
-      <name>operator()</name>
-      <anchorfile>classtatami__stats_1_1quantiles_1_1SingleQuantileVariableLength.html</anchorfile>
-      <anchor>aecec1b0562f3a030b9447efff46aa4e9</anchor>
-      <arglist>(const Index_ len, const Index_ num, Value_ *ptr)</arglist>
-    </member>
-  </compound>
   <compound kind="namespace">
     <name>tatami_stats</name>
     <filename>namespacetatami__stats.html</filename>
@@ -589,13 +531,6 @@
     <namespace>tatami_stats::variances</namespace>
     <class kind="class">tatami_stats::LocalOutputBuffer</class>
     <class kind="class">tatami_stats::LocalOutputBuffers</class>
-    <member kind="function">
-      <type>Index_</type>
-      <name>shift_nans</name>
-      <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a66e149e01c63f446d6d257f68828c453</anchor>
-      <arglist>(Value_ *const ptr, const Index_ num)</arglist>
-    </member>
     <member kind="function">
       <type>Number_</type>
       <name>total_groups</name>
@@ -840,8 +775,6 @@
     <name>tatami_stats::quantiles</name>
     <filename>namespacetatami__stats_1_1quantiles.html</filename>
     <class kind="struct">tatami_stats::quantiles::Options</class>
-    <class kind="class">tatami_stats::quantiles::SingleQuantile</class>
-    <class kind="class">tatami_stats::quantiles::SingleQuantileVariableLength</class>
     <member kind="function">
       <type>void</type>
       <name>apply</name>
