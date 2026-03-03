@@ -73,8 +73,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const double qua
     }
 
     auto initialize = [&](
-        std::optional<quickstats::SingleQuantileFixedNumber<Output_, Value_, Index_> >& fixed,
-        std::optional<quickstats::SingleQuantileVariableNumber<Output_, Value_, Index_> >& variable
+        std::optional<quickstats::SingleQuantileFixedNumber<Output_, Index_> >& fixed,
+        std::optional<quickstats::SingleQuantileVariableNumber<Output_, Index_> >& variable
     ) -> void {
         if (qopt.skip_nan) {
             variable.emplace(otherdim, quantile);
@@ -93,8 +93,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const double qua
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             auto vbuffer = buffer.data();
 
-            std::optional<quickstats::SingleQuantileFixedNumber<Output_, Value_, Index_> > qcalcs_fixed;
-            std::optional<quickstats::SingleQuantileVariableNumber<Output_, Value_, Index_> > qcalcs_var;
+            std::optional<quickstats::SingleQuantileFixedNumber<Output_, Index_> > qcalcs_fixed;
+            std::optional<quickstats::SingleQuantileVariableNumber<Output_, Index_> > qcalcs_var;
             initialize(qcalcs_fixed, qcalcs_var);
 
             for (Index_ x = 0; x < l; ++x) {
@@ -120,8 +120,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const double qua
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
 
-            std::optional<quickstats::SingleQuantileFixedNumber<Output_, Value_, Index_> > qcalcs_fixed;
-            std::optional<quickstats::SingleQuantileVariableNumber<Output_, Value_, Index_> > qcalcs_var;
+            std::optional<quickstats::SingleQuantileFixedNumber<Output_, Index_> > qcalcs_fixed;
+            std::optional<quickstats::SingleQuantileVariableNumber<Output_, Index_> > qcalcs_var;
             initialize(qcalcs_fixed, qcalcs_var);
 
             for (Index_ x = 0; x < l; ++x) {

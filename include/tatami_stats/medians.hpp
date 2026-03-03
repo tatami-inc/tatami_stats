@@ -10,6 +10,7 @@
 
 #include "tatami/tatami.hpp"
 #include "sanisizer/sanisizer.hpp"
+#include "quickstats/quickstats.hpp"
 
 /**
  * @file medians.hpp
@@ -43,19 +44,7 @@ struct Options {
 };
 
 /**
- * Directly compute the median from a dense objective vector.
- *
- * @param[in] ptr Pointer to an array of length `num`, containing the values of the objective vector.
- * This may be modified on output.
- * @param num Length of the objective vector, i.e., length of the array at `ptr`.
- * @param skip_nan See `Options::skip_nan` for details.
- *
- * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
- * @tparam Value_ Numeric type of the input values.
- * @tparam Index_ Integer type of the row/column indices.
- *
- * @return The median of values in `[ptr, ptr + n)`.
+ * @cond
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
@@ -69,59 +58,11 @@ Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
         []() -> void {}
     );
 
-    if (num == 0) {
-        return std::numeric_limits<Output_>::quiet_NaN();
-    }
-
-    Index_ halfway = num / 2;
-    bool is_even = (num % 2 == 0);
-
-    std::nth_element(ptr, ptr + halfway, ptr + num);
-    Output_ medtmp = *(ptr + halfway);
-    if (!is_even) {
-        return medtmp;
-    }
-
-    // 'nth_element()' reorganizes 'ptr' so that everything below 'halfway' is
-    // less than or equal to 'ptr[halfway]', while everything above 'halfway'
-    // is greater than or equal to 'ptr[halfway]'. Thus, to get the element
-    // immediately before 'halfway' in the sort order, we just need to find the
-    // maximum from '[0, halfway)'.
-    Output_ other = *std::max_element(ptr, ptr + halfway);
-
-    if (medtmp == other) {
-        return medtmp; // Preserve exactness, respect infinities of the same sign.
-    } else {
-        return medtmp + (other - medtmp) / 2; // Avoid FP overflow.
-    }
+    return quickstats::median<Output_>(num, ptr);
 }
 
-/**
- * Directly compute the median from a sparse objective vector.
- *
- * @param[in] value Pointer to an array of length `num_nonzero`, containing values of the structural non-zeroes.
- * This may be modified on output.
- * @param num_nonzero Number of structural non-zeros in the objective vector.
- * @param num_all Length of the obejctive vector, including the structural zeros,
- * i.e., `num_all - num_nonzero` is the number of zeros.
- * @param skip_nan See `Options::skip_nan` for details.
- *
- * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
- * @tparam Value_ Numeric type of the input values.
- * @tparam Index_ Integer type of the row/column indices.
- *
- * @return The median of values in the sparse vector.
- */
 template<typename Output_ = double, typename Value_, typename Index_>
 Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan) {
-    // Fallback to the dense code if there are no structural zeros. This is not
-    // just for efficiency as the downstream averaging code assumes that there
-    // is at least one structural zero when considering its scenarios.
-    if (num_nonzero == num_all) {
-        return direct<Output_>(value, num_all, skip_nan);
-    }
-
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
@@ -133,69 +74,11 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
         []() -> void {}
     );
 
-    // Is the number of non-zeros less than the number of zeros?
-    // If so, the median must be zero. Note that we calculate it
-    // in this way to avoid overflow from 'num_nonzero * 2'.
-    if (num_nonzero < num_all - num_nonzero) {
-        return 0;
-    } 
-    
-    Index_ halfway = num_all / 2;
-    bool is_even = (num_all % 2 == 0);
-
-    Index_ num_zero = num_all - num_nonzero;
-    Index_ num_negative = 0;
-    for (Index_ i = 0; i < num_nonzero; ++i) {
-        num_negative += (value[i] < 0);
-    }
-
-    if (!is_even) {
-        if (num_negative > halfway) {
-            std::nth_element(value, value + halfway, value + num_nonzero);
-            return value[halfway];
-
-        } else if (halfway >= num_negative + num_zero) {
-            Index_ skip_zeros = halfway - num_zero;
-            std::nth_element(value, value + skip_zeros, value + num_nonzero);
-            return value[skip_zeros];
-
-        } else {
-            return 0;
-        }
-    }
-
-    Output_ baseline = 0, other = 0;
-    if (num_negative > halfway) { // both halves of the median are negative.
-        std::nth_element(value, value + halfway, value + num_nonzero);
-        baseline = value[halfway];
-        other = *(std::max_element(value, value + halfway)); // max_element gets the sorted value at halfway - 1, see explanation for the dense case.
-
-    } else if (num_negative == halfway) { // the upper half is guaranteed to be zero.
-        Index_ below_halfway = halfway - 1;
-        std::nth_element(value, value + below_halfway, value + num_nonzero);
-        other = value[below_halfway]; // set to other so that addition/subtraction of a zero baseline has no effect on precision. 
-
-    } else if (num_negative < halfway && num_negative + num_zero > halfway) { // both halves are zero, so zero is the median.
-        ;
-
-    } else if (num_negative + num_zero == halfway) { // the lower half is guaranteed to be zero.
-        Index_ skip_zeros = halfway - num_zero;
-        std::nth_element(value, value + skip_zeros, value + num_nonzero);
-        other = value[skip_zeros]; // set to other so that addition/subtraction of a zero baseline has no effect on precision. 
-
-    } else { // both halves of the median are non-negative.
-        Index_ skip_zeros = halfway - num_zero;
-        std::nth_element(value, value + skip_zeros, value + num_nonzero);
-        baseline = value[skip_zeros];
-        other = *(std::max_element(value, value + skip_zeros)); // max_element gets the sorted value at skip_zeros - 1, see explanation for the dense case.
-    }
-
-    if (baseline == other) {
-        return baseline; // Preserve exactness, respect infinities of the same sign.
-    } else {
-        return baseline + (other - baseline) / 2; // Avoid FP overflow.
-    }
+    return quickstats::median<Output_>(num_all, num_nonzero, value);
 }
+/**
+ * @endcond
+ */
 
 /**
  * Compute medians for each element of a chosen dimension of a `tatami::Matrix`.
@@ -229,7 +112,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             for (Index_ x = 0; x < l; ++x) {
                 auto range = ext->fetch(vbuffer, NULL);
                 tatami::copy_n(range.value, range.number, vbuffer);
-                output[x + s] = medians::direct<Output_>(vbuffer, range.number, otherdim, mopt.skip_nan);
+                output[x + s] = direct<Output_>(vbuffer, range.number, otherdim, mopt.skip_nan);
             }
         }, dim, mopt.num_threads);
 
@@ -240,7 +123,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             for (Index_ x = 0; x < l; ++x) {
                 auto ptr = ext->fetch(buffer.data());
                 tatami::copy_n(ptr, otherdim, buffer.data());
-                output[x + s] = medians::direct<Output_>(buffer.data(), otherdim, mopt.skip_nan);
+                output[x + s] = direct<Output_>(buffer.data(), otherdim, mopt.skip_nan);
             }
         }, dim, mopt.num_threads);
     }
