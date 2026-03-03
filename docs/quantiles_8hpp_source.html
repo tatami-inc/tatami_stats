@@ -140,8 +140,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">auto</span> initialize = [&amp;](</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        std::optional&lt;quickstats::SingleQuantileFixedNumber&lt;Output_, Value_, Index_&gt; &gt;&amp; fixed,</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        std::optional&lt;quickstats::SingleQuantileVariableNumber&lt;Output_, Value_, Index_&gt; &gt;&amp; variable</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        std::optional&lt;quickstats::SingleQuantileFixedNumber&lt;Output_, Index_&gt; &gt;&amp; fixed,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        std::optional&lt;quickstats::SingleQuantileVariableNumber&lt;Output_, Index_&gt; &gt;&amp; variable</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    ) -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">if</span> (qopt.<a class="code hl_variable" href="structtatami__stats_1_1quantiles_1_1Options.html#a1132c1939d3a1759873e80152b25c6f9">skip_nan</a>) {</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            variable.emplace(otherdim, quantile);</div>
@@ -160,8 +160,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keyword">auto</span> buffer = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size&lt;std::vector&lt;Value_&gt;</a> &gt;(otherdim);</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keyword">auto</span> vbuffer = buffer.data();</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            std::optional&lt;quickstats::SingleQuantileFixedNumber&lt;Output_, Value_, Index_&gt; &gt; qcalcs_fixed;</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            std::optional&lt;quickstats::SingleQuantileVariableNumber&lt;Output_, Value_, Index_&gt; &gt; qcalcs_var;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            std::optional&lt;quickstats::SingleQuantileFixedNumber&lt;Output_, Index_&gt; &gt; qcalcs_fixed;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            std::optional&lt;quickstats::SingleQuantileVariableNumber&lt;Output_, Index_&gt; &gt; qcalcs_var;</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            initialize(qcalcs_fixed, qcalcs_var);</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">for</span> (Index_ x = 0; x &lt; l; ++x) {</div>
@@ -187,8 +187,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <span class="keyword">auto</span> buffer = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size&lt;std::vector&lt;Value_&gt;</a> &gt;(otherdim);</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keyword">auto</span> ext = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ae5cfcdf9fa34c6d0cd6b672472d407b3">tatami::consecutive_extractor&lt;false&gt;</a>(mat, row, s, l);</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            std::optional&lt;quickstats::SingleQuantileFixedNumber&lt;Output_, Value_, Index_&gt; &gt; qcalcs_fixed;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            std::optional&lt;quickstats::SingleQuantileVariableNumber&lt;Output_, Value_, Index_&gt; &gt; qcalcs_var;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            std::optional&lt;quickstats::SingleQuantileFixedNumber&lt;Output_, Index_&gt; &gt; qcalcs_fixed;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            std::optional&lt;quickstats::SingleQuantileVariableNumber&lt;Output_, Index_&gt; &gt; qcalcs_var;</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            initialize(qcalcs_fixed, qcalcs_var);</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keywordflow">for</span> (Index_ x = 0; x &lt; l; ++x) {</div>

@@ -736,20 +736,6 @@
     <filename>namespacetatami__stats_1_1medians.html</filename>
     <class kind="struct">tatami_stats::medians::Options</class>
     <member kind="function">
-      <type>Output_</type>
-      <name>direct</name>
-      <anchorfile>namespacetatami__stats_1_1medians.html</anchorfile>
-      <anchor>ad805e96ccca9615107f7360788f24a44</anchor>
-      <arglist>(Value_ *ptr, Index_ num, bool skip_nan)</arglist>
-    </member>
-    <member kind="function">
-      <type>Output_</type>
-      <name>direct</name>
-      <anchorfile>namespacetatami__stats_1_1medians.html</anchorfile>
-      <anchor>a646feafa77f4f32dbcb2d58f76e6bd6a</anchor>
-      <arglist>(Value_ *value, Index_ num_nonzero, Index_ num_all, bool skip_nan)</arglist>
-    </member>
-    <member kind="function">
       <type>void</type>
       <name>apply</name>
       <anchorfile>namespacetatami__stats_1_1medians.html</anchorfile>
