@@ -35,18 +35,18 @@ TEST(ComputingDimVariances, RowVariances) {
         ref[r] /= NC - 1;
     }
 
-    compare_double_vectors(ref, tatami_stats::variances::by_row(dense_row.get()));
-    compare_double_vectors(ref, tatami_stats::variances::by_row(dense_column.get()));
-    compare_double_vectors(ref, tatami_stats::variances::by_row(sparse_row.get()));
-    compare_double_vectors(ref, tatami_stats::variances::by_row(sparse_column.get()));
+    compare_double_vectors(ref, tatami_stats::variances::by_row(*dense_row));
+    compare_double_vectors(ref, tatami_stats::variances::by_row(*dense_column));
+    compare_double_vectors(ref, tatami_stats::variances::by_row(*sparse_row));
+    compare_double_vectors(ref, tatami_stats::variances::by_row(*sparse_column));
 
     // Same results from parallel code.
     tatami_stats::variances::Options vopt;
     vopt.num_threads = 3;
-    compare_double_vectors(ref, tatami_stats::variances::by_row(dense_row.get(), vopt));
-    compare_double_vectors(ref, tatami_stats::variances::by_row(dense_column.get(), vopt));
-    compare_double_vectors(ref, tatami_stats::variances::by_row(sparse_row.get(), vopt));
-    compare_double_vectors(ref, tatami_stats::variances::by_row(sparse_column.get(), vopt));
+    compare_double_vectors(ref, tatami_stats::variances::by_row(*dense_row, vopt));
+    compare_double_vectors(ref, tatami_stats::variances::by_row(*dense_column, vopt));
+    compare_double_vectors(ref, tatami_stats::variances::by_row(*sparse_row, vopt));
+    compare_double_vectors(ref, tatami_stats::variances::by_row(*sparse_column, vopt));
 }
 
 TEST(ComputingDimVariances, RowVariancesWithNan) {
@@ -261,16 +261,16 @@ TEST(ComputingDimVariances, InvalidVariances) {
     {
         auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(111, 0, std::vector<double>()));
 
-        auto cref = tatami_stats::variances::by_column(dense.get());
+        auto cref = tatami_stats::variances::by_column(*dense);
         EXPECT_EQ(cref.size(), 0);
-        auto cref2 = tatami_stats::variances::by_column(dense.get(), vopt);
+        auto cref2 = tatami_stats::variances::by_column(*dense, vopt);
         EXPECT_EQ(cref.size(), 0);
 
-        auto rref = tatami_stats::variances::by_row(dense.get());
+        auto rref = tatami_stats::variances::by_row(*dense);
         EXPECT_TRUE(rref.size() > 0);
         EXPECT_TRUE(is_all_nan(rref));
 
-        auto rref2 = tatami_stats::variances::by_row(dense.get(), vopt);
+        auto rref2 = tatami_stats::variances::by_row(*dense, vopt);
         EXPECT_TRUE(rref2.size() > 0);
         EXPECT_TRUE(is_all_nan(rref2));
     }
@@ -279,11 +279,11 @@ TEST(ComputingDimVariances, InvalidVariances) {
     {
         auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(10, 1, std::vector<double>(10)));
 
-        auto rref = tatami_stats::variances::by_row(dense.get());
+        auto rref = tatami_stats::variances::by_row(*dense);
         EXPECT_TRUE(rref.size() > 0);
         EXPECT_TRUE(is_all_nan(rref));
 
-        auto rref2 = tatami_stats::variances::by_row(dense.get(), vopt);
+        auto rref2 = tatami_stats::variances::by_row(*dense, vopt);
         EXPECT_TRUE(rref2.size() > 0);
         EXPECT_TRUE(is_all_nan(rref2));
     }

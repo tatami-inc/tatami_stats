@@ -8,6 +8,7 @@
 
 #include "sanisizer/sanisizer.hpp"
 #include "tatami/tatami.hpp"
+#include "quickstats/quickstats.hpp"
 
 /**
  * @file utils.hpp
@@ -25,14 +26,13 @@ using I = std::remove_cv_t<std::remove_reference_t<Input_> >;
 
 template<typename Value_, typename Index_>
 Index_ shift_nans(Value_* const ptr, const Index_ num) {
-    Index_ pos = 0;
-    for (Index_ i = 0; i < num; ++i) {
-        if (std::isnan(ptr[i])) {
-            std::swap(ptr[i], ptr[pos]);
-            ++pos;
+    return quickstats::skip_values(
+        num,
+        ptr,
+        [](const std::size_t, const Value_ val) -> bool {
+            return std::isnan(val);
         }
-    }
-    return pos;
+    ); 
 }
 /**
  * @endcond

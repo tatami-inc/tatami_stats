@@ -12,6 +12,7 @@
 
 #include "tatami/tatami.hpp"
 #include "sanisizer/sanisizer.hpp"
+#include "quickstats/quickstats.hpp"
 
 /**
  * @file variances.hpp
@@ -47,359 +48,276 @@ struct Options {
 /**
  * @cond
  */
-namespace internal {
+template<typename Value_, typename Index_, typename Output_>
+void apply_direct_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& vopt) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
-template<typename Output_ = double, typename Value_, typename Index_ >
-void add_welford(Output_& mean, Output_& sumsq, Value_ value, Index_ count) {
-    Output_ delta = value - mean;
-    mean += delta / count;
-    sumsq += delta * (value - mean);
+    if (mat.sparse()) {
+        tatami::Options opt;
+        opt.sparse_extract_index = false;
+
+        tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+            quickstats::RssWorkspace<Output_> work;
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(vbuffer.data(), NULL);
+                const auto res = quickstats::rss(otherdim, out.number, out.value, work);
+                output[x + s] = quickstats::rss_to_variance(otherdim, res.rss);
+            }
+        }, dim, vopt.num_threads);
+
+    } else {
+        tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
+            auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+            quickstats::RssWorkspace<Output_> work;
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(buffer.data());
+                const auto res = quickstats::rss(otherdim, out, work);
+                output[x + s] = quickstats::rss_to_variance(otherdim, res.rss);
+            }
+        }, dim, vopt.num_threads);
+    }
 }
 
-template<typename Output_ = double, typename Index_ >
-void add_welford_zeros(Output_& mean, Output_& sumsq, Index_ num_nonzero, Index_ num_all) {
-    auto ratio = static_cast<Output_>(num_nonzero) / static_cast<Output_>(num_all);
-    sumsq += mean * mean * ratio * (num_all - num_nonzero);
-    mean *= ratio;
+template<typename Value_, typename Index_, typename Output_>
+void apply_direct_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& vopt) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+
+    if (mat.sparse()) {
+        tatami::Options opt;
+        opt.sparse_extract_index = false;
+
+        tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+            quickstats::RssWorkspace<Output_> work;
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(vbuffer.data(), NULL);
+                tatami::copy_n(out.value, out.number, vbuffer.data());
+                const auto new_number = shift_nans(vbuffer.data(), out.number);
+                const Index_ new_total = otherdim - (out.number - new_number);
+                const auto res = quickstats::rss(new_total, new_number, vbuffer.data(), work);
+                output[x + s] = quickstats::rss_to_variance(new_total, res.rss);
+            }
+        }, dim, vopt.num_threads);
+
+    } else {
+        tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
+            auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+            quickstats::RssWorkspace<Output_> work;
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(buffer.data());
+                tatami::copy_n(out, otherdim, buffer.data());
+                const auto new_total = shift_nans(buffer.data(), otherdim);
+                const auto res = quickstats::rss(new_total, buffer.data(), work);
+                output[x + s] = quickstats::rss_to_variance(new_total, res.rss);
+            }
+        }, dim, vopt.num_threads);
+    }
 }
 
-// Avoid problems from interactions between constexpr/lambda/std::conditional. 
-template<typename Index_>
-struct MockVector {
-    MockVector(std::size_t) {}
-    Index_& operator[](std::size_t) { return out; }
-    std::size_t size() { return 0; }
-    Index_ out = 0;
-};
+template<typename Value_, typename Index_, typename Output_>
+void apply_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& vopt) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    const bool is_sparse = mat.is_sparse();
 
+    auto all_partial_rss = sanisizer::create<std::vector<std::vector<Output_> > >(vopt.num_threads);
+    auto all_partial_mean = sanisizer::create<std::vector<std::vector<Output_> > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<Index_> >(vopt.num_threads);
+
+    const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
+        // Storing the RSS's for the first thread in the output vector to save ourselves an allocation.
+        Output_* rss_ptr;
+        if (thread == 0) {
+            std::fill_n(output, dim, 0);
+            rss_ptr = output;
+        } else {
+            auto& cur_rss = all_partial_rss[thread];
+            tatami::resize_container_to_Index_size(cur_rss, dim);
+            rss_ptr = cur_rss.data();
+        }
+
+        auto& cur_mean = all_partial_mean[thread];
+        tatami::resize_container_to_Index_size(cur_mean, dim);
+        all_partial_count[thread] = l;
+
+        if (is_sparse) {
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+            auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+            auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+
+            quickstats::RssRunningSparse<Index_, Value_, Output_> runner(dim, cur_mean.data(), rss_ptr, nonzeros.data());
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(vbuffer.data(), ibuffer.data());
+                runner.add(out.number, out.value, out.index);
+            }
+            runner.finish();
+
+        } else {
+            auto ext = tatami::consecutive_extractor<false>(mat, !row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+
+            quickstats::RssRunningDense<Value_, Output_> runner(dim, cur_mean.data(), rss_ptr);
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(buffer.data());
+                runner.add(out);
+            }
+            runner.finish();
+        }
+
+    }, otherdim, vopt.num_threads);
+
+    if (nused > 1) {
+        // Computing the global mean.
+        auto global_mean = tatami::create_container_of_Index_size<std::vector<Output_> >(dim);
+        for (int u = 0; u < nused; ++u) {
+            const Output_ mult = static_cast<Output_>(all_partial_count[u]) / static_cast<Output_>(otherdim);
+            const auto& cur_mean = all_partial_mean[u];
+            for (Index_ d = 0; d < dim; ++d) {
+                global_mean[d] += cur_mean[d] * mult;
+            }
+        }
+
+        // Combining the RSS. We can use recenter_rss_unsafe() as we are guaranteed that cur_count > 0,
+        // as parallelize() will only ever split into non-empty ranges if those ranges are used.
+        for (int u = 0; u < nused; ++u) {
+            const auto cur_count = all_partial_count[u];
+            const auto& cur_mean = all_partial_mean[u];
+            if (u == 0) {
+                for (Index_ d = 0; d < dim; ++d) {
+                    output[d] = quickstats::recenter_rss_unsafe(cur_count, output[d], cur_mean[d], global_mean[d]); 
+                }
+            } else {
+                const auto& cur_rss = all_partial_rss[u];
+                for (Index_ d = 0; d < dim; ++d) {
+                    output[d] += quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], global_mean[d]); 
+                }
+            }
+        }
+    }
+
+    quickstats::rss_to_variance(dim, otherdim, output);
+}
+
+template<typename Value_, typename Index_, typename Output_>
+void apply_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& vopt) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    const bool is_sparse = mat.is_sparse();
+
+    auto all_partial_rss = sanisizer::create<std::vector<std::vector<Output_> > >(vopt.num_threads);
+    auto all_partial_mean = sanisizer::create<std::vector<std::vector<Output_> > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::vector<Index_> > >(vopt.num_threads);
+
+    const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
+        auto& cur_mean = all_partial_mean[thread];
+        tatami::resize_container_to_Index_size(cur_mean, dim);
+        auto& cur_count = all_partial_count[thread];
+        tatami::resize_container_to_Index_size(cur_count, dim);
+
+        // Storing the RSS's for the first thread in the output vector to save ourselves an allocation.
+        Output_* rss;
+        if (thread == 0) {
+            std::fill_n(output, dim, 0);
+            rss = output;
+        } else {
+            auto& cur_rss = all_partial_rss[thread];
+            tatami::resize_container_to_Index_size(cur_rss, dim);
+            rss = cur_rss.data();
+        }
+
+        if (is_sparse) {
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+            auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+            auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+
+            quickstats::RssRunningSparseSkip<Index_, Value_, Output_> runner(dim, cur_mean.data(), rss, nonzeros.data(), cur_count.data());
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(vbuffer.data(), ibuffer.data());
+                runner.add(
+                    out.number,
+                    out.value,
+                    out.index,
+                    [](std::size_t, const Value_ val) -> bool {
+                        return std::isnan(val);
+                    }
+                );
+            }
+            runner.finish();
+
+        } else {
+            auto ext = tatami::consecutive_extractor<false>(mat, !row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+
+            quickstats::RssRunningDenseSkip<Index_, Value_, Output_> runner(dim, cur_mean.data(), rss, cur_count.data());
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(buffer.data());
+                runner.add(
+                    out,
+                    [](std::size_t, const Value_ val) -> bool {
+                        return std::isnan(val);
+                    }
+                );
+            }
+            runner.finish();
+        }
+
+    }, otherdim, vopt.num_threads);
+
+    if (nused == 1) {
+        quickstats::rss_to_variance(dim, all_partial_count.front().data(), output);
+
+    } else {
+        // Computing the global total.
+        auto global_count = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+        for (int u = 0; u < nused; ++u) {
+            const auto& cur_count = all_partial_count[u];
+            for (Index_ d = 0; d < dim; ++d) {
+                global_count[d] += cur_count[d];
+            }
+        }
+
+        // Computing the global mean.
+        auto global_mean = tatami::create_container_of_Index_size<std::vector<Output_> >(dim);
+        for (int u = 0; u < nused; ++u) {
+            const auto& cur_count = all_partial_count[u];
+            const auto& cur_mean = all_partial_mean[u];
+            for (Index_ d = 0; d < dim; ++d) {
+                const auto mult = static_cast<Output_>(cur_count[u]) / static_cast<Output_>(global_count[u]);
+                global_mean[d] += cur_mean[d] * mult;
+            }
+        }
+
+        // Combining the RSS. This time, we need to use the safe version as we don't know whether all elements were skipped in a thread.
+        for (int u = 0; u < nused; ++u) {
+            const auto& cur_count = all_partial_count[u];
+            const auto& cur_mean = all_partial_mean[u];
+            if (u == 0) {
+                for (Index_ d = 0; d < dim; ++d) {
+                    output[d] = quickstats::recenter_rss(cur_count[d], output[d], cur_mean[d], global_mean[d]); 
+                }
+            } else {
+                const auto& cur_rss = all_partial_rss[u];
+                for (Index_ d = 0; d < dim; ++d) {
+                    output[d] += quickstats::recenter_rss(cur_count[d], cur_rss[d], cur_mean[d], global_mean[d]); 
+                }
+            }
+        }
+
+        quickstats::rss_to_variance(dim, global_count.data(), output);
+    }
 }
 /**
  * @endcond
  */
-
-/**
- * Compute the mean and variance from a sparse objective vector.
- * This uses the standard two-pass algorithm with naive accumulation of the sum of squared differences;
- * thus, it is best used with a sufficiently high-precision `Output_` like `double`.
- *
- * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
- * @tparam Value_ Numeric type of the input data.
- * @tparam Index_ Integer type of the row/column indices.
- *
- * @param[in] value Pointer to an array of length `num`, containing the values of the structural non-zeros.
- * @param num_nonzero Length of the array pointed to by `value`.
- * @param num_all Length of the objective vector, including the structural zeros not in `value`.
- * This should be greater than or equal to `num_nonzero`.
- * @param skip_nan See `Options::skip_nan`.
- *
- * @return The sample mean and variance of values in the sparse array.
- * This may be NaN if there are not enough (non-NaN) values in `value`.
- */
-template<typename Output_ = double, typename Value_, typename Index_ >
-std::pair<Output_, Output_> direct(const Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan) {
-    Output_ mean = 0;
-    Index_ lost = 0;
-
-    ::tatami_stats::internal::nanable_ifelse<Value_>(
-        skip_nan,
-        [&]() -> void {
-            auto copy = value;
-            for (Index_ i = 0; i < num_nonzero; ++i, ++copy) {
-                auto val = *copy;
-                if (std::isnan(val)) {
-                    ++lost;
-                } else {
-                    mean += val;
-                }
-            }
-        },
-        [&]() -> void {
-            auto copy = value;
-            for (Index_ i = 0; i < num_nonzero; ++i, ++copy) {
-                mean += *copy;
-            }
-        }
-    );
-
-    auto count = num_all - lost;
-    mean /= count;
-
-    Output_ var = 0;
-    ::tatami_stats::internal::nanable_ifelse<Value_>(
-        skip_nan,
-        [&]() -> void {
-            for (Index_ i = 0; i < num_nonzero; ++i) {
-                auto val = value[i];
-                if (!std::isnan(val)) {
-                    auto delta = static_cast<Output_>(val) - mean;
-                    var += delta * delta;
-                }
-            }
-        },
-        [&]() -> void {
-            for (Index_ i = 0; i < num_nonzero; ++i) {
-                auto delta = static_cast<Output_>(value[i]) - mean;
-                var += delta * delta;
-            }
-        }
-    );
-
-    if (num_nonzero < num_all) {
-        var += static_cast<Output_>(num_all - num_nonzero) * mean * mean;
-    }
-
-    if (count == 0) {
-        return std::make_pair(std::numeric_limits<Output_>::quiet_NaN(), std::numeric_limits<Output_>::quiet_NaN());
-    } else if (count == 1) {
-        return std::make_pair(mean, std::numeric_limits<Output_>::quiet_NaN());
-    } else {
-        return std::make_pair(mean, var / (count - 1));
-    }
-}
-
-/**
- * Compute the mean and variance from a dense objective vector.
- * This uses the standard two-pass algorithm with naive accumulation of the sum of squared differences;
- * thus, it is best used with a sufficiently high-precision `Output_` like `double`.
- *
- * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
- * @tparam Value_ Numeric type of the input data.
- * @tparam Index_ Integer type of the row/column indices.
- *
- * @param[in] ptr Pointer to an array of length `num`, containing the values of the objective vector.
- * @param num Length of the objective vector, i.e., length of the array at `ptr`.
- * @param skip_nan See `Options::skip_nan`.
- *
- * @return The sample mean and variance of values in `[ptr, ptr + num)`.
- * This may be NaN if there are not enough (non-NaN) values in `ptr`.
- */
-template<typename Output_ = double, typename Value_, typename Index_ >
-std::pair<Output_, Output_> direct(const Value_* ptr, Index_ num, bool skip_nan) {
-    return direct<Output_>(ptr, num, num, skip_nan);
-}
-
-/**
- * @brief Running variances from dense data.
- *
- * Compute running means and variances from dense data using Welford's method.
- * This considers a scenario with a set of equilength "objective" vectors \f$[v_1, v_2, v_3, ..., v_n]\f$,
- * but data are only available for "observed" vectors \f$[p_1, p_2, p_3, ..., p_m]\f$,
- * where the \f$j\f$-th element of \f$p_i\f$ is the \f$i\f$-th element of \f$v_j\f$.
- * The idea is to repeatedly call `add()` for `ptr` corresponding to observed vectors from 0 to \f$m - 1\f$,
- * and then finally call `finish()` to obtain the mean and variance for each objective vector.
- *
- * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
- * @tparam Value_ Numeric type of the input data.
- * @tparam Index_ Integer type of the row/column indices.
- */
-template<typename Output_, typename Value_, typename Index_>
-class RunningDense {
-public:
-    /**
-     * @param num Number of objective vectors, i.e., \f$n\f$.
-     * @param[out] mean Pointer to an output array of length `num`.
-     * This should be zeroed on input; after `finish()` is called, this will contain the means for each objective vector.
-     * @param[out] variance Pointer to an output array of length `num`, containing the variances for each objective vector.
-     * This should be zeroed on input; after `finish()` is called, this will contain the sample variance for each objective vector.
-     * @param skip_nan See `Options::skip_nan` for details.
-     */
-    RunningDense(Index_ num, Output_* mean, Output_* variance, bool skip_nan) : 
-        my_num(num),
-        my_mean(mean),
-        my_variance(variance),
-        my_skip_nan(skip_nan),
-        my_ok_count(skip_nan ? tatami::can_cast_Index_to_container_size<I<decltype(my_ok_count)> >(num) : static_cast<Index_>(0))
-    {}
-
-    /**
-     * Add the next observed vector to the variance calculation.
-     * @param[in] ptr Pointer to an array of values of length `num`, corresponding to an observed vector.
-     */
-    void add(const Value_* ptr) {
-        // my_count is the upper bound of all my_ok_count, so we check it regardless of my_skip_nan.
-        my_count = sanisizer::sum<Index_>(my_count, 1);
-
-        ::tatami_stats::internal::nanable_ifelse<Value_>(
-            my_skip_nan,
-            [&]() -> void {
-                for (Index_ i = 0; i < my_num; ++i, ++ptr) {
-                    auto val = *ptr;
-                    if (!std::isnan(val)) {
-                        internal::add_welford(my_mean[i], my_variance[i], val, ++(my_ok_count[i]));
-                    }
-                }
-            },
-            [&]() -> void {
-                for (Index_ i = 0; i < my_num; ++i, ++ptr) {
-                    internal::add_welford(my_mean[i], my_variance[i], *ptr, my_count);
-                }
-            }
-        );
-    }
-
-    /**
-     * Finish the variance calculation once all observed vectors have been passed to `add()`. 
-     */
-    void finish() {
-        ::tatami_stats::internal::nanable_ifelse<Value_>(
-            my_skip_nan,
-            [&]() -> void {
-                for (Index_ i = 0; i < my_num; ++i) {
-                    auto ct = my_ok_count[i];
-                    if (ct < 2) {
-                        my_variance[i] = std::numeric_limits<Output_>::quiet_NaN();
-                        if (ct == 0) {
-                            my_mean[i] = std::numeric_limits<Output_>::quiet_NaN();
-                        }
-                    } else {
-                        my_variance[i] /= ct - 1;
-                    }
-                }
-            },
-            [&]() -> void {
-                if (my_count < 2) {
-                    std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
-                    if (my_count == 0) {
-                        std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
-                    }
-                } else {
-                    for (Index_ i = 0; i < my_num; ++i) {
-                        my_variance[i] /= my_count - 1;
-                    }
-                }
-            }
-        );
-    }
-
-private:
-    Index_ my_num;
-    Output_* my_mean;
-    Output_* my_variance;
-    bool my_skip_nan;
-    Index_ my_count = 0;
-    typename std::conditional<std::numeric_limits<Value_>::has_quiet_NaN, std::vector<Index_>, internal::MockVector<Index_> >::type my_ok_count;
-};
-
-/**
- * @brief Running variances from sparse data.
- *
- * Compute running means and variances from sparse data using Welford's method.
- * This does the same as `RunningDense` but for sparse observed vectors.
- *
- * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
- * @tparam Value_ Numeric type of the input data.
- * @tparam Index_ Integer type of the row/column indices.
- */
-template<typename Output_, typename Value_, typename Index_>
-class RunningSparse {
-public:
-    /**
-     * @param num Number of objective vectors.
-     * @param[out] mean Pointer to an output array of length `num`, containing the means for each objective vector.
-     * This should be zeroed on input; after `finish()` is called, this will contain the mean for each objective vector.
-     * @param[out] variance Pointer to an output array of length `num`, containing the variances for each objective vector.
-     * This should be zeroed on input; after `finish()` is called, this will contain the sample variance for each objective vector.
-     * @param skip_nan See `Options::skip_nan` for details.
-     * @param subtract Offset to subtract from each element of `index` before using it to index into `mean` and friends.
-     * Only relevant if `mean` and friends hold statistics for a contiguous subset of objective vectors,
-     * e.g., during task allocation for parallelization.
-     */
-    RunningSparse(Index_ num, Output_* mean, Output_* variance, bool skip_nan, Index_ subtract = 0) : 
-        my_num(num),
-        my_mean(mean),
-        my_variance(variance),
-        my_nonzero(tatami::can_cast_Index_to_container_size<I<decltype(my_nonzero)> >(num)),
-        my_skip_nan(skip_nan),
-        my_subtract(subtract),
-        my_nan(skip_nan ? tatami::can_cast_Index_to_container_size<I<decltype(my_nan)> >(num) : static_cast<Index_>(0))
-    {}
-
-    /**
-     * Add the next observed vector to the variance calculation.
-     * @param[in] value Value of structural non-zero elements.
-     * @param[in] index Index of structural non-zero elements.
-     * @param number Number of non-zero elements in `value` and `index`.
-     */
-    void add(const Value_* value, const Index_* index, Index_ number) {
-        // my_count is the upper bound of all my_nonzero, so no need to check individual increments.
-        my_count = sanisizer::sum<Index_>(my_count, 1);
-
-        ::tatami_stats::internal::nanable_ifelse<Value_>(
-            my_skip_nan,
-            [&]() -> void {
-                for (Index_ i = 0; i < number; ++i) {
-                    auto val = value[i];
-                    auto ri = index[i] - my_subtract;
-                    if (std::isnan(val)) {
-                        ++my_nan[ri];
-                    } else {
-                        internal::add_welford(my_mean[ri], my_variance[ri], val, ++(my_nonzero[ri]));
-                    }
-                }
-            },
-            [&]() -> void {
-                for (Index_ i = 0; i < number; ++i) {
-                    auto ri = index[i] - my_subtract;
-                    internal::add_welford(my_mean[ri], my_variance[ri], value[i], ++(my_nonzero[ri]));
-                }
-            }
-        );
-    }
-
-    /**
-     * Finish the variance calculation once all observed vectors have been passed to `add()`. 
-     */
-    void finish() {
-        ::tatami_stats::internal::nanable_ifelse<Value_>(
-            my_skip_nan,
-            [&]() -> void {
-                for (Index_ i = 0; i < my_num; ++i) {
-                    auto& curM = my_mean[i];
-                    auto& curV = my_variance[i];
-                    Index_ ct = my_count - my_nan[i];
-
-                    if (ct < 2) {
-                        curV = std::numeric_limits<Output_>::quiet_NaN();
-                        if (ct == 0) {
-                            curM = std::numeric_limits<Output_>::quiet_NaN();
-                        }
-                    } else {
-                        internal::add_welford_zeros(curM, curV, my_nonzero[i], ct);
-                        curV /= ct - 1;
-                    }
-                }
-            },
-            [&]() -> void {
-                if (my_count < 2) {
-                    std::fill_n(my_variance, my_num, std::numeric_limits<Output_>::quiet_NaN());
-                    if (my_count == 0) {
-                        std::fill_n(my_mean, my_num, std::numeric_limits<Output_>::quiet_NaN());
-                    }
-                } else {
-                    for (Index_ i = 0; i < my_num; ++i) {
-                        auto& var = my_variance[i];
-                        internal::add_welford_zeros(my_mean[i], var, my_nonzero[i], my_count);
-                        var /= my_count - 1;
-                    }
-                }
-            }
-        );
-    }
-
-private:
-    Index_ my_num;
-    Output_* my_mean;
-    Output_* my_variance;
-    std::vector<Index_> my_nonzero;
-    bool my_skip_nan;
-    Index_ my_subtract;
-    Index_ my_count = 0;
-    typename std::conditional<std::numeric_limits<Value_>::has_quiet_NaN, std::vector<Index_>, internal::MockVector<Index_> >::type my_nan;
-};
 
 /**
  * Compute variances for each element of a chosen dimension of a `tatami::Matrix`.
@@ -420,72 +338,23 @@ private:
  */
 template<typename Value_, typename Index_, typename Output_>
 void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& vopt) {
-    auto dim = (row ? mat.nrow() : mat.ncol());
-    auto otherdim = (row ? mat.ncol() : mat.nrow());
-    const bool direct = mat.prefer_rows() == row;
-
-    if (mat.sparse()) {
-        if (direct) {
-            tatami::Options opt;
-            opt.sparse_extract_index = false;
-            tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<true>(mat, row, s, l);
-                auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
-                for (Index_ x = 0; x < l; ++x) {
-                    auto out = ext->fetch(vbuffer.data(), NULL);
-                    output[x + s] = variances::direct<Output_>(out.value, out.number, otherdim, vopt.skip_nan).second;
-                }
-            }, dim, vopt.num_threads);
-
-        } else {
-            tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
-                auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(l);
-                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(l);
-
-                auto running_means = tatami::create_container_of_Index_size<std::vector<Output_> >(l);
-                LocalOutputBuffer<Output_> local_output(thread, s, l, output);
-                variances::RunningSparse<Output_, Value_, Index_> runner(l, running_means.data(), local_output.data(), vopt.skip_nan, s);
-
-                for (Index_ x = 0; x < otherdim; ++x) {
-                    auto out = ext->fetch(vbuffer.data(), ibuffer.data());
-                    runner.add(out.value, out.index, out.number);
-                }
-                runner.finish();
-
-                local_output.transfer(); 
-            }, dim, vopt.num_threads);
+    internal::nanable_ifelse<Value_>(
+        vopt.skip_nan,
+        [&]() -> void {
+            if (mat.prefer_rows() == row) {
+                apply_direct_skip(row, mat, output, vopt);
+            } else {
+                apply_running_skip(row, mat, output, vopt);
+            }
+        },
+        [&]() -> void {
+            if (mat.prefer_rows() == row) {
+                apply_direct_noskip(row, mat, output, vopt);
+            } else {
+                apply_running_noskip(row, mat, output, vopt);
+            }
         }
-
-    } else {
-        if (direct) {
-            tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
-                auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
-                for (Index_ x = 0; x < l; ++x) {
-                    auto out = ext->fetch(buffer.data());
-                    output[x + s] = variances::direct<Output_>(out, otherdim, vopt.skip_nan).second;
-                }
-            }, dim, vopt.num_threads);
-
-        } else {
-            tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-                auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, s, l);
-                auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(l);
-
-                auto running_means = tatami::create_container_of_Index_size<std::vector<Output_> >(l);
-                LocalOutputBuffer<Output_> local_output(thread, s, l, output);
-                variances::RunningDense<Output_, Value_, Index_> runner(l, running_means.data(), local_output.data(), vopt.skip_nan);
-
-                for (Index_ x = 0; x < otherdim; ++x) {
-                    runner.add(ext->fetch(buffer.data()));
-                }
-                runner.finish();
-
-                local_output.transfer(); 
-            }, dim, vopt.num_threads);
-        }
-    }
+    );
 }
 
 /**
