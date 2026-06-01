@@ -51,9 +51,7 @@ Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
-            auto lost = shift_nans(ptr, num);
-            ptr += lost;
-            num -= lost;
+            num = shift_nans(ptr, num);
         },
         []() -> void {}
     );
@@ -66,10 +64,9 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
     ::tatami_stats::internal::nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
-            auto lost = shift_nans(value, num_nonzero);
-            value += lost;
-            num_nonzero -= lost;
-            num_all -= lost;
+            auto new_nonzero = shift_nans(value, num_nonzero);
+            num_all -= num_nonzero - new_nonzero;
+            num_nonzero = new_nonzero;
         },
         []() -> void {}
     );

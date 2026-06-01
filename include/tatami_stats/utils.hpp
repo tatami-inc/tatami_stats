@@ -27,7 +27,7 @@ using I = std::remove_cv_t<std::remove_reference_t<Input_> >;
 template<typename Value_, typename Index_>
 Index_ shift_nans(Value_* const ptr, const Index_ num) {
     return quickstats::skip_values(
-        num,
+        num, // conversion of Index_ to a std::size_t is safe due to tatami's guarantees. 
         ptr,
         [](const std::size_t, const Value_ val) -> bool {
             return std::isnan(val);

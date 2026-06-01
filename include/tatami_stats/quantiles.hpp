@@ -105,8 +105,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const double qua
                 ::tatami_stats::internal::nanable_ifelse<Value_>(
                     qopt.skip_nan,
                     [&]() -> void {
-                        auto lost = shift_nans(vbuffer, range.number);
-                        output[x + s] = (*qcalcs_var)(otherdim - lost, range.number - lost, vbuffer + lost);
+                        const auto new_non_zeros = shift_nans(vbuffer, range.number);
+                        output[x + s] = (*qcalcs_var)(otherdim - (range.number - new_non_zeros), new_non_zeros, vbuffer);
                     },
                     [&]() -> void {
                         output[x + s] = (*qcalcs_fixed)(range.number, vbuffer);
@@ -133,8 +133,8 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const double qua
                 ::tatami_stats::internal::nanable_ifelse<Value_>(
                     qopt.skip_nan,
                     [&]() -> void {
-                        auto lost = shift_nans(bufptr, otherdim);
-                        output[x + s] = (*qcalcs_var)(otherdim - lost, bufptr + lost);
+                        const auto new_total = shift_nans(bufptr, otherdim);
+                        output[x + s] = (*qcalcs_var)(new_total, bufptr);
                     },
                     [&]() -> void {
                         output[x + s] = (*qcalcs_fixed)(bufptr);
