@@ -45,11 +45,9 @@ struct Options {
 /**
  * @cond
  */
-namespace internal {
-
 template<typename Index_, typename Output_>
-void finish_means(std::size_t num_groups, const Index_* group_size, Output_* output_means) {
-    for (I<decltype(num_groups)> b = 0; b < num_groups; ++b) {
+void finish_means(const std::size_t num_groups, const std::vector<Index_>& group_size, Output_* output_means) {
+    for (std::size_t b = 0; b < num_groups; ++b) {
         if (group_size[b]) {
             output_means[b] /= group_size[b];
         } else {
@@ -59,207 +57,525 @@ void finish_means(std::size_t num_groups, const Index_* group_size, Output_* out
 }
 
 template<typename Index_, typename Output_>
-void finish_variances(std::size_t num_groups, const Index_* group_size, Output_* output_variances) {
-    for (I<decltype(num_groups)> b = 0; b < num_groups; ++b) {
-        if (group_size[b] > 1) {
-            output_variances[b] /= group_size[b] - 1;
+void finish_variances(const std::size_t num_groups, const std::vector<Index_>& group_size, const std::vector<Output_>& rss, const Index_ i, Output_** output_variances) {
+   for (std::size_t  b = 0; b < num_groups; ++b) {
+       if (group_size[b] > 1) {
+           output_variances[b][i] = rss[b] / static_cast<Output_>(group_size[b] - 1);
+       } else {
+           output_variances[b][i] = std::numeric_limits<Output_>::quiet_NaN();
+       }
+   }
+}
+
+template<typename Value_, typename Index_, typename Group_, typename Output_>
+void apply_direct_noskip(
+    const bool row,
+    const tatami::Matrix<Value_, Index_>& mat, 
+    const Group_* const group, 
+    const std::size_t num_groups, 
+    Output_** const output_variances,
+    const Options& vopt
+) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+
+    auto group_sizes = sanisizer::create<std::vector<Index_> >(num_groups);
+    for (Index_ i = 0; i < otherdim; ++i) {
+        group_sizes[group[i]] += 1;
+    }
+
+    if (mat.sparse()) {
+        tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+            auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(otherdim);
+            auto cur_means = sanisizer::create<std::vector<Output_> >(num_groups);
+            auto cur_variances = sanisizer::create<std::vector<Output_> >(num_groups);
+            auto cur_non_zeros = sanisizer::create<std::vector<Index_> >(num_groups);
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto range = ext->fetch(vbuffer.data(), ibuffer.data());
+
+                // Computing the mean first.
+                for (Index_ i = 0; i < range.number; ++i) {
+                    const auto b = group[range.index[i]];
+                    cur_means[b] += range.value[i];
+                    ++cur_non_zeros[b];
+                }
+                finish_means(num_groups, group_sizes, cur_means.data());
+
+                // Now computing the RSS.
+                for (Index_ i = 0; i < range.number; ++i) {
+                    const auto b = group[range.index[i]];
+                    const auto delta = range.value[i] - cur_means[b];
+                    cur_variances[b] += delta * delta;
+                }
+                for (std::size_t b = 0; b < num_groups; ++b) {
+                    cur_variances[b] += cur_means[b] * cur_means[b] * (group_sizes[b] - cur_non_zeros[b]);
+                }
+                finish_variances(num_groups, group_sizes, cur_variances, static_cast<Index_>(s + x), output_variances);
+
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    std::fill(cur_means.begin(), cur_means.end(), 0);
+                    std::fill(cur_variances.begin(), cur_variances.end(), 0);
+                    std::fill(cur_non_zeros.begin(), cur_non_zeros.end(), 0);
+                }
+            }
+        }, dim, vopt.num_threads);
+
+    } else {
+        tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
+            auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+            auto cur_means = sanisizer::create<std::vector<Output_> >(num_groups);
+            auto cur_variances = sanisizer::create<std::vector<Output_> >(num_groups);
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto ptr = ext->fetch(buffer.data());
+
+                // Computing the mean first.
+                for (Index_ j = 0; j < otherdim; ++j) {
+                    cur_means[group[j]] += ptr[j];
+                }
+                finish_means(num_groups, group_sizes, cur_means.data());
+
+                // Now computing the RSS.
+                for (Index_ j = 0; j < otherdim; ++j) {
+                    const auto b = group[j];
+                    const auto delta = ptr[j] - cur_means[b];
+                    cur_variances[b] += delta * delta;
+                }
+                finish_variances(num_groups, group_sizes, cur_variances, static_cast<Index_>(s + x), output_variances);
+
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    std::fill(cur_means.begin(), cur_means.end(), 0);
+                    std::fill(cur_variances.begin(), cur_variances.end(), 0);
+                }
+            }
+        }, dim, vopt.num_threads);
+    }
+}
+
+template<typename Value_, typename Index_, typename Group_, typename Output_>
+void apply_direct_skip(
+    const bool row,
+    const tatami::Matrix<Value_, Index_>& mat, 
+    const Group_* const group, 
+    const std::size_t num_groups, 
+    Output_** const output_variances,
+    const Options& vopt
+) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+
+    if (mat.sparse()) {
+        auto full_group_sizes = sanisizer::create<std::vector<Index_> >(num_groups);
+        for (Index_ i = 0; i < otherdim; ++i) {
+            full_group_sizes[group[i]] += 1;
+        }
+
+        tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+            auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(otherdim);
+            auto cur_means = sanisizer::create<std::vector<Output_> >(num_groups);
+            auto cur_variances = sanisizer::create<std::vector<Output_> >(num_groups);
+            auto cur_non_zeros = sanisizer::create<std::vector<Index_> >(num_groups);
+            auto cur_sizes = sanisizer::create<std::vector<Index_> >(num_groups);
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto range = ext->fetch(vbuffer.data(), ibuffer.data());
+
+                // Computing the mean first.
+                for (Index_ i = 0; i < range.number; ++i) {
+                    const auto val = range.value[i];
+                    const auto b = group[range.index[i]];
+                    if (!std::isnan(val)) {
+                        ++cur_non_zeros[b];
+                        cur_means[b] += val;
+                    } else {
+                        ++cur_sizes[b];
+                    }
+                }
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    cur_sizes[g] = full_group_sizes[g] - cur_sizes[g];
+                }
+                finish_means(num_groups, cur_sizes, cur_means.data());
+
+                // Computing the variance first.
+                for (Index_ i = 0; i < range.number; ++i) {
+                    const auto val = range.value[i];
+                    if (!std::isnan(val)) {
+                        const auto b = group[range.index[i]];
+                        const auto delta = val - cur_means[b];
+                        cur_variances[b] += delta * delta;
+                    }
+                }
+                for (std::size_t b = 0; b < num_groups; ++b) {
+                    cur_variances[b] += cur_means[b] * cur_means[b] * (cur_sizes[b] - cur_non_zeros[b]);
+                }
+                finish_variances(num_groups, cur_sizes, cur_variances, static_cast<Index_>(s + x), output_variances);
+
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    std::fill(cur_means.begin(), cur_means.end(), 0);
+                    std::fill(cur_variances.begin(), cur_variances.end(), 0);
+                    std::fill(cur_non_zeros.begin(), cur_non_zeros.end(), 0);
+                    std::fill(cur_sizes.begin(), cur_sizes.end(), 0);
+                }
+            }
+        }, dim, vopt.num_threads);
+
+    } else {
+        tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
+            auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
+            auto cur_means = sanisizer::create<std::vector<Output_> >(num_groups);
+            auto cur_variances = sanisizer::create<std::vector<Output_> >(num_groups);
+            auto cur_sizes = sanisizer::create<std::vector<Index_> >(num_groups);
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto ptr = ext->fetch(buffer.data());
+
+                // Computing the mean first.
+                for (Index_ j = 0; j < otherdim; ++j) {
+                    const auto val = ptr[j];
+                    if (!std::isnan(val)) {
+                        const auto b = group[j];
+                        cur_means[b] += val;
+                        ++cur_sizes[b];
+                    }
+                }
+                finish_means(num_groups, cur_sizes, cur_means.data());
+
+                // Computing the variance first.
+                for (Index_ j = 0; j < otherdim; ++j) {
+                    const auto val = ptr[j];
+                    if (!std::isnan(val)) {
+                        const auto b = group[j];
+                        const auto delta = val - cur_means[b];
+                        cur_variances[b] += delta * delta;
+                    }
+                }
+                finish_variances(num_groups, cur_sizes, cur_variances, static_cast<Index_>(s + x), output_variances);
+
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    std::fill(cur_means.begin(), cur_means.end(), 0);
+                    std::fill(cur_variances.begin(), cur_variances.end(), 0);
+                    std::fill(cur_sizes.begin(), cur_sizes.end(), 0);
+                }
+            }
+        }, dim, vopt.num_threads);
+    }
+}
+
+template<typename Value_, typename Index_, typename Group_, typename Output_>
+void apply_running_noskip(
+    const bool row,
+    const tatami::Matrix<Value_, Index_>& mat,
+    const Group_* const group, 
+    const std::size_t num_groups, 
+    Output_** const output_variances,
+    const Options& vopt
+) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    const bool is_sparse = mat.is_sparse();
+
+    auto all_partial_rss = sanisizer::create<std::vector<std::vector<std::vector<Output_> > > >(vopt.num_threads);
+    auto all_partial_mean = sanisizer::create<std::vector<std::vector<std::vector<Output_> > > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::vector<Index_> > >(vopt.num_threads);
+
+    const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
+        // Storing the RSS's for the first thread in the output vector to save ourselves an allocation.
+        Output_** rss_ptr;
+        std::optional<std::vector<Output_*> >rss_ptrs;
+        if (thread == 0) {
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                std::fill_n(output_variances[g], dim, 0);
+            }
+            rss_ptr = output_variances;
         } else {
-            output_variances[b] = std::numeric_limits<Output_>::quiet_NaN();
+            rss_ptrs.emplace(sanisizer::cast<I<decltype(rss_ptrs->size())> >(num_groups));
+            auto& cur_rss = all_partial_rss[thread];
+            sanisizer::resize(cur_rss, num_groups);
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                tatami::resize_container_to_Index_size(cur_rss[g], dim);
+                (*rss_ptrs)[g] = cur_rss[g].data();
+            }
+            rss_ptr = rss_ptrs->data();
+        }
+
+        auto& cur_mean = all_partial_mean[thread];
+        sanisizer::resize(cur_mean, num_groups);
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            tatami::resize_container_to_Index_size(cur_mean[g], dim);
+        }
+
+        auto& cur_count = all_partial_count[thread];
+        sanisizer::resize(cur_count, num_groups);
+        for (Index_ x = 0; x < l; ++x) {
+            cur_count[group[x + s]] += 1;
+        }
+
+        if (is_sparse) {
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+            auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+
+            auto nonzeros = sanisizer::create<std::vector<std::vector<Index_> > >(num_groups);
+            std::vector<quickstats::RssRunningSparse<Index_, Value_, Output_> > runners;
+            sanisizer::reserve(runners, num_groups);
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                tatami::resize_container_to_Index_size(nonzeros[g], dim);
+                runners.emplace_back(dim, cur_mean[g].data(), rss_ptr[g], nonzeros[g].data());
+            }
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(vbuffer.data(), ibuffer.data());
+                runners[group[x + s]].add(out.number, out.value, out.index);
+            }
+
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                runners[g].finish();
+            }
+
+        } else {
+            auto ext = tatami::consecutive_extractor<false>(mat, !row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+
+            std::vector<quickstats::RssRunningDense<Value_, Output_> > runners;
+            sanisizer::reserve(runners, num_groups);
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                runners.emplace_back(dim, cur_mean[g].data(), rss_ptr[g]);
+            }
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(buffer.data());
+                runners[group[x + s]].add(out);
+            }
+
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                runners[g].finish();
+            }
+        }
+    }, otherdim, vopt.num_threads);
+
+    if (nused == 1) {
+        const auto& cur_count = all_partial_count[0];
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            quickstats::rss_to_variance(dim, cur_count[g], output_variances[g]);
+        }
+
+    } else {
+        auto global_count = sanisizer::create<std::vector<Index_> >(num_groups);
+        for (int u = 0; u < nused; ++u) {
+            const auto& cur_count = all_partial_count[u];
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                global_count[g] += cur_count[g];
+            }
+        }
+
+        // Computing the global mean.
+        auto global_mean = sanisizer::create<std::vector<std::vector<Output_> > >(num_groups);
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            auto& cur_global = global_mean[g];
+            tatami::resize_container_to_Index_size(cur_global, dim);
+            for (int u = 0; u < nused; ++u) {
+                const auto& cur_mean = all_partial_mean[u][g];
+                const Output_ mult = static_cast<Output_>(all_partial_count[u][g]) / static_cast<Output_>(global_count[g]);
+                for (Index_ d = 0; d < dim; ++d) {
+                    cur_global[d] += cur_mean[d] * mult;
+                }
+            }
+        }
+
+        // Combining the RSS. We need to use the safe variant of recenter_rss(), just to protect against the
+        // case where a group has no observations within a particular thread. 
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            const auto& cur_global = global_mean[g];
+            const auto cur_output = output_variances[g];
+            for (int u = 0; u < nused; ++u) {
+                const auto cur_count = all_partial_count[u][g];
+                const auto& cur_mean = all_partial_mean[u][g];
+                if (u == 0) {
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] = quickstats::recenter_rss(cur_count, cur_output[d], cur_mean[d], cur_global[d]); 
+                    }
+                } else {
+                    const auto& cur_rss = all_partial_rss[u][g];
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] += quickstats::recenter_rss(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
+                    }
+                }
+            }
+
+            quickstats::rss_to_variance(dim, global_count[g], cur_output);
         }
     }
 }
 
+template<typename Value_, typename Index_, typename Group_, typename Output_>
+void apply_running_skip(
+    const bool row,
+    const tatami::Matrix<Value_, Index_>& mat,
+    const Group_* const group, 
+    const std::size_t num_groups, 
+    Output_** const output_variances,
+    const Options& vopt
+) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    const bool is_sparse = mat.is_sparse();
+
+    auto all_partial_rss = sanisizer::create<std::vector<std::vector<std::vector<Output_> > > >(vopt.num_threads);
+    auto all_partial_mean = sanisizer::create<std::vector<std::vector<std::vector<Output_> > > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::vector<std::vector<Index_> > > >(vopt.num_threads);
+
+    const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
+        // Storing the RSS's for the first thread in the output vector to save ourselves an allocation.
+        Output_** rss_ptr;
+        std::optional<std::vector<Output_*> >rss_ptrs;
+        if (thread == 0) {
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                std::fill_n(output_variances[g], dim, 0);
+            }
+            rss_ptr = output_variances;
+        } else {
+            rss_ptrs.emplace(sanisizer::cast<I<decltype(rss_ptrs->size())> >(num_groups));
+            auto& cur_rss = all_partial_rss[thread];
+            sanisizer::resize(cur_rss, num_groups);
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                tatami::resize_container_to_Index_size(cur_rss[g], dim);
+                (*rss_ptrs)[g] = cur_rss[g].data();
+            }
+            rss_ptr = rss_ptrs->data();
+        }
+
+        auto& cur_mean = all_partial_mean[thread];
+        sanisizer::resize(cur_mean, num_groups);
+        auto& cur_count = all_partial_count[thread];
+        sanisizer::resize(cur_count, num_groups);
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            tatami::resize_container_to_Index_size(cur_mean[g], dim);
+            tatami::resize_container_to_Index_size(cur_count[g], dim);
+        }
+
+        if (is_sparse) {
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+            auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+
+            auto nonzeros = sanisizer::create<std::vector<std::vector<Index_> > >(num_groups);
+            std::vector<quickstats::RssRunningSparseSkip<Index_, Value_, Output_> > runners;
+            sanisizer::reserve(runners, num_groups);
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                tatami::resize_container_to_Index_size(nonzeros[g], dim);
+                runners.emplace_back(dim, cur_mean[g].data(), rss_ptr[g], nonzeros[g].data(), cur_count[g].data());
+            }
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(vbuffer.data(), ibuffer.data());
+                runners[group[x + s]].add(
+                    out.number,
+                    out.value,
+                    out.index,
+                    [](const std::size_t, const Value_ val) -> bool { return std::isnan(val); }
+                );
+            }
+
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                runners[g].finish();
+            }
+
+        } else {
+            auto ext = tatami::consecutive_extractor<false>(mat, !row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+
+            std::vector<quickstats::RssRunningDenseSkip<Index_, Value_, Output_> > runners;
+            sanisizer::reserve(runners, num_groups);
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                runners.emplace_back(dim, cur_mean[g].data(), rss_ptr[g], cur_count[g].data());
+            }
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(buffer.data());
+                runners[group[x + s]].add(
+                    out,
+                    [](const std::size_t, const Value_ val) -> bool { return std::isnan(val); }
+                );
+            }
+
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                runners[g].finish();
+            }
+        }
+    }, otherdim, vopt.num_threads);
+
+    if (nused == 1) {
+        const auto& cur_count = all_partial_count[0];
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            quickstats::rss_to_variance(dim, cur_count[g].data(), output_variances[g]);
+        }
+
+    } else {
+        auto global_count = sanisizer::create<std::vector<std::vector<Index_> > >(num_groups);
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            auto& cur_global_count = global_count[g];
+            tatami::resize_container_to_Index_size(cur_global_count, dim);
+
+            for (int u = 0; u < nused; ++u) {
+                const auto& cur_count = all_partial_count[u][g];
+                for (Index_ d = 0; d < dim; ++d) {
+                    cur_global_count[d] += cur_count[d];
+                }
+            }
+        }
+
+        // Computing the global mean.
+        auto global_mean = sanisizer::create<std::vector<std::vector<Output_> > >(num_groups);
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            const auto& cur_global_count = global_count[g];
+            auto& cur_global_mean = global_mean[g];
+            tatami::resize_container_to_Index_size(cur_global_mean, dim);
+
+            for (int u = 0; u < nused; ++u) {
+                const auto& cur_mean = all_partial_mean[u][g];
+                const auto& cur_count = all_partial_count[u][g];
+                for (Index_ d = 0; d < dim; ++d) {
+                    const auto mult = static_cast<Output_>(cur_count[d]) / static_cast<Output_>(cur_global_count[d]);
+                    cur_global_mean[d] += cur_mean[d] * mult;
+                }
+            }
+        }
+
+        // Combining the RSS. We need to use the safe variant of recenter_rss(), just to protect against the
+        // case where a group has no observations within a particular thread. 
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            const auto& cur_global_mean = global_mean[g];
+            const auto cur_output = output_variances[g];
+
+            for (int u = 0; u < nused; ++u) {
+                const auto& cur_mean = all_partial_mean[u][g];
+                const auto& cur_count = all_partial_count[u][g];
+                if (u == 0) {
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] = quickstats::recenter_rss(cur_count[d], cur_output[d], cur_mean[d], cur_global_mean[d]); 
+                    }
+                } else {
+                    const auto& cur_rss = all_partial_rss[u][g];
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] += quickstats::recenter_rss(cur_count[d], cur_rss[d], cur_mean[d], cur_global_mean[d]); 
+                    }
+                }
+            }
+
+            quickstats::rss_to_variance(dim, global_count[g].data(), output_variances[g]);
+        }
+    }
 }
 /**
  * @endcond
  */
-
-/**
- * Compute the mean and variance from a dense objective vector.
- * This uses the standard two-pass algorithm with naive accumulation of the sum of squared differences;
- * thus, it is best used with a sufficiently high-precision `Output_` like `double`.
- *
- * @tparam Value_ Numeric type of the matrix value.
- * @tparam Index_ Integer type of the row/column indices.
- * @tparam Group_ Integer type of the group assignments for each row.
- * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
- *
- * @param[in] ptr Pointer to an array of values of length `num`.
- * @param num Length of the objective vector, i.e., length of the array at `ptr`.
- * @param[in] group Pointer to an array of length `num`, containing the group assignment for each entry of `ptr`.
- * Entries of `group` should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
- * @param num_groups Number of groups, i.e., \f$N\f$.
- * @param[in] group_size Pointer to an array of length `num_groups`, containing the size of each group.
- * This can be obtained by calling `tabulate_groups()` on `group`.
- * @param[out] output_means Pointer to an array of length `num_groups`.
- * This is filled with the per-group mean on output.
- * Values may be NaN if there are not enough (non-NaN) values in a group.
- * @param[out] output_variances Pointer to an array of length `num_groups`.
- * This is filled with the per-group variances on output.
- * Values may be NaN if there are not enough (non-NaN) values in a group.
- * @param skip_nan See `Options::skip_nan`.
- * @param[out] valid_group_size Pointer to an array of length `num_groups`.
- * This is used to store the number of non-NaN entries.
- * Only used if `skip_nan = true`.
- */
-template<typename Value_, typename Index_, typename Group_, typename Output_>
-void direct(
-    const Value_* ptr, 
-    Index_ num, 
-    const Group_* group, 
-    std::size_t num_groups, 
-    const Index_* group_size, 
-    Output_* output_means, 
-    Output_* output_variances, 
-    bool skip_nan, 
-    Index_* valid_group_size)
-{
-    std::fill_n(output_means, num_groups, 0);
-    std::fill_n(output_variances, num_groups, 0);
-
-    ::tatami_stats::internal::nanable_ifelse<Value_>(
-        skip_nan,
-        [&]() -> void {
-            std::fill_n(valid_group_size, num_groups, 0);
-
-            for (Index_ j = 0; j < num; ++j) {
-                auto x = ptr[j];
-                if (!std::isnan(x)) {
-                    auto b = group[j];
-                    output_means[b] += x;
-                    ++valid_group_size[b];
-                }
-            }
-            internal::finish_means(num_groups, valid_group_size, output_means);
-
-            for (Index_ j = 0; j < num; ++j) {
-                auto x = ptr[j];
-                if (!std::isnan(x)) {
-                    auto b = group[j];
-                    auto delta = x - output_means[b];
-                    output_variances[b] += delta * delta;
-                }
-            }
-            internal::finish_variances(num_groups, valid_group_size, output_variances);
-        },
-        [&]() -> void {
-            for (Index_ j = 0; j < num; ++j) {
-                output_means[group[j]] += ptr[j];
-            }
-            internal::finish_means(num_groups, group_size, output_means);
-
-            for (Index_ j = 0; j < num; ++j) {
-                auto b = group[j];
-                auto delta = ptr[j] - output_means[b];
-                output_variances[b] += delta * delta;
-            }
-            internal::finish_variances(num_groups, group_size, output_variances);
-        }
-    );
-}
-
-/**
- * Compute the mean and variance from a sparse objective vector.
- * This uses the standard two-pass algorithm with naive accumulation of the sum of squared differences;
- * thus, it is best used with a sufficiently high-precision `Output_` like `double`.
- *
- * @tparam Value_ Numeric type of the matrix value.
- * @tparam Index_ Integer type of the row/column indices.
- * @tparam Group_ Integer type of the group assignments for each row.
- * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
- *
- * @param[in] value Pointer to an array of length `num_nonzero`, containing the values of the structural non-zeros.
- * @param[in] index Pointer to an array of length `num_nonzero`, containing the indices of the structural non-zeros.
- * All indices should be non-negative and less than the length of the objective vector.
- * @param num_nonzero Number of structural non-zeros. 
- * @param[in] group Pointer to an array of length equal to the length of the objective vector, containing the group assignment for each vector element.
- * Entries of `group` should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
- * @param num_groups Number of groups, i.e., \f$N\f$.
- * @param[in] group_size Pointer to an array of length `num_groups`, containing the size of each group.
- * This can be obtained by calling `tabulate_groups()` on `group`.
- * @param[out] output_means Pointer to an array of length `num_groups`.
- * This is filled with the per-group mean on output.
- * Values may be NaN if there are not enough (non-NaN) values in a group.
- * @param[out] output_variances Pointer to an array of length `num_groups`.
- * This is filled with the per-group variances on output.
- * Values may be NaN if there are not enough (non-NaN) values in a group.
- * @param[out] output_nonzero Pointer to an array of length `num_groups`.
- * On output, this is filled with the number of structural non-zeros in each group.
- * @param skip_nan See `Options::skip_nan`.
- * @param[out] valid_group_size Pointer to an array of length `num_groups`.
- * This is used to store the number of non-NaN entries.
- * Only used if `skip_nan = true`.
- */
-template<typename Value_, typename Index_, typename Group_, typename Output_>
-void direct(
-    const Value_* value, 
-    const Index_* index, 
-    Index_ num_nonzero, 
-    const Group_* group, 
-    std::size_t num_groups, 
-    const Index_* group_size, 
-    Output_* output_means, 
-    Output_* output_variances, 
-    Index_* output_nonzero,
-    bool skip_nan, 
-    Index_* valid_group_size)
-{
-    std::fill_n(output_means, num_groups, 0);
-    std::fill_n(output_nonzero, num_groups, 0);
-    std::fill_n(output_variances, num_groups, 0);
-
-    ::tatami_stats::internal::nanable_ifelse<Value_>(
-        skip_nan,
-        [&]() -> void {
-            std::copy_n(group_size, num_groups, valid_group_size);
-
-            for (Index_ j = 0; j < num_nonzero; ++j) {
-                auto x = value[j];
-                auto b = group[index[j]];
-                if (!std::isnan(x)) {
-                    output_means[b] += x;
-                    ++(output_nonzero[b]);
-                } else {
-                    --(valid_group_size[b]);
-                }
-            }
-            internal::finish_means(num_groups, valid_group_size, output_means);
-
-            for (Index_ j = 0; j < num_nonzero; ++j) {
-                auto x = value[j];
-                if (!std::isnan(x)) {
-                    auto b = group[index[j]];
-                    auto delta = x - output_means[b];
-                    output_variances[b] += delta * delta;
-                }
-            }
-            for (I<decltype(num_groups)> b = 0; b < num_groups; ++b) {
-                output_variances[b] += output_means[b] * output_means[b] * (valid_group_size[b] - output_nonzero[b]);
-            }
-            internal::finish_variances(num_groups, valid_group_size, output_variances);
-        },
-        [&]() -> void {
-            for (Index_ j = 0; j < num_nonzero; ++j) {
-                auto b = group[index[j]];
-                output_means[b] += value[j];
-                ++output_nonzero[b];
-            }
-            internal::finish_means(num_groups, group_size, output_means);
-
-            for (Index_ j = 0; j < num_nonzero; ++j) {
-                auto b = group[index[j]];
-                auto delta = value[j] - output_means[b];
-                output_variances[b] += delta * delta;
-            }
-            for (I<decltype(num_groups)> b = 0; b < num_groups; ++b) {
-                output_variances[b] += output_means[b] * output_means[b] * (group_size[b] - output_nonzero[b]);
-            }
-            internal::finish_variances(num_groups, group_size, output_variances);
-        }
-    );
-}
 
 /**
  * Compute per-group variances for each element of a chosen dimension of a `tatami::Matrix`.
@@ -284,141 +600,32 @@ void direct(
  * @param sopt Summation options.
  */
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* group, std::size_t num_groups, const Index_* group_size, Output_** output, const Options& sopt) {
-    const Index_ dim = (row ? mat.nrow() : mat.ncol());
-    const Index_ otherdim = (row ? mat.ncol() : mat.nrow());
-
-    if (mat.sparse()) {
-        if (mat.prefer_rows() == row) {
-            tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
-                auto ext = tatami::consecutive_extractor<true>(mat, row, start, len);
-                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
-                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(otherdim);
-
-                auto tmp_means = sanisizer::create<std::vector<Output_> >(num_groups);
-                auto output_variances = sanisizer::create<std::vector<Output_> >(num_groups);
-                auto tmp_nonzero = sanisizer::create<std::vector<Index_> >(num_groups);
-                auto valid_group_size = sanisizer::create<std::vector<Index_> >(sopt.skip_nan ? num_groups : 0);
-
-                for (Index_ i = 0; i < len; ++i) {
-                    auto range = ext->fetch(xbuffer.data(), ibuffer.data());
-                    direct(
-                        range.value, 
-                        range.index, 
-                        range.number, 
-                        group, 
-                        num_groups, 
-                        group_size, 
-                        tmp_means.data(), 
-                        output_variances.data(), 
-                        tmp_nonzero.data(), 
-                        sopt.skip_nan, 
-                        valid_group_size.data()
-                    );
-
-                    for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
-                        output[g][i + start] = output_variances[g];
-                    }
-                }
-            }, dim, sopt.num_threads);
-
-        } else {
-            // Order within each observed vector doesn't affect numerical
-            // precision of the outcome, as addition order for each objective
-            // vector is already well-defined for a running calculation.
-            tatami::Options opt;
-            opt.sparse_ordered_index = false; 
-
-            tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
-                std::vector<variances::RunningSparse<Output_, Value_, Index_> > runners;
-                runners.reserve(num_groups);
-                std::vector<LocalOutputBuffer<Output_> > local_var_output;
-                local_var_output.reserve(num_groups);
-                std::vector<std::vector<Output_> > local_mean_output;
-                local_mean_output.reserve(num_groups);
-
-                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
-                    local_var_output.emplace_back(thread, start, len, output[g]);
-                    local_mean_output.emplace_back(len);
-                    runners.emplace_back(len, local_mean_output.back().data(), local_var_output.back().data(), sopt.skip_nan, start);
-                }
-
-                auto ext = tatami::consecutive_extractor<true>(mat, !row, static_cast<Index_>(0), otherdim, start, len, opt);
-                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(len);
-                auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(len);
-
-                for (Index_ i = 0; i < otherdim; ++i) {
-                    auto range = ext->fetch(xbuffer.data(), ibuffer.data());
-                    runners[group[i]].add(range.value, range.index, range.number);
-                }
-
-                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
-                    runners[g].finish();
-                    local_var_output[g].transfer();
-                }
-            }, dim, sopt.num_threads);
+void apply(
+    bool row,
+    const tatami::Matrix<Value_, Index_>& mat,
+    const Group_* group,
+    std::size_t num_groups,
+    const Index_*,
+    Output_** const output,
+    const Options& sopt
+) {
+    internal::nanable_ifelse<Value_>(
+        sopt.skip_nan,
+        [&]() -> void {
+            if (mat.prefer_rows() == row) {
+                apply_direct_skip(row, mat, group, num_groups, output, sopt);
+            } else {
+                apply_running_skip(row, mat, group, num_groups, output, sopt);
+            }
+        },
+        [&]() -> void {
+            if (mat.prefer_rows() == row) {
+                apply_direct_noskip(row, mat, group, num_groups, output, sopt);
+            } else {
+                apply_running_noskip(row, mat, group, num_groups, output, sopt);
+            }
         }
-
-    } else {
-        if (mat.prefer_rows() == row) {
-            tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
-                auto ext = tatami::consecutive_extractor<false>(mat, row, start, len);
-                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
-
-                auto tmp_means = sanisizer::create<std::vector<Output_> >(num_groups);
-                auto output_variances = sanisizer::create<std::vector<Output_> >(num_groups);
-                auto valid_group_size = sanisizer::create<std::vector<Index_> >(sopt.skip_nan ? num_groups : 0);
-
-                for (Index_ i = 0; i < len; ++i) {
-                    auto ptr = ext->fetch(xbuffer.data());
-                    direct(
-                        ptr, 
-                        otherdim, 
-                        group, 
-                        num_groups, 
-                        group_size, 
-                        tmp_means.data(), 
-                        output_variances.data(), 
-                        sopt.skip_nan, 
-                        valid_group_size.data()
-                    );
-
-                    for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
-                        output[g][i + start] = output_variances[g];
-                    }
-                }
-            }, dim, sopt.num_threads);
-
-        } else {
-            tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
-                std::vector<variances::RunningDense<Output_, Value_, Index_> > runners;
-                runners.reserve(num_groups);
-                std::vector<LocalOutputBuffer<Output_> > local_var_output;
-                local_var_output.reserve(num_groups);
-                std::vector<std::vector<Output_> > local_mean_output;
-                local_mean_output.reserve(num_groups);
-
-                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
-                    local_var_output.emplace_back(thread, start, len, output[g]);
-                    local_mean_output.emplace_back(len);
-                    runners.emplace_back(len, local_mean_output.back().data(), local_var_output.back().data(), sopt.skip_nan);
-                }
-
-                auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(len);
-                auto ext = tatami::consecutive_extractor<false>(mat, !row, static_cast<Index_>(0), otherdim, start, len);
-
-                for (Index_ i = 0; i < otherdim; ++i) {
-                    auto ptr = ext->fetch(xbuffer.data());
-                    runners[group[i]].add(ptr);
-                }
-
-                for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
-                    runners[g].finish();
-                    local_var_output[g].transfer();
-                }
-            }, dim, sopt.num_threads);
-        }
-    }
+    );
 }
 
 /**
