@@ -209,7 +209,7 @@ TEST(ComputingDimCounts, ColumnZeroCounts) {
     EXPECT_EQ(ref, tatami_stats::counts::zero::by_column(unsorted_column.get()));
 }
 
-TEST(ComputingDimVariances, ColumnZeroCountsWithNan) {
+TEST(ComputingDimCounts, ColumnZeroCountsWithNan) {
     size_t NR = 82, NC = 33;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
