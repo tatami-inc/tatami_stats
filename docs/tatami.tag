@@ -90,8 +90,6 @@
     <path>tatami_stats/</path>
     <filename>variances_8hpp.html</filename>
     <class kind="struct">tatami_stats::variances::Options</class>
-    <class kind="class">tatami_stats::variances::RunningDense</class>
-    <class kind="class">tatami_stats::variances::RunningSparse</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::variances</namespace>
   </compound>
@@ -413,34 +411,6 @@
     </member>
   </compound>
   <compound kind="class">
-    <name>tatami_stats::variances::RunningDense</name>
-    <filename>classtatami__stats_1_1variances_1_1RunningDense.html</filename>
-    <templarg>typename Output_</templarg>
-    <templarg>typename Value_</templarg>
-    <templarg>typename Index_</templarg>
-    <member kind="function">
-      <type></type>
-      <name>RunningDense</name>
-      <anchorfile>classtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
-      <anchor>ae4305fb083a270fa5f5800e8a5bdb140</anchor>
-      <arglist>(Index_ num, Output_ *mean, Output_ *variance, bool skip_nan)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>add</name>
-      <anchorfile>classtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
-      <anchor>a13d93ffc98acfd3f7eb53265ef694c07</anchor>
-      <arglist>(const Value_ *ptr)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>finish</name>
-      <anchorfile>classtatami__stats_1_1variances_1_1RunningDense.html</anchorfile>
-      <anchor>a389232abda6b2ed3218e5cb648d1f33c</anchor>
-      <arglist>()</arglist>
-    </member>
-  </compound>
-  <compound kind="class">
     <name>tatami_stats::ranges::RunningSparse</name>
     <filename>classtatami__stats_1_1ranges_1_1RunningSparse.html</filename>
     <templarg>typename Output_</templarg>
@@ -487,34 +457,6 @@
       <anchorfile>classtatami__stats_1_1sums_1_1RunningSparse.html</anchorfile>
       <anchor>a2fede3f8461b31bc9f5da83571bfac39</anchor>
       <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
-    </member>
-  </compound>
-  <compound kind="class">
-    <name>tatami_stats::variances::RunningSparse</name>
-    <filename>classtatami__stats_1_1variances_1_1RunningSparse.html</filename>
-    <templarg>typename Output_</templarg>
-    <templarg>typename Value_</templarg>
-    <templarg>typename Index_</templarg>
-    <member kind="function">
-      <type></type>
-      <name>RunningSparse</name>
-      <anchorfile>classtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
-      <anchor>acb56694c71bb6155a3ad90e5e1437347</anchor>
-      <arglist>(Index_ num, Output_ *mean, Output_ *variance, bool skip_nan, Index_ subtract=0)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>add</name>
-      <anchorfile>classtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
-      <anchor>ad998372f22ce80165cc39a8bfcb74108</anchor>
-      <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>finish</name>
-      <anchorfile>classtatami__stats_1_1variances_1_1RunningSparse.html</anchorfile>
-      <anchor>a9ab4ac3ef21c82557e7292dc38d9e504</anchor>
-      <arglist>()</arglist>
     </member>
   </compound>
   <compound kind="namespace">
@@ -697,24 +639,10 @@
     <class kind="struct">tatami_stats::grouped_variances::Options</class>
     <member kind="function">
       <type>void</type>
-      <name>direct</name>
-      <anchorfile>namespacetatami__stats_1_1grouped__variances.html</anchorfile>
-      <anchor>a0ca9d67874e780b6c83dfc77a252f567</anchor>
-      <arglist>(const Value_ *ptr, Index_ num, const Group_ *group, std::size_t num_groups, const Index_ *group_size, Output_ *output_means, Output_ *output_variances, bool skip_nan, Index_ *valid_group_size)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>direct</name>
-      <anchorfile>namespacetatami__stats_1_1grouped__variances.html</anchorfile>
-      <anchor>a5949219e7545b96e549fe12bf02e29c4</anchor>
-      <arglist>(const Value_ *value, const Index_ *index, Index_ num_nonzero, const Group_ *group, std::size_t num_groups, const Index_ *group_size, Output_ *output_means, Output_ *output_variances, Index_ *output_nonzero, bool skip_nan, Index_ *valid_group_size)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
       <name>apply</name>
       <anchorfile>namespacetatami__stats_1_1grouped__variances.html</anchorfile>
-      <anchor>a3eac3787693b4533e2afa7a7c01852eb</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, const Index_ *group_size, Output_ **output, const Options &amp;sopt)</arglist>
+      <anchor>a6b5f6cd3a8e92fbac9ecb388d4c3eb87</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, const Index_ *, Output_ **const output, const Options &amp;sopt)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
@@ -864,22 +792,6 @@
     <name>tatami_stats::variances</name>
     <filename>namespacetatami__stats_1_1variances.html</filename>
     <class kind="struct">tatami_stats::variances::Options</class>
-    <class kind="class">tatami_stats::variances::RunningDense</class>
-    <class kind="class">tatami_stats::variances::RunningSparse</class>
-    <member kind="function">
-      <type>std::pair&lt; Output_, Output_ &gt;</type>
-      <name>direct</name>
-      <anchorfile>namespacetatami__stats_1_1variances.html</anchorfile>
-      <anchor>a321f88af41ac5ef639c72c57a067bd71</anchor>
-      <arglist>(const Value_ *value, Index_ num_nonzero, Index_ num_all, bool skip_nan)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::pair&lt; Output_, Output_ &gt;</type>
-      <name>direct</name>
-      <anchorfile>namespacetatami__stats_1_1variances.html</anchorfile>
-      <anchor>a001e16afe34b07f6981b674c6a840fa9</anchor>
-      <arglist>(const Value_ *ptr, Index_ num, bool skip_nan)</arglist>
-    </member>
     <member kind="function">
       <type>void</type>
       <name>apply</name>
