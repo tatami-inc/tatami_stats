@@ -41,7 +41,7 @@ add_executable(
     src/counts.cpp
     src/grouped_medians.cpp
     src/grouped_sums.cpp
-    src/grouped_variances.cpp
+    src/group_variance.cpp
     src/utils.cpp
 )
 decorate_test(libtest)
