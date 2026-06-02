@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats/grouped_variances.hpp File Reference</title>
+<title>tatami_stats: tatami_stats/group_variance.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -101,19 +101,25 @@ $(function(){ initResizable(false); });
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">grouped_variances.hpp File Reference</div></div>
+  <div class="headertitle"><div class="title">group_variance.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Compute group-wise variances from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.  
 <a href="#details">More...</a></p>
 
-<p><a href="grouped__variances_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="group__variance_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">tatami_stats::grouped_variances::Options</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grouped summation options.  <a href="structtatami__stats_1_1grouped__variances_1_1Options.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1group__variance_1_1Options.html">tatami_stats::group_variance::Options</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grouped summation options.  <a href="structtatami__stats_1_1group__variance_1_1Options.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1group__variance_1_1Buffers.html">tatami_stats::group_variance::Buffers&lt; Output_ &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structtatami__stats_1_1group__variance_1_1Result.html" title="Results of apply().">Result</a> buffers for <code><a class="el" href="namespacetatami__stats_1_1group__variance.html#a9b81f7b16c2c841a757b852647c75ab2">apply()</a></code>.  <a href="structtatami__stats_1_1group__variance_1_1Buffers.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1group__variance_1_1Result.html">tatami_stats::group_variance::Result&lt; Output_ &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Results of <code><a class="el" href="namespacetatami__stats_1_1group__variance.html#a9b81f7b16c2c841a757b852647c75ab2">apply()</a></code>.  <a href="structtatami__stats_1_1group__variance_1_1Result.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -121,21 +127,18 @@ Namespaces</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></td></tr>
 <tr class="memdesc:namespacetatami__stats"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions to compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1grouped__variances.html">tatami_stats::grouped_variances</a></td></tr>
-<tr class="memdesc:namespacetatami__stats_1_1grouped__variances"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions for computing dimension-wise grouped variances. <br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1group__variance.html">tatami_stats::group_variance</a></td></tr>
+<tr class="memdesc:namespacetatami__stats_1_1group__variance"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions for computing dimension-wise per-group variances. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6b5f6cd3a8e92fbac9ecb388d4c3eb87" id="r_a6b5f6cd3a8e92fbac9ecb388d4c3eb87"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:a6b5f6cd3a8e92fbac9ecb388d4c3eb87"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1grouped__variances.html#a6b5f6cd3a8e92fbac9ecb388d4c3eb87">tatami_stats::grouped_variances::apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, const Index_ *, Output_ **const output, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
-<tr class="separator:a6b5f6cd3a8e92fbac9ecb388d4c3eb87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd3490a0beece305c896f35cc86f53e6" id="r_abd3490a0beece305c896f35cc86f53e6"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
-<tr class="memitem:abd3490a0beece305c896f35cc86f53e6"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1grouped__variances.html#abd3490a0beece305c896f35cc86f53e6">tatami_stats::grouped_variances::by_row</a> (const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
-<tr class="separator:abd3490a0beece305c896f35cc86f53e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47d05526a9980d64b58152a2d7db6fa2" id="r_a47d05526a9980d64b58152a2d7db6fa2"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
-<tr class="memitem:a47d05526a9980d64b58152a2d7db6fa2"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1grouped__variances.html#a47d05526a9980d64b58152a2d7db6fa2">tatami_stats::grouped_variances::by_column</a> (const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const <a class="el" href="structtatami__stats_1_1grouped__variances_1_1Options.html">Options</a> &amp;sopt)</td></tr>
-<tr class="separator:a47d05526a9980d64b58152a2d7db6fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b81f7b16c2c841a757b852647c75ab2" id="r_a9b81f7b16c2c841a757b852647c75ab2"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
+<tr class="memitem:a9b81f7b16c2c841a757b852647c75ab2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1group__variance.html#a9b81f7b16c2c841a757b852647c75ab2">tatami_stats::group_variance::apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, <a class="el" href="structtatami__stats_1_1group__variance_1_1Buffers.html">Buffers</a>&lt; Output_ &gt; &amp;output, const <a class="el" href="structtatami__stats_1_1group__variance_1_1Options.html">Options</a> &amp;opt)</td></tr>
+<tr class="separator:a9b81f7b16c2c841a757b852647c75ab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a087510ef814ecaa5247847f635b364cc" id="r_a087510ef814ecaa5247847f635b364cc"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
+<tr class="memitem:a087510ef814ecaa5247847f635b364cc"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structtatami__stats_1_1group__variance_1_1Result.html">Result</a>&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1group__variance.html#a087510ef814ecaa5247847f635b364cc">tatami_stats::group_variance::apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, const <a class="el" href="structtatami__stats_1_1group__variance_1_1Options.html">Options</a> &amp;opt)</td></tr>
+<tr class="separator:a087510ef814ecaa5247847f635b364cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Compute group-wise variances from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </p>
