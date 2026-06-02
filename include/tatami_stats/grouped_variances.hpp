@@ -2,7 +2,6 @@
 #define TATAMI_STATS_GROUPED_VARIANCES_HPP
 
 #include "utils.hpp"
-#include "variances.hpp"
 
 #include <vector>
 #include <algorithm>

@@ -34,7 +34,7 @@ endmacro()
 add_executable(
     libtest
     src/sums.cpp
-    src/variances.cpp
+    src/variance.cpp
     src/medians.cpp
     src/quantiles.cpp
     src/ranges.cpp

@@ -10,7 +10,7 @@
 #include "ranges.hpp"
 #include "sums.hpp"
 #include "utils.hpp"
-#include "variances.hpp"
+#include "variance.hpp"
 
 /**
  * @file tatami_stats.hpp

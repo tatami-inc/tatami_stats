@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "tatami_stats/grouped_variances.hpp"
-#include "tatami_stats/variances.hpp"
+#include "tatami_stats/variance.hpp"
 #include "tatami_test/tatami_test.hpp"
 #include "utils.h"
 
@@ -41,7 +41,7 @@ TEST(GroupedVariances, ByRow) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        expected[g] = tatami_stats::variances::by_row(sub.get());
+        expected[g] = tatami_stats::variance::apply(true, *sub, {}).variance;
     }
 
     compare_double_vectors_of_vectors(expected, tatami_stats::grouped_variances::by_row(dense_row.get(), cgroups.data()));
@@ -96,9 +96,9 @@ TEST(GroupedVariances, ByRowWithNan) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        tatami_stats::variances::Options mopt;
+        tatami_stats::variance::Options mopt;
         mopt.skip_nan = true;
-        expected[g] = tatami_stats::variances::by_row(sub.get(), mopt);
+        expected[g] = tatami_stats::variance::apply(true, *sub, mopt).variance;
     }
 
     tatami_stats::grouped_variances::Options mopt;
@@ -135,7 +135,7 @@ TEST(GroupedVariances, ByColumn) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        expected[g] = tatami_stats::variances::by_column(sub.get());
+        expected[g] = tatami_stats::variance::apply(false, *sub, {}).variance;
     }
 
     compare_double_vectors_of_vectors(expected, tatami_stats::grouped_variances::by_column(dense_row.get(), rgroups.data()));
@@ -190,9 +190,9 @@ TEST(GroupedVariances, ByColumnWithNan) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        tatami_stats::variances::Options mopt;
+        tatami_stats::variance::Options mopt;
         mopt.skip_nan = true;
-        expected[g] = tatami_stats::variances::by_column(sub.get(), mopt);
+        expected[g] = tatami_stats::variance::apply(false, *sub, mopt).variance;
     }
 
     tatami_stats::grouped_variances::Options mopt;
