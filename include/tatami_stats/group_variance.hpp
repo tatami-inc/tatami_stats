@@ -292,43 +292,54 @@ void apply_running_noskip(
     const bool is_sparse = mat.is_sparse();
 
     const bool do_parallel = vopt.num_threads > 1;
-    std::vector<std::vector<std::vector<Output_> > > all_partial_mean, all_partial_rss;
+    std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_mean, all_partial_rss;
     if (do_parallel) {
-        sanisizer::resize(all_partial_mean, vopt.num_threads);
-        sanisizer::resize(all_partial_rss, vopt.num_threads);
+        // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
+        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads - 1));
+        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads));
     }
-    auto all_partial_count = sanisizer::create<std::vector<std::vector<Index_> > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<Index_> > > >(vopt.num_threads);
+
+    for (std::size_t g = 0; g < num_groups; ++g) {
+        std::fill_n(output.mean[g], dim, 0);
+        std::fill_n(output.variance[g], dim, 0);
+    }
 
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-        Output_** mean_ptrs, **rss_ptrs;
+        Output_** mean_ptrs;
+        Output_** rss_ptrs;
         std::optional<std::vector<Output_*> > tmp_mean_ptrs, tmp_rss_ptrs;
+        std::optional<std::vector<std::vector<Output_> > > cur_mean, cur_rss;
+
         if (!do_parallel) {
+            // Storing mean and RSS directly in the output vector to cut down two allocations if we're not working in parallel.
             mean_ptrs = output.mean.data();
             rss_ptrs = output.variance.data();
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                std::fill_n(mean_ptrs[g], dim, 0);
-                std::fill_n(rss_ptrs[g], dim, 0);
-            }
         } else {
-            auto& cur_mean = all_partial_mean[thread];
-            sanisizer::resize(cur_mean, num_groups);
-            auto& cur_rss = all_partial_rss[thread];
-            sanisizer::resize(cur_rss, num_groups);
-
+            // Storing the partial RSS directly in the output vectors to save ourselves an allocation if we're in the first thread.
+            // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
+            cur_mean.emplace(sanisizer::cast<I<decltype(cur_mean->size())> >(num_groups));
             tmp_mean_ptrs.emplace(sanisizer::cast<I<decltype(tmp_mean_ptrs->size())> >(num_groups));
-            tmp_rss_ptrs.emplace(sanisizer::cast<I<decltype(tmp_rss_ptrs->size())> >(num_groups));
             for (std::size_t g = 0; g < num_groups; ++g) {
-                tatami::resize_container_to_Index_size(cur_mean[g], dim);
-                (*tmp_mean_ptrs)[g] = cur_mean[g].data();
-                tatami::resize_container_to_Index_size(cur_rss[g], dim);
-                (*tmp_rss_ptrs)[g] = cur_rss[g].data();
+                tatami::resize_container_to_Index_size((*cur_mean)[g], dim);
+                (*tmp_mean_ptrs)[g] = (*cur_mean)[g].data();
             }
             mean_ptrs = tmp_mean_ptrs->data();
-            rss_ptrs = tmp_rss_ptrs->data();
+
+            if (thread == 0) {
+                rss_ptrs = output.variance.data();
+            } else {
+                cur_rss.emplace(sanisizer::cast<I<decltype(cur_rss->size())> >(num_groups));
+                tmp_rss_ptrs.emplace(sanisizer::cast<I<decltype(tmp_rss_ptrs->size())> >(num_groups));
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    tatami::resize_container_to_Index_size((*cur_rss)[g], dim);
+                    (*tmp_rss_ptrs)[g] = (*cur_rss)[g].data();
+                }
+                rss_ptrs = tmp_rss_ptrs->data();
+            }
         }
 
-        auto& cur_count = all_partial_count[thread];
-        sanisizer::resize(cur_count, num_groups);
+        auto cur_count = sanisizer::create<std::vector<Index_> >(num_groups);
         for (Index_ x = 0; x < l; ++x) {
             cur_count[group[x + s]] += 1;
         }
@@ -374,18 +385,29 @@ void apply_running_noskip(
                 runners[g].finish();
             }
         }
+
+        all_partial_count[thread] = std::move(cur_count);
+        if (do_parallel) {
+            (*all_partial_mean)[thread] = std::move(cur_mean);
+            if (thread > 0) {
+                (*all_partial_rss)[thread - 1] = std::move(cur_rss);
+            }
+        }
     }, otherdim, vopt.num_threads);
 
     if (!do_parallel) {
-        const auto& cur_count = all_partial_count[0];
+        const auto& cur_count = *(all_partial_count[0]);
         for (std::size_t g = 0; g < num_groups; ++g) {
             quickstats::rss_to_variance(dim, cur_count[g], output.variance[g]);
         }
 
     } else {
+        const auto& ap_mean = *all_partial_mean;
+        const auto& ap_rss = *all_partial_rss;
+
         auto global_count = sanisizer::create<std::vector<Index_> >(num_groups);
         for (int u = 0; u < nused; ++u) {
-            const auto& cur_count = all_partial_count[u];
+            const auto& cur_count = *(all_partial_count[u]);
             for (std::size_t g = 0; g < num_groups; ++g) {
                 global_count[g] += cur_count[g];
             }
@@ -395,8 +417,8 @@ void apply_running_noskip(
         for (std::size_t g = 0; g < num_groups; ++g) {
             const auto cur_output = output.mean[g];
             for (int u = 0; u < nused; ++u) {
-                const auto& cur_mean = all_partial_mean[u][g];
-                const Output_ mult = static_cast<Output_>(all_partial_count[u][g]) / static_cast<Output_>(global_count[g]);
+                const auto& cur_mean = (*(ap_mean[u]))[g];
+                const Output_ mult = static_cast<Output_>((*(all_partial_count[u]))[g]) / static_cast<Output_>(global_count[g]);
                 for (Index_ d = 0; d < dim; ++d) {
                     cur_output[d] += cur_mean[d] * mult;
                 }
@@ -409,11 +431,17 @@ void apply_running_noskip(
             const auto& cur_global = output.mean[g];
             const auto cur_output = output.variance[g];
             for (int u = 0; u < nused; ++u) {
-                const auto cur_count = all_partial_count[u][g];
-                const auto& cur_mean = all_partial_mean[u][g];
-                const auto& cur_rss = all_partial_rss[u][g];
-                for (Index_ d = 0; d < dim; ++d) {
-                    cur_output[d] += quickstats::recenter_rss(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
+                const auto cur_count = (*(all_partial_count[u]))[g];
+                const auto& cur_mean = (*(ap_mean[u]))[g];
+                if (u == 0) {
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] = quickstats::recenter_rss(cur_count, cur_output[d], cur_mean[d], cur_global[d]); 
+                    }
+                } else {
+                    const auto& cur_rss = (*(ap_rss[u - 1]))[g];
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] += quickstats::recenter_rss(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
+                    }
                 }
             }
             quickstats::rss_to_variance(dim, global_count[g], cur_output);
@@ -435,43 +463,55 @@ void apply_running_skip(
     const bool is_sparse = mat.is_sparse();
 
     const bool do_parallel = vopt.num_threads > 1;
-    std::vector<std::vector<std::vector<Output_> > > all_partial_mean, all_partial_rss;
+    std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_mean, all_partial_rss;
     if (do_parallel) {
-        sanisizer::resize(all_partial_mean, vopt.num_threads);
-        sanisizer::resize(all_partial_rss, vopt.num_threads);
+        // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
+        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads - 1));
+        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads));
+
     }
-    auto all_partial_count = sanisizer::create<std::vector<std::vector<std::vector<Index_> > > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<std::vector<Index_> > > > >(vopt.num_threads);
+
+    for (std::size_t g = 0; g < num_groups; ++g) {
+        std::fill_n(output.mean[g], dim, 0);
+        std::fill_n(output.variance[g], dim, 0);
+    }
 
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-        Output_** mean_ptrs, **rss_ptrs;
+        Output_** mean_ptrs;
+        Output_** rss_ptrs;
         std::optional<std::vector<Output_*> > tmp_mean_ptrs, tmp_rss_ptrs;
+        std::optional<std::vector<std::vector<Output_> > > cur_mean, cur_rss;
+
         if (!do_parallel) {
+            // Storing mean and RSS directly in the output vector to cut down two allocations if we're not working in parallel.
             mean_ptrs = output.mean.data();
             rss_ptrs = output.variance.data();
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                std::fill_n(mean_ptrs[g], dim, 0);
-                std::fill_n(rss_ptrs[g], dim, 0);
-            }
         } else {
-            auto& cur_mean = all_partial_mean[thread];
-            sanisizer::resize(cur_mean, num_groups);
-            auto& cur_rss = all_partial_rss[thread];
-            sanisizer::resize(cur_rss, num_groups);
-
+            // Storing the partial RSS directly in the output vectors to save ourselves an allocation if we're in the first thread.
+            // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
+            cur_mean.emplace(sanisizer::cast<I<decltype(cur_mean->size())> >(num_groups));
             tmp_mean_ptrs.emplace(sanisizer::cast<I<decltype(tmp_mean_ptrs->size())> >(num_groups));
-            tmp_rss_ptrs.emplace(sanisizer::cast<I<decltype(tmp_rss_ptrs->size())> >(num_groups));
             for (std::size_t g = 0; g < num_groups; ++g) {
-                tatami::resize_container_to_Index_size(cur_mean[g], dim);
-                (*tmp_mean_ptrs)[g] = cur_mean[g].data();
-                tatami::resize_container_to_Index_size(cur_rss[g], dim);
-                (*tmp_rss_ptrs)[g] = cur_rss[g].data();
+                tatami::resize_container_to_Index_size((*cur_mean)[g], dim);
+                (*tmp_mean_ptrs)[g] = (*cur_mean)[g].data();
             }
             mean_ptrs = tmp_mean_ptrs->data();
-            rss_ptrs = tmp_rss_ptrs->data();
+
+            if (thread == 0) {
+                rss_ptrs = output.variance.data();
+            } else {
+                cur_rss.emplace(sanisizer::cast<I<decltype(cur_rss->size())> >(num_groups));
+                tmp_rss_ptrs.emplace(sanisizer::cast<I<decltype(tmp_rss_ptrs->size())> >(num_groups));
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    tatami::resize_container_to_Index_size((*cur_rss)[g], dim);
+                    (*tmp_rss_ptrs)[g] = (*cur_rss)[g].data();
+                }
+                rss_ptrs = tmp_rss_ptrs->data();
+            }
         }
 
-        auto& cur_count = all_partial_count[thread];
-        sanisizer::resize(cur_count, num_groups);
+        auto cur_count = sanisizer::create<std::vector<std::vector<Index_> > >(num_groups);
         for (std::size_t g = 0; g < num_groups; ++g) {
             tatami::resize_container_to_Index_size(cur_count[g], dim);
         }
@@ -529,21 +569,32 @@ void apply_running_skip(
                 runners[g].finish();
             }
         }
+
+        all_partial_count[thread] = std::move(cur_count);
+        if (do_parallel) {
+            (*all_partial_mean)[thread] = std::move(cur_mean);
+            if (thread > 0) {
+                (*all_partial_rss)[thread - 1] = std::move(cur_rss);
+            }
+        }
     }, otherdim, vopt.num_threads);
 
     if (!do_parallel) {
-        const auto& cur_count = all_partial_count[0];
+        const auto& cur_count = *(all_partial_count[0]);
         for (std::size_t g = 0; g < num_groups; ++g) {
             quickstats::rss_to_variance(dim, cur_count[g].data(), output.variance[g]);
         }
 
     } else {
+        const auto& ap_mean = *all_partial_mean;
+        const auto& ap_rss = *all_partial_rss;
+
         auto global_count = sanisizer::create<std::vector<std::vector<Index_> > >(num_groups);
         for (std::size_t g = 0; g < num_groups; ++g) {
             auto& cur_global_count = global_count[g];
             tatami::resize_container_to_Index_size(cur_global_count, dim);
             for (int u = 0; u < nused; ++u) {
-                const auto& cur_count = all_partial_count[u][g];
+                const auto& cur_count = (*(all_partial_count[u]))[g];
                 for (Index_ d = 0; d < dim; ++d) {
                     cur_global_count[d] += cur_count[d];
                 }
@@ -555,8 +606,8 @@ void apply_running_skip(
             const auto& cur_global_count = global_count[g];
             const auto cur_global_mean = output.mean[g];
             for (int u = 0; u < nused; ++u) {
-                const auto& cur_mean = all_partial_mean[u][g];
-                const auto& cur_count = all_partial_count[u][g];
+                const auto& cur_mean = (*(ap_mean[u]))[g];
+                const auto& cur_count = (*(all_partial_count[u]))[g];
                 for (Index_ d = 0; d < dim; ++d) {
                     const auto mult = static_cast<Output_>(cur_count[d]) / static_cast<Output_>(cur_global_count[d]);
                     cur_global_mean[d] += cur_mean[d] * mult;
@@ -570,11 +621,17 @@ void apply_running_skip(
             const auto cur_global_mean = output.mean[g];
             const auto cur_output = output.variance[g];
             for (int u = 0; u < nused; ++u) {
-                const auto& cur_mean = all_partial_mean[u][g];
-                const auto& cur_count = all_partial_count[u][g];
-                const auto& cur_rss = all_partial_rss[u][g];
-                for (Index_ d = 0; d < dim; ++d) {
-                    cur_output[d] += quickstats::recenter_rss(cur_count[d], cur_rss[d], cur_mean[d], cur_global_mean[d]); 
+                const auto& cur_mean = (*(ap_mean[u]))[g];
+                const auto& cur_count = (*(all_partial_count[u]))[g];
+                if (u == 0) {
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] = quickstats::recenter_rss(cur_count[d], cur_output[d], cur_mean[d], cur_global_mean[d]); 
+                    }
+                } else {
+                    const auto& cur_rss = (*(ap_rss[u - 1]))[g];
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] += quickstats::recenter_rss(cur_count[d], cur_rss[d], cur_mean[d], cur_global_mean[d]); 
+                    }
                 }
             }
 

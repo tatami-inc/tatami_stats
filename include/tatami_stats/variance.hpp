@@ -9,6 +9,7 @@
 #include <limits>
 #include <algorithm>
 #include <cstddef>
+#include <optional>
 
 #include "tatami/tatami.hpp"
 #include "sanisizer/sanisizer.hpp"
@@ -153,32 +154,38 @@ void apply_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, B
     const bool is_sparse = mat.is_sparse();
 
     const bool do_parallel = vopt.num_threads > 1;
-    std::vector<std::vector<Output_> > all_partial_mean, all_partial_rss;
-    std::vector<Index_> all_partial_count;
+    std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_mean, all_partial_rss;
+    std::optional<std::vector<Index_> > all_partial_count;
     if (do_parallel) {
-        sanisizer::resize(all_partial_rss, vopt.num_threads);
-        sanisizer::resize(all_partial_mean, vopt.num_threads);
-        sanisizer::resize(all_partial_count, vopt.num_threads);
+        // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
+        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_rss->size())> >(vopt.num_threads - 1));
+        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads));
+        all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(vopt.num_threads));
     }
 
     std::fill_n(output.variance, dim, 0);
     std::fill_n(output.mean, dim, 0);
 
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-        // Storing the results directly in the output vector to save ourselves an allocation if we're not working in parallel.
         Output_* rss_ptr;
         Output_* mean_ptr;
+        std::optional<std::vector<Output_> > cur_rss, cur_mean;
+
         if (!do_parallel) {
+            // Storing mean and RSS directly in the output vector to cut down two allocations if we're not working in parallel.
             rss_ptr = output.variance;
             mean_ptr = output.mean;
         } else {
-            auto& cur_rss = all_partial_rss[thread];
-            tatami::resize_container_to_Index_size(cur_rss, dim);
-            rss_ptr = cur_rss.data();
-            auto& cur_mean = all_partial_mean[thread];
-            tatami::resize_container_to_Index_size(cur_mean, dim);
-            mean_ptr = cur_mean.data();
-            all_partial_count[thread] = l;
+            // Storing the partial RSS directly in the output vector to save ourselves an allocation if we're in the first thread.
+            // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
+            cur_mean.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
+            mean_ptr = cur_mean->data();
+            if (thread == 0) {
+                rss_ptr = output.variance;
+            } else {
+                cur_rss.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
+                rss_ptr = cur_rss->data();
+            }
         }
 
         if (is_sparse) {
@@ -208,13 +215,26 @@ void apply_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, B
             runner.finish();
         }
 
+        if (do_parallel) {
+            (*all_partial_count)[thread] = l;
+            (*all_partial_mean)[thread] = std::move(cur_mean);
+            if (thread > 0) {
+                (*all_partial_rss)[thread - 1] = std::move(cur_rss);
+            }
+        }
     }, otherdim, vopt.num_threads);
 
-    if (do_parallel) { // don't check nused > 1, as it's possible for do_parallel = true with nused = 1 if not all threads are used.
+    // Don't check nused > 1, as it's possible for do_parallel = true with nused = 1 if not all threads are used.
+    // This would cause us to leave output.mean and output.variance empty.
+    if (do_parallel) {
+        const auto& ap_count = *all_partial_count;
+        const auto& ap_mean = *all_partial_mean;
+        const auto& ap_rss = *all_partial_rss;
+
         // Computing the global mean.
         for (int u = 0; u < nused; ++u) {
-            const Output_ mult = static_cast<Output_>(all_partial_count[u]) / static_cast<Output_>(otherdim);
-            const auto& cur_mean = all_partial_mean[u];
+            const Output_ mult = static_cast<Output_>(ap_count[u]) / static_cast<Output_>(otherdim);
+            const auto& cur_mean = *(ap_mean[u]);
             for (Index_ d = 0; d < dim; ++d) {
                 output.mean[d] += cur_mean[d] * mult;
             }
@@ -223,11 +243,17 @@ void apply_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, B
         // Combining the RSS. We can use recenter_rss_unsafe() as we are guaranteed that cur_count > 0,
         // as parallelize() will only ever split into non-empty ranges if those ranges are used.
         for (int u = 0; u < nused; ++u) {
-            const auto cur_count = all_partial_count[u];
-            const auto& cur_mean = all_partial_mean[u];
-            const auto& cur_rss = all_partial_rss[u];
-            for (Index_ d = 0; d < dim; ++d) {
-                output.variance[d] += quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], output.mean[d]); 
+            const auto cur_count = ap_count[u];
+            const auto& cur_mean = *(ap_mean[u]);
+            if (u == 0) {
+                for (Index_ d = 0; d < dim; ++d) {
+                    output.variance[d] = quickstats::recenter_rss_unsafe(cur_count, output.variance[d], cur_mean[d], output.mean[d]); 
+                }
+            } else {
+                const auto& cur_rss = *(ap_rss[u - 1]);
+                for (Index_ d = 0; d < dim; ++d) {
+                    output.variance[d] += quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], output.mean[d]); 
+                }
             }
         }
     }
@@ -243,34 +269,40 @@ void apply_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buf
 
     assert(vopt.num_threads > 0);
     const bool do_parallel = vopt.num_threads > 1;
-    std::vector<std::vector<Output_> > all_partial_mean, all_partial_rss;
+    std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_mean, all_partial_rss;
     if (do_parallel) {
-        sanisizer::resize(all_partial_rss, vopt.num_threads);
-        sanisizer::resize(all_partial_mean, vopt.num_threads);
+        // -1, as we'll repurpose the output buffers to store the output of the first thread.
+        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_rss->size())> >(vopt.num_threads - 1));
+        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads));
     }
-    auto all_partial_count = sanisizer::create<std::vector<std::vector<Index_> > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<Index_> > > >(vopt.num_threads);
 
     std::fill_n(output.variance, dim, 0);
     std::fill_n(output.mean, dim, 0);
 
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-        // Storing the results directly in the output vector to save ourselves an allocation if we're not working in parallel.
         Output_* rss_ptr;
         Output_* mean_ptr;
+        std::optional<std::vector<Output_> > cur_rss, cur_mean;
+
         if (!do_parallel) {
+            // Storing mean and RSS directly in the output vector to cut down two allocations if we're not working in parallel.
             rss_ptr = output.variance;
             mean_ptr = output.mean;
         } else {
-            auto& cur_rss = all_partial_rss[thread];
-            tatami::resize_container_to_Index_size(cur_rss, dim);
-            rss_ptr = cur_rss.data();
-            auto& cur_mean = all_partial_mean[thread];
-            tatami::resize_container_to_Index_size(cur_mean, dim);
-            mean_ptr = cur_mean.data();
+            // Storing the partial RSS directly in the output vector to save ourselves an allocation if we're in the first thread.
+            // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
+            cur_mean.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
+            mean_ptr = cur_mean->data();
+            if (thread == 0) {
+                rss_ptr = output.variance;
+            } else {
+                cur_rss.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
+                rss_ptr = cur_rss->data();
+            }
         }
 
-        auto& cur_count = all_partial_count[thread];
-        tatami::resize_container_to_Index_size(cur_count, dim);
+        auto cur_count = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
         if (is_sparse) {
             tatami::Options opt;
@@ -311,16 +343,29 @@ void apply_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buf
             runner.finish();
         }
 
+        // Moving results to the main containers.
+        all_partial_count[thread] = std::move(cur_count);
+        if (do_parallel) {
+            (*all_partial_mean)[thread] = std::move(cur_mean);
+            if (thread > 0) {
+                (*all_partial_rss)[thread - 1] = std::move(cur_rss);
+            }
+        }
     }, otherdim, vopt.num_threads);
 
+    // Don't check nused > 1, as it's possible for do_parallel = true with nused = 1 if not all threads are used.
+    // This would cause us to leave output.mean and output.variance empty.
     if (!do_parallel) {
-        quickstats::rss_to_variance(dim, all_partial_count.front().data(), output.variance);
+        quickstats::rss_to_variance(dim, all_partial_count.front()->data(), output.variance);
 
     } else {
+        const auto& ap_mean = *all_partial_mean;
+        const auto& ap_rss = *all_partial_rss;
+
         // Computing the global total.
         auto global_count = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
         for (int u = 0; u < nused; ++u) {
-            const auto& cur_count = all_partial_count[u];
+            const auto& cur_count = *(all_partial_count[u]);
             for (Index_ d = 0; d < dim; ++d) {
                 global_count[d] += cur_count[d];
             }
@@ -328,8 +373,8 @@ void apply_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buf
 
         // Computing the global mean.
         for (int u = 0; u < nused; ++u) {
-            const auto& cur_count = all_partial_count[u];
-            const auto& cur_mean = all_partial_mean[u];
+            const auto& cur_count = *(all_partial_count[u]);
+            const auto& cur_mean = *(ap_mean[u]);
             for (Index_ d = 0; d < dim; ++d) {
                 const auto mult = static_cast<Output_>(cur_count[u]) / static_cast<Output_>(global_count[u]);
                 output.mean[d] += cur_mean[d] * mult;
@@ -338,11 +383,17 @@ void apply_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buf
 
         // Combining the RSS. This time, we need to use the safe version as we don't know whether all elements were skipped in a thread.
         for (int u = 0; u < nused; ++u) {
-            const auto& cur_count = all_partial_count[u];
-            const auto& cur_mean = all_partial_mean[u];
-            const auto& cur_rss = all_partial_rss[u];
-            for (Index_ d = 0; d < dim; ++d) {
-                output.variance[d] += quickstats::recenter_rss(cur_count[d], cur_rss[d], cur_mean[d], output.mean[d]); 
+            const auto& cur_count = *(all_partial_count[u]);
+            const auto& cur_mean = *(ap_mean[u]);
+            if (u == 0) {
+                for (Index_ d = 0; d < dim; ++d) {
+                    output.variance[d] = quickstats::recenter_rss(cur_count[d], output.variance[d], cur_mean[d], output.mean[d]); 
+                }
+            } else {
+                const auto& cur_rss = *(ap_rss[u - 1]);
+                for (Index_ d = 0; d < dim; ++d) {
+                    output.variance[d] += quickstats::recenter_rss(cur_count[d], cur_rss[d], cur_mean[d], output.mean[d]); 
+                }
             }
         }
 
