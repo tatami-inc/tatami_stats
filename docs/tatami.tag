@@ -86,12 +86,33 @@
     <namespace>tatami_stats</namespace>
   </compound>
   <compound kind="file">
-    <name>variances.hpp</name>
+    <name>variance.hpp</name>
     <path>tatami_stats/</path>
-    <filename>variances_8hpp.html</filename>
-    <class kind="struct">tatami_stats::variances::Options</class>
+    <filename>variance_8hpp.html</filename>
+    <class kind="struct">tatami_stats::variance::Options</class>
+    <class kind="struct">tatami_stats::variance::Buffers</class>
+    <class kind="struct">tatami_stats::variance::Result</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::variances</namespace>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::variance::Buffers</name>
+    <filename>structtatami__stats_1_1variance_1_1Buffers.html</filename>
+    <templarg>typename Output_</templarg>
+    <member kind="variable">
+      <type>Output_ *</type>
+      <name>mean</name>
+      <anchorfile>structtatami__stats_1_1variance_1_1Buffers.html</anchorfile>
+      <anchor>a39ca7a33c657d2d82b15b0c21ad36d6b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_ *</type>
+      <name>variance</name>
+      <anchorfile>structtatami__stats_1_1variance_1_1Buffers.html</anchorfile>
+      <anchor>a1f1036acbc03fc9fe8c83f99d6b806ac</anchor>
+      <arglist></arglist>
+    </member>
   </compound>
   <compound kind="class">
     <name>tatami_stats::LocalOutputBuffer</name>
@@ -344,20 +365,39 @@
     </member>
   </compound>
   <compound kind="struct">
-    <name>tatami_stats::variances::Options</name>
-    <filename>structtatami__stats_1_1variances_1_1Options.html</filename>
+    <name>tatami_stats::variance::Options</name>
+    <filename>structtatami__stats_1_1variance_1_1Options.html</filename>
     <member kind="variable">
       <type>bool</type>
       <name>skip_nan</name>
-      <anchorfile>structtatami__stats_1_1variances_1_1Options.html</anchorfile>
-      <anchor>aeb3ee96b5c18332bd57e0633c3593c53</anchor>
+      <anchorfile>structtatami__stats_1_1variance_1_1Options.html</anchorfile>
+      <anchor>a6b5d05d0c4cf3f4ac49fe9911c1aa205</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
-      <anchorfile>structtatami__stats_1_1variances_1_1Options.html</anchorfile>
-      <anchor>a067e87951e90ca4510b110c13efe56cb</anchor>
+      <anchorfile>structtatami__stats_1_1variance_1_1Options.html</anchorfile>
+      <anchor>a4baf2dba459c078c57cdbb1311be2fb9</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::variance::Result</name>
+    <filename>structtatami__stats_1_1variance_1_1Result.html</filename>
+    <templarg>typename Output_</templarg>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ &gt;</type>
+      <name>mean</name>
+      <anchorfile>structtatami__stats_1_1variance_1_1Result.html</anchorfile>
+      <anchor>a2e50beff5de3f786942606cf6a76eb0b</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ &gt;</type>
+      <name>variance</name>
+      <anchorfile>structtatami__stats_1_1variance_1_1Result.html</anchorfile>
+      <anchor>a81911a61079abe8f9070d177c4f1e0d1</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -791,28 +831,6 @@
   <compound kind="namespace">
     <name>tatami_stats::variances</name>
     <filename>namespacetatami__stats_1_1variances.html</filename>
-    <class kind="struct">tatami_stats::variances::Options</class>
-    <member kind="function">
-      <type>void</type>
-      <name>apply</name>
-      <anchorfile>namespacetatami__stats_1_1variances.html</anchorfile>
-      <anchor>a52fd7f235d9c9d0721210f3c8b5c503a</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, const Options &amp;vopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1variances.html</anchorfile>
-      <anchor>a1b78af51c1130641ff940ce5bbc8b645</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;vopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1variances.html</anchorfile>
-      <anchor>a6788d39d4ab53679786e67794d7a6578</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;vopt)</arglist>
-    </member>
   </compound>
   <compound kind="page">
     <name>index</name>

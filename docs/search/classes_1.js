@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['blocksparsifiedwrapper_0',['BlockSparsifiedWrapper',['https://tatami-inc.github.io/tatami/classtatami_1_1BlockSparsifiedWrapper.html',1,'tatami']]]
+  ['blocksparsifiedwrapper_0',['BlockSparsifiedWrapper',['https://tatami-inc.github.io/tatami/classtatami_1_1BlockSparsifiedWrapper.html',1,'tatami']]],
+  ['buffers_1',['Buffers',['../structtatami__stats_1_1variance_1_1Buffers.html',1,'tatami_stats::variance']]]
 ];
