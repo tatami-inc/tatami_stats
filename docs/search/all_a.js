@@ -12,7 +12,7 @@ var searchData=
   ['matrix_3c_20valueout_5f_2c_20indexout_5f_20_3e_9',['Matrix&lt; ValueOut_, IndexOut_ &gt;',['https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html',1,'tatami']]],
   ['maybeoracle_10',['MaybeOracle',['https://tatami-inc.github.io/tatami/namespacetatami.html#a812af1bfb04773bf28da8549c3e6e5ee',1,'tatami']]],
   ['mean_11',['mean',['../structtatami__stats_1_1group__variance_1_1Buffers.html#afed5cd7a08497041c4e278b68e1f899d',1,'tatami_stats::group_variance::Buffers::mean'],['../structtatami__stats_1_1group__variance_1_1Result.html#addc30577181d680d1ce1ce22080a4d19',1,'tatami_stats::group_variance::Result::mean'],['../structtatami__stats_1_1variance_1_1Buffers.html#a39ca7a33c657d2d82b15b0c21ad36d6b',1,'tatami_stats::variance::Buffers::mean'],['../structtatami__stats_1_1variance_1_1Result.html#a2e50beff5de3f786942606cf6a76eb0b',1,'tatami_stats::variance::Result::mean']]],
-  ['medians_2ehpp_12',['medians.hpp',['../medians_8hpp.html',1,'']]],
+  ['median_2ehpp_12',['median.hpp',['../median_8hpp.html',1,'']]],
   ['myopicdenseextractor_13',['MyopicDenseExtractor',['https://tatami-inc.github.io/tatami/classtatami_1_1MyopicDenseExtractor.html',1,'tatami']]],
   ['myopicsparseextractor_14',['MyopicSparseExtractor',['https://tatami-inc.github.io/tatami/classtatami_1_1MyopicSparseExtractor.html',1,'tatami']]]
 ];

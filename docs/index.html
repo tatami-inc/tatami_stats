@@ -109,7 +109,7 @@ $(function(){ initResizable(false); });
 <div class="line">);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Compute row-wise medians.</span></div>
-<div class="line"><span class="keyword">auto</span> row_medians = <a class="code hl_function" href="namespacetatami__stats_1_1medians.html#ab70115fd094f9395a13bd3d18418df51">tatami_stats::medians::by_row</a>(mat.get());</div>
+<div class="line"><span class="keyword">auto</span> row_medians = tatami_stats::medians::by_row(mat.get());</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Column-wise means and variances with NaN skipping and multiple threads.</span></div>
 <div class="line">tatami_stats::variances::Options vopt;</div>
@@ -117,7 +117,6 @@ $(function(){ initResizable(false); });
 <div class="line">vopt.num_threads = 5;</div>
 <div class="line"><span class="keyword">auto</span> col_mean_and_var = tatami_stats::variances::by_column(mat.get(), vopt);</div>
 <div class="ttc" id="aclasstatami_1_1DenseRowMatrix_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1DenseRowMatrix.html">tatami::DenseRowMatrix</a></div></div>
-<div class="ttc" id="anamespacetatami__stats_1_1medians_html_ab70115fd094f9395a13bd3d18418df51"><div class="ttname"><a href="namespacetatami__stats_1_1medians.html#ab70115fd094f9395a13bd3d18418df51">tatami_stats::medians::by_row</a></div><div class="ttdeci">std::vector&lt; Output_ &gt; by_row(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;mopt)</div><div class="ttdef"><b>Definition</b> medians.hpp:197</div></div>
 <div class="ttc" id="atatami__stats_8hpp_html"><div class="ttname"><a href="tatami__stats_8hpp.html">tatami_stats.hpp</a></div><div class="ttdoc">Umbrella header for the tatami_stats library.</div></div>
 </div><!-- fragment --><p>Check out the <a href="https://tatami-inc.github.io/tatami_stats">API documentation</a> for more details.</p>
 <h1>Lower-level functionality</h1>
@@ -148,7 +147,7 @@ $(function(){ initResizable(false); });
 <div class="line">}</div>
 <div class="ttc" id="anamespacetatami__stats_1_1sums_html_af95ccf6d0eea5492a7ccd6c1c003df92"><div class="ttname"><a href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">tatami_stats::sums::direct</a></div><div class="ttdeci">Output_ direct(const Value_ *ptr, Index_ num, bool skip_nan)</div><div class="ttdef"><b>Definition</b> sums.hpp:59</div></div>
 <div class="ttc" id="anamespacetatami_html_aca84df9f6331751c29b0bcc0ca656af7"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a></div><div class="ttdeci">Value_ * copy_n(const Value_ *const input, const Size_ n, Value_ *const output)</div></div>
-</div><!-- fragment --><p>These low-level functions allow developers to compute multiple statistics with a single pass through the matrix. In contrast, calling <code><a class="el" href="namespacetatami__stats_1_1sums.html#a789933d544ed5e4a6b4f682f03db56e2">tatami_stats::sums::by_row</a></code> and <code><a class="el" href="namespacetatami__stats_1_1medians.html#ab70115fd094f9395a13bd3d18418df51">tatami_stats::medians::by_row</a></code> separately would extract data from the matrix twice, which may be expensive for file-backed matrices.</p>
+</div><!-- fragment --><p>These low-level functions allow developers to compute multiple statistics with a single pass through the matrix. In contrast, calling <code><a class="el" href="namespacetatami__stats_1_1sums.html#a789933d544ed5e4a6b4f682f03db56e2">tatami_stats::sums::by_row</a></code> and <code>tatami_stats::medians::by_row</code> separately would extract data from the matrix twice, which may be expensive for file-backed matrices.</p>
 <h1>Building projects</h1>
 <h2>CMake with <code>FetchContent</code></h2>
 <p>If you're using CMake, you just need to add something like this to your <code>CMakeLists.txt</code>:</p>
