@@ -9,6 +9,14 @@
     <namespace>tatami_stats::count</namespace>
   </compound>
   <compound kind="file">
+    <name>group_median.hpp</name>
+    <path>tatami_stats/</path>
+    <filename>group__median_8hpp.html</filename>
+    <class kind="struct">tatami_stats::group_median::Options</class>
+    <namespace>tatami_stats</namespace>
+    <namespace>tatami_stats::group_median</namespace>
+  </compound>
+  <compound kind="file">
     <name>group_variance.hpp</name>
     <path>tatami_stats/</path>
     <filename>group__variance_8hpp.html</filename>
@@ -17,14 +25,6 @@
     <class kind="struct">tatami_stats::group_variance::Result</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::group_variance</namespace>
-  </compound>
-  <compound kind="file">
-    <name>grouped_medians.hpp</name>
-    <path>tatami_stats/</path>
-    <filename>grouped__medians_8hpp.html</filename>
-    <class kind="struct">tatami_stats::grouped_medians::Options</class>
-    <namespace>tatami_stats</namespace>
-    <namespace>tatami_stats::grouped_medians</namespace>
   </compound>
   <compound kind="file">
     <name>grouped_sums.hpp</name>
@@ -246,6 +246,24 @@
     </member>
   </compound>
   <compound kind="struct">
+    <name>tatami_stats::group_median::Options</name>
+    <filename>structtatami__stats_1_1group__median_1_1Options.html</filename>
+    <member kind="variable">
+      <type>bool</type>
+      <name>skip_nan</name>
+      <anchorfile>structtatami__stats_1_1group__median_1_1Options.html</anchorfile>
+      <anchor>a329790c6c5eca52cf0c51edaf316f8df</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>num_threads</name>
+      <anchorfile>structtatami__stats_1_1group__median_1_1Options.html</anchorfile>
+      <anchor>a61115fcf9e69e2350a277b5b29dfa65e</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
     <name>tatami_stats::group_variance::Options</name>
     <filename>structtatami__stats_1_1group__variance_1_1Options.html</filename>
     <member kind="variable">
@@ -260,24 +278,6 @@
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1group__variance_1_1Options.html</anchorfile>
       <anchor>ae9e1d6e9e9c071031ed4176d76396370</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>tatami_stats::grouped_medians::Options</name>
-    <filename>structtatami__stats_1_1grouped__medians_1_1Options.html</filename>
-    <member kind="variable">
-      <type>bool</type>
-      <name>skip_nan</name>
-      <anchorfile>structtatami__stats_1_1grouped__medians_1_1Options.html</anchorfile>
-      <anchor>aaefc94bcd05df52b217ff11c976e124b</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>num_threads</name>
-      <anchorfile>structtatami__stats_1_1grouped__medians_1_1Options.html</anchorfile>
-      <anchor>a445db36471f70bce7b128f585923f0bf</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -529,8 +529,8 @@
     <name>tatami_stats</name>
     <filename>namespacetatami__stats.html</filename>
     <namespace>tatami_stats::count</namespace>
+    <namespace>tatami_stats::group_median</namespace>
     <namespace>tatami_stats::group_variance</namespace>
-    <namespace>tatami_stats::grouped_medians</namespace>
     <namespace>tatami_stats::grouped_sums</namespace>
     <namespace>tatami_stats::medians</namespace>
     <namespace>tatami_stats::quantiles</namespace>
@@ -574,6 +574,25 @@
     </member>
   </compound>
   <compound kind="namespace">
+    <name>tatami_stats::group_median</name>
+    <filename>namespacetatami__stats_1_1group__median.html</filename>
+    <class kind="struct">tatami_stats::group_median::Options</class>
+    <member kind="function">
+      <type>void</type>
+      <name>apply</name>
+      <anchorfile>namespacetatami__stats_1_1group__median.html</anchorfile>
+      <anchor>ae95c80badf4353f7b6585c13b1848a7d</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, std::vector&lt; Output_ * &gt; &amp;output, const Options &amp;mopt)</arglist>
+    </member>
+    <member kind="function">
+      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
+      <name>apply</name>
+      <anchorfile>namespacetatami__stats_1_1group__median.html</anchorfile>
+      <anchor>a5512915153b95e13e7a390f700da01d8</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const Options &amp;mopt)</arglist>
+    </member>
+  </compound>
+  <compound kind="namespace">
     <name>tatami_stats::group_variance</name>
     <filename>namespacetatami__stats_1_1group__variance.html</filename>
     <class kind="struct">tatami_stats::group_variance::Buffers</class>
@@ -592,32 +611,6 @@
       <anchorfile>namespacetatami__stats_1_1group__variance.html</anchorfile>
       <anchor>a087510ef814ecaa5247847f635b364cc</anchor>
       <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, const Options &amp;opt)</arglist>
-    </member>
-  </compound>
-  <compound kind="namespace">
-    <name>tatami_stats::grouped_medians</name>
-    <filename>namespacetatami__stats_1_1grouped__medians.html</filename>
-    <class kind="struct">tatami_stats::grouped_medians::Options</class>
-    <member kind="function">
-      <type>void</type>
-      <name>apply</name>
-      <anchorfile>namespacetatami__stats_1_1grouped__medians.html</anchorfile>
-      <anchor>a94adfe3299a3636c1227200eefc420c5</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const GroupSizes_ &amp;group_sizes, Output_ **output, const Options &amp;mopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1grouped__medians.html</anchorfile>
-      <anchor>ace067d4c170730d3939d999bce4f66bd</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const Options &amp;mopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1grouped__medians.html</anchorfile>
-      <anchor>a229a992062074ed05dba11f4d32d5578</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const Options &amp;mopt)</arglist>
     </member>
   </compound>
   <compound kind="namespace">
