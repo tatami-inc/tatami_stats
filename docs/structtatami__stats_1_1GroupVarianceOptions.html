@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats::group_variance::Result&lt; Output_ &gt; Struct Template Reference</title>
+<title>tatami_stats: tatami_stats::GroupVarianceOptions Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -92,71 +92,60 @@ $(function(){ initResizable(false); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="namespacetatami__stats_1_1group__variance.html">group_variance</a></li><li class="navelem"><a class="el" href="structtatami__stats_1_1group__variance_1_1Result.html">Result</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="structtatami__stats_1_1GroupVarianceOptions.html">GroupVarianceOptions</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div id="doc-content">
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structtatami__stats_1_1group__variance_1_1Result-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats::group_variance::Result&lt; Output_ &gt; Struct Template Reference</div></div>
+<a href="structtatami__stats_1_1GroupVarianceOptions-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">tatami_stats::GroupVarianceOptions Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Results of <code><a class="el" href="namespacetatami__stats_1_1group__variance.html#a9b81f7b16c2c841a757b852647c75ab2">apply()</a></code>.  
+<p>Options for <code><a class="el" href="namespacetatami__stats.html#ac7476ce5e6db67ed8d137d14077d6a10">group_variance()</a></code>.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="group__variance_8hpp_source.html">group_variance.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:addc30577181d680d1ce1ce22080a4d19" id="r_addc30577181d680d1ce1ce22080a4d19"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#addc30577181d680d1ce1ce22080a4d19">mean</a></td></tr>
-<tr class="separator:addc30577181d680d1ce1ce22080a4d19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae27777b24cf1a33a4a90ceb22cdbfcf8" id="r_ae27777b24cf1a33a4a90ceb22cdbfcf8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae27777b24cf1a33a4a90ceb22cdbfcf8">variance</a></td></tr>
-<tr class="separator:ae27777b24cf1a33a4a90ceb22cdbfcf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c88585c22dad4d741e472cdbec6c233" id="r_a4c88585c22dad4d741e472cdbec6c233"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c88585c22dad4d741e472cdbec6c233">skip_nan</a> = false</td></tr>
+<tr class="separator:a4c88585c22dad4d741e472cdbec6c233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8aae82a226fc7be7903fe040f6d6f0c" id="r_af8aae82a226fc7be7903fe040f6d6f0c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8aae82a226fc7be7903fe040f6d6f0c">num_threads</a> = 1</td></tr>
+<tr class="separator:af8aae82a226fc7be7903fe040f6d6f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_&gt;<br />
-struct tatami_stats::group_variance::Result&lt; Output_ &gt;</div><p>Results of <code><a class="el" href="namespacetatami__stats_1_1group__variance.html#a9b81f7b16c2c841a757b852647c75ab2">apply()</a></code>. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. This should be capable of storing NaNs. </td></tr>
-  </table>
-  </dd>
-</dl>
+<div class="textblock"><p>Options for <code><a class="el" href="namespacetatami__stats.html#ac7476ce5e6db67ed8d137d14077d6a10">group_variance()</a></code>. </p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="addc30577181d680d1ce1ce22080a4d19" name="addc30577181d680d1ce1ce22080a4d19"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#addc30577181d680d1ce1ce22080a4d19">&#9670;&#160;</a></span>mean</h2>
+<a id="a4c88585c22dad4d741e472cdbec6c233" name="a4c88585c22dad4d741e472cdbec6c233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c88585c22dad4d741e472cdbec6c233">&#9670;&#160;</a></span>skip_nan</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;typename Output_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;Output_&gt; &gt; <a class="el" href="structtatami__stats_1_1group__variance_1_1Result.html">tatami_stats::group_variance::Result</a>&lt; Output_ &gt;::mean</td>
+          <td class="memname">bool tatami_stats::GroupVarianceOptions::skip_nan = false</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Vector of length equal to the number of groups. Each element is a vector of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise), containing the sample mean of each row/column. </p>
+<p>Whether to check for NaNs in the input, and skip them. If false, NaNs are assumed to be absent, and the behavior of the summation in the presence of NaNs is undefined. </p>
 
 </div>
 </div>
-<a id="ae27777b24cf1a33a4a90ceb22cdbfcf8" name="ae27777b24cf1a33a4a90ceb22cdbfcf8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae27777b24cf1a33a4a90ceb22cdbfcf8">&#9670;&#160;</a></span>variance</h2>
+<a id="af8aae82a226fc7be7903fe040f6d6f0c" name="af8aae82a226fc7be7903fe040f6d6f0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8aae82a226fc7be7903fe040f6d6f0c">&#9670;&#160;</a></span>num_threads</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;typename Output_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;Output_&gt; &gt; <a class="el" href="structtatami__stats_1_1group__variance_1_1Result.html">tatami_stats::group_variance::Result</a>&lt; Output_ &gt;::variance</td>
+          <td class="memname">int tatami_stats::GroupVarianceOptions::num_threads = 1</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Vector of length equal to the number of groups. Each element is a vector of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise), containing the sample variance of each row/column. </p>
+<p>Number of threads to use when computing variances across a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. See <code><a class="elRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize()</a></code> for more details on the parallelization mechanism. </p>
 
 </div>
 </div>

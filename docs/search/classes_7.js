@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['localoutputbuffer_0',['LocalOutputBuffer',['../classtatami__stats_1_1LocalOutputBuffer.html',1,'tatami_stats']]],
-  ['localoutputbuffers_1',['LocalOutputBuffers',['../classtatami__stats_1_1LocalOutputBuffers.html',1,'tatami_stats']]]
+  ['indexsparsifiedwrapper_0',['IndexSparsifiedWrapper',['https://tatami-inc.github.io/tatami/classtatami_1_1IndexSparsifiedWrapper.html',1,'tatami']]],
+  ['iterator_1',['Iterator',['https://tatami-inc.github.io/tatami/structtatami_1_1SomeNumericArray_1_1Iterator.html',1,'tatami::SomeNumericArray']]]
 ];

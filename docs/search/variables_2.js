@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mean_0',['mean',['../structtatami__stats_1_1group__variance_1_1Buffers.html#afed5cd7a08497041c4e278b68e1f899d',1,'tatami_stats::group_variance::Buffers::mean'],['../structtatami__stats_1_1group__variance_1_1Result.html#addc30577181d680d1ce1ce22080a4d19',1,'tatami_stats::group_variance::Result::mean'],['../structtatami__stats_1_1variance_1_1Buffers.html#a39ca7a33c657d2d82b15b0c21ad36d6b',1,'tatami_stats::variance::Buffers::mean'],['../structtatami__stats_1_1variance_1_1Result.html#a2e50beff5de3f786942606cf6a76eb0b',1,'tatami_stats::variance::Result::mean']]]
+  ['mean_0',['mean',['../structtatami__stats_1_1GroupVarianceBuffers.html#a771ae7d9b063b96db8a64f443b591736',1,'tatami_stats::GroupVarianceBuffers::mean'],['../structtatami__stats_1_1GroupVarianceResult.html#a281f56a278e69315e854bfdb04165150',1,'tatami_stats::GroupVarianceResult::mean'],['../structtatami__stats_1_1VarianceBuffers.html#a11227ea52547a2ea7c0b88b3a90ba241',1,'tatami_stats::VarianceBuffers::mean'],['../structtatami__stats_1_1VarianceResult.html#af7eefe392238647ffaf7454b17014c9a',1,'tatami_stats::VarianceResult::mean']]]
 ];

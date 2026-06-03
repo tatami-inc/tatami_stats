@@ -11,8 +11,10 @@ var searchData=
   ['matrix_3c_20value_5f_2c_20index_5f_20_3e_8',['Matrix&lt; Value_, Index_ &gt;',['https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html',1,'tatami']]],
   ['matrix_3c_20valueout_5f_2c_20indexout_5f_20_3e_9',['Matrix&lt; ValueOut_, IndexOut_ &gt;',['https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html',1,'tatami']]],
   ['maybeoracle_10',['MaybeOracle',['https://tatami-inc.github.io/tatami/namespacetatami.html#a812af1bfb04773bf28da8549c3e6e5ee',1,'tatami']]],
-  ['mean_11',['mean',['../structtatami__stats_1_1group__variance_1_1Buffers.html#afed5cd7a08497041c4e278b68e1f899d',1,'tatami_stats::group_variance::Buffers::mean'],['../structtatami__stats_1_1group__variance_1_1Result.html#addc30577181d680d1ce1ce22080a4d19',1,'tatami_stats::group_variance::Result::mean'],['../structtatami__stats_1_1variance_1_1Buffers.html#a39ca7a33c657d2d82b15b0c21ad36d6b',1,'tatami_stats::variance::Buffers::mean'],['../structtatami__stats_1_1variance_1_1Result.html#a2e50beff5de3f786942606cf6a76eb0b',1,'tatami_stats::variance::Result::mean']]],
-  ['median_2ehpp_12',['median.hpp',['../median_8hpp.html',1,'']]],
-  ['myopicdenseextractor_13',['MyopicDenseExtractor',['https://tatami-inc.github.io/tatami/classtatami_1_1MyopicDenseExtractor.html',1,'tatami']]],
-  ['myopicsparseextractor_14',['MyopicSparseExtractor',['https://tatami-inc.github.io/tatami/classtatami_1_1MyopicSparseExtractor.html',1,'tatami']]]
+  ['mean_11',['mean',['../structtatami__stats_1_1GroupVarianceBuffers.html#a771ae7d9b063b96db8a64f443b591736',1,'tatami_stats::GroupVarianceBuffers::mean'],['../structtatami__stats_1_1GroupVarianceResult.html#a281f56a278e69315e854bfdb04165150',1,'tatami_stats::GroupVarianceResult::mean'],['../structtatami__stats_1_1VarianceBuffers.html#a11227ea52547a2ea7c0b88b3a90ba241',1,'tatami_stats::VarianceBuffers::mean'],['../structtatami__stats_1_1VarianceResult.html#af7eefe392238647ffaf7454b17014c9a',1,'tatami_stats::VarianceResult::mean']]],
+  ['median_12',['median',['../namespacetatami__stats.html#aebf2d6f697c1572992203b6a891e1e20',1,'tatami_stats::median(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *const output, const MedianOptions &amp;mopt)'],['../namespacetatami__stats.html#ab2fe9e8e668c05880dbd6fca9215c079',1,'tatami_stats::median(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const MedianOptions &amp;mopt)']]],
+  ['median_2ehpp_13',['median.hpp',['../median_8hpp.html',1,'']]],
+  ['medianoptions_14',['MedianOptions',['../structtatami__stats_1_1MedianOptions.html',1,'tatami_stats']]],
+  ['myopicdenseextractor_15',['MyopicDenseExtractor',['https://tatami-inc.github.io/tatami/classtatami_1_1MyopicDenseExtractor.html',1,'tatami']]],
+  ['myopicsparseextractor_16',['MyopicSparseExtractor',['https://tatami-inc.github.io/tatami/classtatami_1_1MyopicSparseExtractor.html',1,'tatami']]]
 ];

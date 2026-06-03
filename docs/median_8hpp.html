@@ -112,8 +112,8 @@ $(function(){ initResizable(false); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1median_1_1Options.html">tatami_stats::median::Options</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Median calculation options.  <a href="structtatami__stats_1_1median_1_1Options.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1MedianOptions.html">tatami_stats::MedianOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="namespacetatami__stats.html#aebf2d6f697c1572992203b6a891e1e20">median()</a></code>.  <a href="structtatami__stats_1_1MedianOptions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -121,120 +121,19 @@ Namespaces</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></td></tr>
 <tr class="memdesc:namespacetatami__stats"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions to compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1medians.html">tatami_stats::medians</a></td></tr>
-<tr class="memdesc:namespacetatami__stats_1_1medians"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions for computing dimension-wise medians. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad77b269869568e1984476bf6204e48bc" id="r_ad77b269869568e1984476bf6204e48bc"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
-<tr class="memitem:ad77b269869568e1984476bf6204e48bc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ad77b269869568e1984476bf6204e48bc">tatami_stats::median::apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, const <a class="el" href="structtatami__stats_1_1median_1_1Options.html">Options</a> &amp;mopt)</td></tr>
-<tr class="separator:ad77b269869568e1984476bf6204e48bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d03848a3fa46901a6a2d050fb1cee46" id="r_a7d03848a3fa46901a6a2d050fb1cee46"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
-<tr class="memitem:a7d03848a3fa46901a6a2d050fb1cee46"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a7d03848a3fa46901a6a2d050fb1cee46">tatami_stats::median::apply</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const <a class="el" href="structtatami__stats_1_1median_1_1Options.html">Options</a> &amp;mopt)</td></tr>
-<tr class="separator:a7d03848a3fa46901a6a2d050fb1cee46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebf2d6f697c1572992203b6a891e1e20" id="r_aebf2d6f697c1572992203b6a891e1e20"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
+<tr class="memitem:aebf2d6f697c1572992203b6a891e1e20"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html#aebf2d6f697c1572992203b6a891e1e20">tatami_stats::median</a> (const bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, Output_ *const output, const <a class="el" href="structtatami__stats_1_1MedianOptions.html">MedianOptions</a> &amp;mopt)</td></tr>
+<tr class="separator:aebf2d6f697c1572992203b6a891e1e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2fe9e8e668c05880dbd6fca9215c079" id="r_ab2fe9e8e668c05880dbd6fca9215c079"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:ab2fe9e8e668c05880dbd6fca9215c079"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html#ab2fe9e8e668c05880dbd6fca9215c079">tatami_stats::median</a> (const bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const <a class="el" href="structtatami__stats_1_1MedianOptions.html">MedianOptions</a> &amp;mopt)</td></tr>
+<tr class="separator:ab2fe9e8e668c05880dbd6fca9215c079"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Compute row and column medians from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="ad77b269869568e1984476bf6204e48bc" name="ad77b269869568e1984476bf6204e48bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad77b269869568e1984476bf6204e48bc">&#9670;&#160;</a></span>apply() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void tatami_stats::median::apply </td>
-          <td>(</td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Output_ *</td>          <td class="paramname"><span class="paramname"><em>output</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structtatami__stats_1_1median_1_1Options.html">Options</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>mopt</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Compute medians for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">Value_</td><td>Numeric type of the input values. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
-    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute the median for each row. If false, the median is computed for each column instead. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise). On output, this will contain the row/column medians. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">mopt</td><td>Median calculation options. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a7d03848a3fa46901a6a2d050fb1cee46" name="a7d03848a3fa46901a6a2d050fb1cee46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d03848a3fa46901a6a2d050fb1cee46">&#9670;&#160;</a></span>apply() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; Output_ &gt; tatami_stats::median::apply </td>
-          <td>(</td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structtatami__stats_1_1median_1_1Options.html">Options</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>mopt</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Overload of <code>apply()</code> that allocates memory for the output medians.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs. </td></tr>
-    <tr><td class="paramname">Value_</td><td>Numeric type of the input values. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute the median for each row. If false, the median is computed for each column instead. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Pointer to an array of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise). On output, this will contain the row/column medians. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">mopt</td><td>Median calculation options. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0

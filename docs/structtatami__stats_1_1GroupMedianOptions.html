@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: Member List</title>
+<title>tatami_stats: tatami_stats::GroupMedianOptions Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -92,20 +92,67 @@ $(function(){ initResizable(false); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="namespacetatami__stats_1_1group__variance.html">group_variance</a></li><li class="navelem"><a class="el" href="structtatami__stats_1_1group__variance_1_1Buffers.html">Buffers</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="structtatami__stats_1_1GroupMedianOptions.html">GroupMedianOptions</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div id="doc-content">
 <div class="header">
-  <div class="headertitle"><div class="title">tatami_stats::group_variance::Buffers&lt; Output_ &gt; Member List</div></div>
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structtatami__stats_1_1GroupMedianOptions-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">tatami_stats::GroupMedianOptions Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="structtatami__stats_1_1group__variance_1_1Buffers.html">tatami_stats::group_variance::Buffers&lt; Output_ &gt;</a>, including all inherited members.</p>
-<table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="structtatami__stats_1_1group__variance_1_1Buffers.html#afed5cd7a08497041c4e278b68e1f899d">mean</a></td><td class="entry"><a class="el" href="structtatami__stats_1_1group__variance_1_1Buffers.html">tatami_stats::group_variance::Buffers&lt; Output_ &gt;</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="structtatami__stats_1_1group__variance_1_1Buffers.html#a2b2c46ff5a92053ae69652d15529bb36">variance</a></td><td class="entry"><a class="el" href="structtatami__stats_1_1group__variance_1_1Buffers.html">tatami_stats::group_variance::Buffers&lt; Output_ &gt;</a></td><td class="entry"></td></tr>
-</table></div><!-- contents -->
+<p>Options for <code><a class="el" href="namespacetatami__stats.html#ab70fac32c7dab5f22803aced34612227">group_median()</a></code>.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="group__median_8hpp_source.html">group_median.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a95a322285783cf5f23ba5342a223c2e1" id="r_a95a322285783cf5f23ba5342a223c2e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a95a322285783cf5f23ba5342a223c2e1">skip_nan</a> = false</td></tr>
+<tr class="separator:a95a322285783cf5f23ba5342a223c2e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cb9eefbb96e15372c0569e0b66424f2" id="r_a9cb9eefbb96e15372c0569e0b66424f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9cb9eefbb96e15372c0569e0b66424f2">num_threads</a> = 1</td></tr>
+<tr class="separator:a9cb9eefbb96e15372c0569e0b66424f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Options for <code><a class="el" href="namespacetatami__stats.html#ab70fac32c7dab5f22803aced34612227">group_median()</a></code>. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a95a322285783cf5f23ba5342a223c2e1" name="a95a322285783cf5f23ba5342a223c2e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95a322285783cf5f23ba5342a223c2e1">&#9670;&#160;</a></span>skip_nan</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool tatami_stats::GroupMedianOptions::skip_nan = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Whether to check for NaNs in the input, and skip them. If false, NaNs are assumed to be absent, and the behavior of the median calculation in the presence of NaNs is undefined. </p>
+
+</div>
+</div>
+<a id="a9cb9eefbb96e15372c0569e0b66424f2" name="a9cb9eefbb96e15372c0569e0b66424f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cb9eefbb96e15372c0569e0b66424f2">&#9670;&#160;</a></span>num_threads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tatami_stats::GroupMedianOptions::num_threads = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of threads to use when computing medians across a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. See <code><a class="elRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize()</a></code> for more details on the parallelization mechanism. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>tatami_stats/<a class="el" href="group__median_8hpp_source.html">group_median.hpp</a></li>
+</ul>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
