@@ -35,7 +35,7 @@ add_executable(
     libtest
     src/sums.cpp
     src/variance.cpp
-    src/medians.cpp
+    src/median.cpp
     src/quantiles.cpp
     src/ranges.cpp
     src/count.cpp

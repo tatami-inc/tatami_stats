@@ -2,7 +2,7 @@
 #define TATAMI_STATS_GROUPED_MEDIANS_HPP
 
 #include "utils.hpp"
-#include "medians.hpp"
+#include "median.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -91,7 +91,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
 
                 for (I<decltype(ngroups)> g = 0; g < ngroups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = medians::direct<Output_, Value_, Index_>(w.data(), w.size(), group_sizes[g], mopt.skip_nan);
+                    output[g][i + start] = median::direct<Output_, Value_, Index_>(w.data(), w.size(), group_sizes[g], mopt.skip_nan);
                     w.clear();
                 }
             }
@@ -106,7 +106,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Group_* gr
 
                 for (I<decltype(ngroups)> g = 0; g < ngroups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = medians::direct<Output_, Value_, Index_>(w.data(), w.size(), mopt.skip_nan);
+                    output[g][i + start] = median::direct<Output_, Value_, Index_>(w.data(), w.size(), mopt.skip_nan);
                     w.clear();
                 }
             }

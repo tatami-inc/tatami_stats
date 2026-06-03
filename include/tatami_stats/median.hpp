@@ -1,5 +1,5 @@
-#ifndef TATAMI_STATS_MEDIANS_HPP
-#define TATAMI_STATS_MEDIANS_HPP
+#ifndef TATAMI_STATS_MEDIAN_HPP
+#define TATAMI_STATS_MEDIAN_HPP
 
 #include "utils.hpp"
 
@@ -13,7 +13,7 @@
 #include "quickstats/quickstats.hpp"
 
 /**
- * @file medians.hpp
+ * @file median.hpp
  *
  * @brief Compute row and column medians from a `tatami::Matrix`.
  */
@@ -24,7 +24,7 @@ namespace tatami_stats {
  * @brief Functions for computing dimension-wise medians.
  * @namespace tatami_stats::medians
  */
-namespace medians {
+namespace median {
 
 /**
  * @brief Median calculation options.
@@ -93,9 +93,9 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
  * @param mopt Median calculation options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const medians::Options& mopt) {
-    auto dim = (row ? mat.nrow() : mat.ncol());
-    auto otherdim = (row ? mat.ncol() : mat.nrow());
+void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& mopt) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
     if (mat.sparse()) {
         tatami::Options opt;
@@ -127,100 +127,27 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
 }
 
 /**
- * @cond
- */
-// Back-compatibility.
-template<typename Value_, typename Index_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>* p, Output_* output, const medians::Options& mopt) {
-    apply(row, *p, output, mopt);
-}
-/**
- * @endcond
- */
-
-/**
- * Wrapper around `apply()` for column medians.
+ * Overload of `apply()` that allocates memory for the output medians.
  *
  * @tparam Output_ Floating-point type of the output value.
  * This should be capable of storing NaNs.
  * @tparam Value_ Numeric type of the input values.
  * @tparam Index_ Integer type of the row/column indices.
  *
+ * @param row Whether to compute the median for each row.
+ * If false, the median is computed for each column instead.
  * @param mat Instance of a `tatami::Matrix`.
+ * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
+ * On output, this will contain the row/column medians.
  * @param mopt Median calculation options.
- *
- * @return A vector of length equal to the number of columns, containing the column medians.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat, const Options& mopt) {
-    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.ncol());
-    apply(false, mat, output.data(), mopt);
+std::vector<Output_> apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Options& mopt) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    auto output = sanisizer::create<std::vector<Output_> >(dim);
+    apply(row, mat, output.data(), mopt);
     return output;
 }
-
-/**
- * @cond
- */
-// Back-compatibility.
-template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p, const Options& mopt) {
-    return by_column<Output_>(*p, mopt);
-}
-
-template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>& mat) {
-    return by_column<Output_>(mat, Options());
-}
-
-template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_column(const tatami::Matrix<Value_, Index_>* p) {
-    return by_column<Output_>(*p);
-}
-/**
- * @endcond
- */
-
-/**
- * Wrapper around `apply()` for row medians.
- *
- * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
- * @tparam Value_ Numeric type of the input values.
- * @tparam Index_ Integer type of the row/column indices.
- *
- * @param mat Instance of a `tatami::Matrix`.
- * @param mopt Median calculation options.
- *
- * @return A vector of length equal to the number of rows, containing the row medians.
- */
-template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat, const Options& mopt) {
-    auto output = tatami::create_container_of_Index_size<std::vector<Output_> >(mat.nrow());
-    apply(true, mat, output.data(), mopt);
-    return output;
-}
-
-/**
- * @cond
- */
-// Back-compatibility.
-template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p, const Options& mopt) {
-    return by_row<Output_>(*p, mopt);
-}
-
-template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>& mat) {
-    return by_row<Output_>(mat, Options());
-}
-
-template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> by_row(const tatami::Matrix<Value_, Index_>* p) {
-    return by_row<Output_>(*p);
-}
-/**
- * @endcond
- */
 
 }
 

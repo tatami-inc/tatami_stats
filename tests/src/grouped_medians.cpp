@@ -38,7 +38,7 @@ TEST(GroupedMedians, ByRow) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        expected[g] = tatami_stats::medians::by_row(sub.get());
+        expected[g] = tatami_stats::median::apply(true, *sub, {});
     }
 
     EXPECT_EQ(expected, tatami_stats::grouped_medians::by_row(dense_column.get(), cgroups.data()));
@@ -93,9 +93,9 @@ TEST(GroupedMedians, ByRowWithNan) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        tatami_stats::medians::Options mopt;
+        tatami_stats::median::Options mopt;
         mopt.skip_nan = true;
-        expected[g] = tatami_stats::medians::by_row(sub.get(), mopt);
+        expected[g] = tatami_stats::median::apply(true, *sub, mopt);
     }
 
     tatami_stats::grouped_medians::Options mopt;
@@ -135,7 +135,7 @@ TEST(GroupedMedians, ByColumn) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        expected[g] = tatami_stats::medians::by_column(sub.get());
+        expected[g] = tatami_stats::median::apply(false, *sub, {});
     }
 
     EXPECT_EQ(expected, tatami_stats::grouped_medians::by_column(dense_row.get(), rgroups.data()));
@@ -191,9 +191,9 @@ TEST(GroupedMedians, ByColumnWithNan) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        tatami_stats::medians::Options mopt;
+        tatami_stats::median::Options mopt;
         mopt.skip_nan = true;
-        expected[g] = tatami_stats::medians::by_column(sub.get(), mopt);
+        expected[g] = tatami_stats::median::apply(false, *sub, mopt);
     }
 
     tatami_stats::grouped_medians::Options mopt;
