@@ -16,7 +16,7 @@ static void compare_result(
     compare_double_vectors(expected_mean, res.mean);
 }
 
-TEST(ComputingDimVariances, RowVariances) {
+TEST(Variance, RowVariances) {
     size_t NR = 109, NC = 82;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -67,7 +67,7 @@ TEST(ComputingDimVariances, RowVariances) {
     compare_result(tatami_stats::variance::apply(true, *sparse_column, vopt), expectedm, ref);
 }
 
-TEST(ComputingDimVariances, RowVariancesWithNan) {
+TEST(Variance, RowVariancesWithNan) {
     size_t NR = 52, NC = 83;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -113,7 +113,7 @@ TEST(ComputingDimVariances, RowVariancesWithNan) {
     compare_result(tatami_stats::variance::apply(true, *sparse_column, vopt), expectedm, ref);
 }
 
-TEST(ComputingDimVariances, ColumnVariances) {
+TEST(Variance, ColumnVariances) {
     size_t NR = 99, NC = 92;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -164,7 +164,7 @@ TEST(ComputingDimVariances, ColumnVariances) {
     compare_result(tatami_stats::variance::apply(false, *sparse_column, vopt), expectedm, ref);
 }
 
-TEST(ComputingDimVariances, ColumnVariancesWithNan) {
+TEST(Variance, ColumnVariancesWithNan) {
     size_t NR = 82, NC = 33;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -211,7 +211,7 @@ TEST(ComputingDimVariances, ColumnVariancesWithNan) {
     compare_result(tatami_stats::variance::apply(false, *sparse_column, vopt), expectedm, ref);
 }
 
-TEST(ComputingDimVariances, NewType) {
+TEST(Variance, NewType) {
     size_t NR = 198, NC = 52;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -259,7 +259,7 @@ TEST(ComputingDimVariances, NewType) {
     compare_result(tatami_stats::variance::apply(false, *sparse_column, vopt), cexpected.mean, cexpected.variance);
 }
 
-TEST(ComputingDimVariances, DirtyOutput) {
+TEST(Variance, DirtyOutput) {
     size_t NR = 99, NC = 152;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{ 
         tatami_test::SimulateVectorOptions opt;
@@ -323,7 +323,7 @@ TEST(ComputingDimVariances, DirtyOutput) {
     compare_result(ref, dirtym, dirtyv);
 }
 
-TEST(ComputingDimVariances, InvalidVariances) {
+TEST(Variance, InvalidVariances) {
     tatami_stats::variance::Options vopt;
     vopt.skip_nan = true;
 
