@@ -1,15 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <tagfile doxygen_version="1.12.0">
   <compound kind="file">
-    <name>counts.hpp</name>
+    <name>count.hpp</name>
     <path>tatami_stats/</path>
-    <filename>counts_8hpp.html</filename>
-    <class kind="struct">tatami_stats::counts::nan::Options</class>
-    <class kind="struct">tatami_stats::counts::zero::Options</class>
+    <filename>count_8hpp.html</filename>
+    <class kind="struct">tatami_stats::count::Options</class>
     <namespace>tatami_stats</namespace>
-    <namespace>tatami_stats::counts</namespace>
-    <namespace>tatami_stats::counts::nan</namespace>
-    <namespace>tatami_stats::counts::zero</namespace>
+    <namespace>tatami_stats::count</namespace>
   </compound>
   <compound kind="file">
     <name>group_variance.hpp</name>
@@ -238,24 +235,13 @@
     </member>
   </compound>
   <compound kind="struct">
-    <name>tatami_stats::counts::nan::Options</name>
-    <filename>structtatami__stats_1_1counts_1_1nan_1_1Options.html</filename>
+    <name>tatami_stats::count::Options</name>
+    <filename>structtatami__stats_1_1count_1_1Options.html</filename>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
-      <anchorfile>structtatami__stats_1_1counts_1_1nan_1_1Options.html</anchorfile>
-      <anchor>a792f980aeabb8086664b72444156aa8e</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
-    <name>tatami_stats::counts::zero::Options</name>
-    <filename>structtatami__stats_1_1counts_1_1zero_1_1Options.html</filename>
-    <member kind="variable">
-      <type>int</type>
-      <name>num_threads</name>
-      <anchorfile>structtatami__stats_1_1counts_1_1zero_1_1Options.html</anchorfile>
-      <anchor>afb95b1354e56fcf8f19f9e96dd88ee39</anchor>
+      <anchorfile>structtatami__stats_1_1count_1_1Options.html</anchorfile>
+      <anchor>a0f661e864e19f5a79c86d4698ecdcaad</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -542,7 +528,7 @@
   <compound kind="namespace">
     <name>tatami_stats</name>
     <filename>namespacetatami__stats.html</filename>
-    <namespace>tatami_stats::counts</namespace>
+    <namespace>tatami_stats::count</namespace>
     <namespace>tatami_stats::group_variance</namespace>
     <namespace>tatami_stats::grouped_medians</namespace>
     <namespace>tatami_stats::grouped_sums</namespace>
@@ -569,96 +555,22 @@
     </member>
   </compound>
   <compound kind="namespace">
-    <name>tatami_stats::counts</name>
-    <filename>namespacetatami__stats_1_1counts.html</filename>
-    <namespace>tatami_stats::counts::nan</namespace>
-    <namespace>tatami_stats::counts::zero</namespace>
+    <name>tatami_stats::count</name>
+    <filename>namespacetatami__stats_1_1count.html</filename>
+    <class kind="struct">tatami_stats::count::Options</class>
     <member kind="function">
       <type>void</type>
       <name>apply</name>
-      <anchorfile>namespacetatami__stats_1_1counts.html</anchorfile>
-      <anchor>a6fab7e429397cda0c52501f3d1280d40</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, int num_threads, Condition_ condition)</arglist>
+      <anchorfile>namespacetatami__stats_1_1count.html</anchorfile>
+      <anchor>a288a7d76957937e08b16b2ef64a441fa</anchor>
+      <arglist>(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *const output, Condition_ condition, const Options &amp;opt)</arglist>
     </member>
-  </compound>
-  <compound kind="namespace">
-    <name>tatami_stats::counts::nan</name>
-    <filename>namespacetatami__stats_1_1counts_1_1nan.html</filename>
-    <class kind="struct">tatami_stats::counts::nan::Options</class>
     <member kind="function">
-      <type>void</type>
+      <type>std::vector&lt; Output_ &gt;</type>
       <name>apply</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1nan.html</anchorfile>
-      <anchor>ade8f471e6ffb65979c47f9306a462c91</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, const Options &amp;nopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1nan.html</anchorfile>
-      <anchor>a0e87c2576b55646820eb10791ab50eae</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;nopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1nan.html</anchorfile>
-      <anchor>aab621a0818e57bbc76831d38bcace181</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1nan.html</anchorfile>
-      <anchor>a2ef755d1592efd72f35c644c35064a75</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;nopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1nan.html</anchorfile>
-      <anchor>a0e659e23cfea20741ce3b6c0da9a9f58</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat)</arglist>
-    </member>
-  </compound>
-  <compound kind="namespace">
-    <name>tatami_stats::counts::zero</name>
-    <filename>namespacetatami__stats_1_1counts_1_1zero.html</filename>
-    <class kind="struct">tatami_stats::counts::zero::Options</class>
-    <member kind="function">
-      <type>void</type>
-      <name>apply</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1zero.html</anchorfile>
-      <anchor>a817f100b20ceb21ebeac28e6880160f5</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, const Options &amp;zopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1zero.html</anchorfile>
-      <anchor>af559d2616322e068b400d36cd4a28bde</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;zopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1zero.html</anchorfile>
-      <anchor>a9223d94e5cc7fecbcc39ffa736aa42aa</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1zero.html</anchorfile>
-      <anchor>aa13dd1495b40349531c65f030b6bd059</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;zopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1counts_1_1zero.html</anchorfile>
-      <anchor>a2d689bba39823ea82569ebf05445cbb8</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat)</arglist>
+      <anchorfile>namespacetatami__stats_1_1count.html</anchorfile>
+      <anchor>a88c26959501c2b4e5e01aa5115c47c40</anchor>
+      <arglist>(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Condition_ condition, const Options &amp;opt)</arglist>
     </member>
   </compound>
   <compound kind="namespace">

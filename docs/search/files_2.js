@@ -11,5 +11,5 @@ var searchData=
   ['convert_5fto_5fdense_2ehpp_8',['convert_to_dense.hpp',['https://tatami-inc.github.io/tatami/convert__to__dense_8hpp.html',1,'']]],
   ['convert_5fto_5ffragmented_5fsparse_2ehpp_9',['convert_to_fragmented_sparse.hpp',['https://tatami-inc.github.io/tatami/convert__to__fragmented__sparse_8hpp.html',1,'']]],
   ['copy_2ehpp_10',['copy.hpp',['https://tatami-inc.github.io/tatami/copy_8hpp.html',1,'']]],
-  ['counts_2ehpp_11',['counts.hpp',['../counts_8hpp.html',1,'']]]
+  ['count_2ehpp_11',['count.hpp',['../count_8hpp.html',1,'']]]
 ];
