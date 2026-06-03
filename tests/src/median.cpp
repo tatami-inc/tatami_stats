@@ -10,13 +10,13 @@
 template<typename Value_>
 static double direct_medians(const Value_* vec, size_t n, bool skip_nan) {
     std::vector<Value_> copy(vec, vec + n);
-    return tatami_stats::median::direct<double>(copy.data(), copy.size(), skip_nan);
+    return tatami_stats::median_direct<double>(copy.data(), copy.size(), skip_nan);
 }
 
 template<typename Value_, typename Index_>
 static double direct_medians(const Value_* vec, Index_ num_nonzero, Index_ num_all, bool skip_nan) {
     std::vector<Value_> copy(vec, vec + num_nonzero);
-    return tatami_stats::median::direct<double>(copy.data(), num_nonzero, num_all, skip_nan);
+    return tatami_stats::median_direct<double>(copy.data(), num_nonzero, num_all, skip_nan);
 }
 
 TEST(Median, DirectDenseNaN) {
@@ -77,33 +77,33 @@ TEST_P(ComputingDimMediansTest, RowSimple) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto rref = tatami_stats::median::apply(true, *dense_row, {});
+    auto rref = tatami_stats::median(true, *dense_row, {});
     EXPECT_EQ(rref.size(), NR);
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_column, {}));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_row, {}));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_column, {}));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_column, {}));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_row, {}));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_column, {}));
 
     // Checking that the parallel code is the same.
-    tatami_stats::median::Options mopt;
+    tatami_stats::MedianOptions mopt;
     mopt.num_threads = 3;
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_row, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_column, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_row, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_column, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_row, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_column, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_row, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_column, mopt));
 
     // Checking that we get the same results after skipping NaNs.
     mopt.num_threads = 1;
     mopt.skip_nan = true;
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_row, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_column, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_row, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_column, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_row, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_column, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_row, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_column, mopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *unsorted_row, {}));
+    EXPECT_EQ(rref, tatami_stats::median(true, *unsorted_row, {}));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *unsorted_column, {}));
+    EXPECT_EQ(rref, tatami_stats::median(true, *unsorted_column, {}));
 }
 
 TEST_P(ComputingDimMediansTest, ColumnSimple) {
@@ -131,39 +131,39 @@ TEST_P(ComputingDimMediansTest, ColumnSimple) {
     }());
 
     std::mt19937_64 rng(NR * NC + 30 + status);
-    inject_variable_zeros(NR, NC, vec, rng);
+    inject_variable_zeros(NC, NR, vec, rng);
 
     auto dense_column = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseColumnMatrix<double, int>(NR, NC, std::move(vec)));
     auto dense_row = tatami::convert_to_dense<double, int>(*dense_column, true, {});
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto cref = tatami_stats::median::apply(false, *dense_row, {});
+    auto cref = tatami_stats::median(false, *dense_row, {});
     EXPECT_EQ(cref.size(), NC);
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_column, {}));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_row, {}));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_column, {}));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_column, {}));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_row, {}));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_column, {}));
 
     // Checking that the parallel code is the same.
-    tatami_stats::median::Options mopt;
+    tatami_stats::MedianOptions mopt;
     mopt.num_threads = 3;
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_row, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_column, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_row, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_column, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_row, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_column, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_row, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_column, mopt));
 
     // Checking that we get the same results after skipping NaNs.
     mopt.num_threads = 1;
     mopt.skip_nan = true;
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_row, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_column, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_row, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_column, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_row, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_column, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_row, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_column, mopt));
 
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *unsorted_row, {}));
+    EXPECT_EQ(cref, tatami_stats::median(false, *unsorted_row, {}));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *unsorted_column, {}));
+    EXPECT_EQ(cref, tatami_stats::median(false, *unsorted_column, {}));
 }
 
 TEST_P(ComputingDimMediansTest, RowNaN) {
@@ -211,20 +211,20 @@ TEST_P(ComputingDimMediansTest, RowNaN) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     auto ref = std::make_unique<tatami::DenseRowMatrix<double, int> >(NR, NC - 1, std::move(skip));
-    auto rref = tatami_stats::median::apply(true, *ref, {});
+    auto rref = tatami_stats::median(true, *ref, {});
 
-    tatami_stats::median::Options mopt;
+    tatami_stats::MedianOptions mopt;
     mopt.skip_nan = true;
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_row, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_column, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_row, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_column, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_row, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_column, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_row, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_column, mopt));
 
     mopt.num_threads = 3;
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_row, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *dense_column, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_row, mopt));
-    EXPECT_EQ(rref, tatami_stats::median::apply(true, *sparse_column, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_row, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *dense_column, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_row, mopt));
+    EXPECT_EQ(rref, tatami_stats::median(true, *sparse_column, mopt));
 }
 
 TEST_P(ComputingDimMediansTest, ColumnNaN) {
@@ -272,20 +272,20 @@ TEST_P(ComputingDimMediansTest, ColumnNaN) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     auto ref = std::make_unique<tatami::DenseColumnMatrix<double, int> >(NR - 1, NC, std::move(skip));
-    auto cref = tatami_stats::median::apply(false, *ref, {});
+    auto cref = tatami_stats::median(false, *ref, {});
 
-    tatami_stats::median::Options mopt;
+    tatami_stats::MedianOptions mopt;
     mopt.skip_nan = true;
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_row, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_column, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_row, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_column, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_row, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_column, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_row, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_column, mopt));
 
     mopt.num_threads = 3;
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_row, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *dense_column, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_row, mopt));
-    EXPECT_EQ(cref, tatami_stats::median::apply(false, *sparse_column, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_row, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *dense_column, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_row, mopt));
+    EXPECT_EQ(cref, tatami_stats::median(false, *sparse_column, mopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -311,26 +311,26 @@ TEST(ComputingDimMedians, AllZero) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto ref = tatami_stats::median::apply(true, *dense_row, {});
+    auto ref = tatami_stats::median(true, *dense_row, {});
     EXPECT_EQ(ref, std::vector<double>(NR));
-    EXPECT_EQ(ref, tatami_stats::median::apply(true, *dense_column, {}));
-    EXPECT_EQ(ref, tatami_stats::median::apply(true, *sparse_row, {}));
-    EXPECT_EQ(ref, tatami_stats::median::apply(true, *sparse_column, {}));
+    EXPECT_EQ(ref, tatami_stats::median(true, *dense_column, {}));
+    EXPECT_EQ(ref, tatami_stats::median(true, *sparse_row, {}));
+    EXPECT_EQ(ref, tatami_stats::median(true, *sparse_column, {}));
 
-    ref = tatami_stats::median::apply(false, *dense_row, {});
+    ref = tatami_stats::median(false, *dense_row, {});
     EXPECT_EQ(ref, std::vector<double>(NC));
-    EXPECT_EQ(ref, tatami_stats::median::apply(false, *dense_column, {}));
-    EXPECT_EQ(ref, tatami_stats::median::apply(false, *sparse_row, {}));
-    EXPECT_EQ(ref, tatami_stats::median::apply(false, *sparse_column, {}));
+    EXPECT_EQ(ref, tatami_stats::median(false, *dense_column, {}));
+    EXPECT_EQ(ref, tatami_stats::median(false, *sparse_row, {}));
+    EXPECT_EQ(ref, tatami_stats::median(false, *sparse_column, {}));
 }
 
 TEST(ComputingDimMedians, Empty) {
     auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(111, 0, std::vector<double>()));
 
-    auto cref = tatami_stats::median::apply(false, *dense, {});
+    auto cref = tatami_stats::median(false, *dense, {});
     EXPECT_EQ(cref.size(), 0);
 
-    auto rref = tatami_stats::median::apply(true, *dense, {});
+    auto rref = tatami_stats::median(true, *dense, {});
     EXPECT_EQ(rref.size(), dense->nrow());
     EXPECT_TRUE(std::isnan(rref.front()));
     EXPECT_TRUE(std::isnan(rref.back()));
@@ -351,8 +351,8 @@ TEST(ComputingDimMedians, NewType) {
     }
 
     auto ref = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
-    auto rexpected = tatami_stats::median::apply(true, *ref, {});
-    auto cexpected = tatami_stats::median::apply(false, *ref, {});
+    auto rexpected = tatami_stats::median(true, *ref, {});
+    auto cexpected = tatami_stats::median(false, *ref, {});
 
     std::vector<std::int8_t> ivec(dump.begin(), dump.end());
     auto dense_row = std::make_shared<tatami::DenseRowMatrix<std::int8_t, std::uint8_t> >(NR, NC, std::move(ivec));
@@ -360,15 +360,15 @@ TEST(ComputingDimMedians, NewType) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    EXPECT_EQ(tatami_stats::median::apply(true, *dense_row, {}), rexpected);
-    EXPECT_EQ(tatami_stats::median::apply(true, *dense_column, {}), rexpected);
-    EXPECT_EQ(tatami_stats::median::apply(true, *sparse_row, {}), rexpected);
-    EXPECT_EQ(tatami_stats::median::apply(true, *sparse_column, {}), rexpected);
+    EXPECT_EQ(tatami_stats::median(true, *dense_row, {}), rexpected);
+    EXPECT_EQ(tatami_stats::median(true, *dense_column, {}), rexpected);
+    EXPECT_EQ(tatami_stats::median(true, *sparse_row, {}), rexpected);
+    EXPECT_EQ(tatami_stats::median(true, *sparse_column, {}), rexpected);
 
-    EXPECT_EQ(tatami_stats::median::apply(false, *dense_row, {}), cexpected);
-    EXPECT_EQ(tatami_stats::median::apply(false, *dense_column, {}), cexpected);
-    EXPECT_EQ(tatami_stats::median::apply(false, *sparse_row, {}), cexpected);
-    EXPECT_EQ(tatami_stats::median::apply(false, *sparse_column, {}), cexpected);
+    EXPECT_EQ(tatami_stats::median(false, *dense_row, {}), cexpected);
+    EXPECT_EQ(tatami_stats::median(false, *dense_column, {}), cexpected);
+    EXPECT_EQ(tatami_stats::median(false, *sparse_row, {}), cexpected);
+    EXPECT_EQ(tatami_stats::median(false, *sparse_column, {}), cexpected);
 }
 
 TEST(ComputingDimMedians, DirtyOutput) {
@@ -387,24 +387,24 @@ TEST(ComputingDimMedians, DirtyOutput) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto ref = tatami_stats::median::apply(true, *dense_row, {});
+    auto ref = tatami_stats::median(true, *dense_row, {});
 
-    tatami_stats::median::Options mopt;
+    tatami_stats::MedianOptions mopt;
 
     // Works when the input vector is a bit dirty.
     std::vector<double> dirty(NR, -1);
-    tatami_stats::median::apply(true, *dense_row, dirty.data(), mopt);
+    tatami_stats::median(true, *dense_row, dirty.data(), mopt);
     EXPECT_EQ(ref, dirty);
 
     std::fill(dirty.begin(), dirty.end(), -1);
-    tatami_stats::median::apply(true, *dense_column.get(), dirty.data(), mopt);
+    tatami_stats::median(true, *dense_column.get(), dirty.data(), mopt);
     EXPECT_EQ(ref, dirty);
 
     std::fill(dirty.begin(), dirty.end(), -1);
-    tatami_stats::median::apply(true, *sparse_row, dirty.data(), mopt);
+    tatami_stats::median(true, *sparse_row, dirty.data(), mopt);
     EXPECT_EQ(ref, dirty);
 
     std::fill(dirty.begin(), dirty.end(), -1);
-    tatami_stats::median::apply(true, *sparse_column, dirty.data(), mopt);
+    tatami_stats::median(true, *sparse_column, dirty.data(), mopt);
     EXPECT_EQ(ref, dirty);
 }

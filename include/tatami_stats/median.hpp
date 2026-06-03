@@ -21,15 +21,9 @@
 namespace tatami_stats {
 
 /**
- * @brief Functions for computing dimension-wise medians.
- * @namespace tatami_stats::medians
+ * @brief Options for `median()`.
  */
-namespace median {
-
-/**
- * @brief Median calculation options.
- */
-struct Options {
+struct MedianOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
      * If false, NaNs are assumed to be absent, and the behavior of the median calculation in the presence of NaNs is undefined.
@@ -47,8 +41,8 @@ struct Options {
  * @cond
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
-    ::tatami_stats::internal::nanable_ifelse<Value_>(
+Output_ median_direct(Value_* ptr, Index_ num, bool skip_nan) {
+    internal::nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
             num = shift_nans(ptr, num);
@@ -60,8 +54,8 @@ Output_ direct(Value_* ptr, Index_ num, bool skip_nan) {
 }
 
 template<typename Output_ = double, typename Value_, typename Index_>
-Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan) {
-    ::tatami_stats::internal::nanable_ifelse<Value_>(
+Output_ median_direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan) {
+    internal::nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
             auto new_nonzero = shift_nans(value, num_nonzero);
@@ -93,7 +87,7 @@ Output_ direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan)
  * @param mopt Median calculation options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const Options& mopt) {
+void median(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, const MedianOptions& mopt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
@@ -109,7 +103,7 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             for (Index_ x = 0; x < l; ++x) {
                 auto range = ext->fetch(vbuffer, NULL);
                 tatami::copy_n(range.value, range.number, vbuffer);
-                output[x + s] = direct<Output_>(vbuffer, range.number, otherdim, mopt.skip_nan);
+                output[x + s] = median_direct<Output_>(vbuffer, range.number, otherdim, mopt.skip_nan);
             }
         }, dim, mopt.num_threads);
 
@@ -120,14 +114,14 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
             for (Index_ x = 0; x < l; ++x) {
                 auto ptr = ext->fetch(buffer.data());
                 tatami::copy_n(ptr, otherdim, buffer.data());
-                output[x + s] = direct<Output_>(buffer.data(), otherdim, mopt.skip_nan);
+                output[x + s] = median_direct<Output_>(buffer.data(), otherdim, mopt.skip_nan);
             }
         }, dim, mopt.num_threads);
     }
 }
 
 /**
- * Overload of `apply()` that allocates memory for the output medians.
+ * Overload of `median()` that allocates memory for the output medians.
  *
  * @tparam Output_ Floating-point type of the output value.
  * This should be capable of storing NaNs.
@@ -142,13 +136,11 @@ void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output,
  * @param mopt Median calculation options.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Options& mopt) {
+std::vector<Output_> median(const bool row, const tatami::Matrix<Value_, Index_>& mat, const MedianOptions& mopt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     auto output = sanisizer::create<std::vector<Output_> >(dim);
-    apply(row, mat, output.data(), mopt);
+    median(row, mat, output.data(), mopt);
     return output;
-}
-
 }
 
 }

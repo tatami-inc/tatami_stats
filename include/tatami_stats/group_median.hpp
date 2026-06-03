@@ -19,15 +19,9 @@
 namespace tatami_stats {
 
 /**
- * @brief Functions for computing dimension-wise grouped medians.
- * @namespace tatami_stats::group_median
+ * @brief Options for `group_median()`.
  */
-namespace group_median {
-
-/**
- * @brief Grouped median calculation options.
- */
-struct Options {
+struct GroupMedianOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
      * If false, NaNs are assumed to be absent, and the behavior of the median calculation in the presence of NaNs is undefined.
@@ -63,13 +57,13 @@ struct Options {
  * @param mopt Median calculation options.
  */
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply(
+void group_median(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
     const std::size_t num_groups,
     std::vector<Output_*>& output,
-    const Options& mopt
+    const GroupMedianOptions& mopt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
@@ -100,7 +94,7 @@ void apply(
 
                 for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = median::direct<Output_, Value_, Index_>(w.data(), w.size(), group_sizes[g], mopt.skip_nan);
+                    output[g][i + start] = median_direct<Output_, Value_, Index_>(w.data(), w.size(), group_sizes[g], mopt.skip_nan);
                     w.clear();
                 }
             }
@@ -115,7 +109,7 @@ void apply(
 
                 for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = median::direct<Output_, Value_, Index_>(w.data(), w.size(), mopt.skip_nan);
+                    output[g][i + start] = median_direct<Output_, Value_, Index_>(w.data(), w.size(), mopt.skip_nan);
                     w.clear();
                 }
             }
@@ -124,7 +118,7 @@ void apply(
 }
 
 /**
- * Overload of `apply()` that allocates memory for the output medians.
+ * Overload of `group_median()` that allocates memory for the output medians.
  *
  * @tparam Output_ Floating-point type of the output value, capable of storing averages or NaNs.
  * @tparam Value_ Numeric type of the matrix value.
@@ -145,12 +139,12 @@ void apply(
  * containing the row/column medians for the corresponding group.
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_>
-std::vector<std::vector<Output_> > apply(
+std::vector<std::vector<Output_> > group_median(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
     const std::size_t num_groups,
-    const Options& mopt
+    const GroupMedianOptions& mopt
 ) {
     auto output = sanisizer::create<std::vector<std::vector<Output_> > >(num_groups);
     std::vector<Output_*> outptrs;
@@ -160,10 +154,8 @@ std::vector<std::vector<Output_> > apply(
         tatami::resize_container_to_Index_size(o, dim);
         outptrs.push_back(o.data());
     }
-    apply(row, mat, group, num_groups, outptrs, mopt);
+    group_median(row, mat, group, num_groups, outptrs, mopt);
     return output;
-}
-
 }
 
 }

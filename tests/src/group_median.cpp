@@ -38,35 +38,35 @@ TEST(GroupMedian, RowSimple) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        expected[g] = tatami_stats::median::apply(true, *sub, {});
+        expected[g] = tatami_stats::median(true, *sub, {});
     }
 
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_column, cgroups.data(), ngroup, {}));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_column, cgroups.data(), ngroup, {}));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_row, cgroups.data(), ngroup, {}));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_column, cgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_column, cgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_column, cgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_row, cgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_column, cgroups.data(), ngroup, {}));
 
     // Checking that the parallel code is the same.
-    tatami_stats::group_median::Options mopt;
+    tatami_stats::GroupMedianOptions mopt;
     mopt.num_threads = 3;
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_row, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_column, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_row, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_row, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_row, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_column, cgroups.data(), ngroup, mopt));
 
     // Checking that we get the same results when skipping NaNs.
     mopt.num_threads = 1;
     mopt.skip_nan = true;
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_row, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_column, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_row, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_row, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_row, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_column, cgroups.data(), ngroup, mopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *unsorted_row, cgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *unsorted_row, cgroups.data(), ngroup, {}));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *unsorted_column, cgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *unsorted_column, cgroups.data(), ngroup, {}));
 }
 
 TEST(GroupMedian, RowSkipNan) {
@@ -101,23 +101,23 @@ TEST(GroupMedian, RowSkipNan) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        tatami_stats::median::Options mopt;
+        tatami_stats::MedianOptions mopt;
         mopt.skip_nan = true;
-        expected[g] = tatami_stats::median::apply(true, *sub, mopt);
+        expected[g] = tatami_stats::median(true, *sub, mopt);
     }
 
-    tatami_stats::group_median::Options mopt;
+    tatami_stats::GroupMedianOptions mopt;
     mopt.skip_nan = true;
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_column, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_column, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_row, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_row, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_column, cgroups.data(), ngroup, mopt));
 
     mopt.num_threads = 3;
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_column, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *dense_column, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_row, cgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(true, *sparse_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *dense_column, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_row, cgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(true, *sparse_column, cgroups.data(), ngroup, mopt));
 }
 
 TEST(GroupMedian, ColumnSimple) {
@@ -149,35 +149,35 @@ TEST(GroupMedian, ColumnSimple) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        expected[g] = tatami_stats::median::apply(false, *sub, {});
+        expected[g] = tatami_stats::median(false, *sub, {});
     }
 
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_row, rgroups.data(), ngroup, {}));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_column, rgroups.data(), ngroup, {}));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_row, rgroups.data(), ngroup, {}));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_column, rgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_row, rgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_column, rgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_row, rgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_column, rgroups.data(), ngroup, {}));
 
     // Checking that the parallel code is the same.
-    tatami_stats::group_median::Options mopt;
+    tatami_stats::GroupMedianOptions mopt;
     mopt.num_threads = 3;
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_row, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_column, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_row, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_column, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_row, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_column, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_row, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_column, rgroups.data(), ngroup, mopt));
 
     // Checking that we get the same results when skipping NaNs.
     mopt.num_threads = 1;
     mopt.skip_nan = true;
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_row, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_column, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_row, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_column, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_row, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_column, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_row, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_column, rgroups.data(), ngroup, mopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *unsorted_row, rgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *unsorted_row, rgroups.data(), ngroup, {}));
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *unsorted_column, rgroups.data(), ngroup, {}));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *unsorted_column, rgroups.data(), ngroup, {}));
 }
 
 TEST(GroupMedian, ColumnSkipNan) {
@@ -213,27 +213,27 @@ TEST(GroupMedian, ColumnSkipNan) {
     std::vector<std::vector<double> > expected(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        tatami_stats::median::Options mopt;
+        tatami_stats::MedianOptions mopt;
         mopt.skip_nan = true;
-        expected[g] = tatami_stats::median::apply(false, *sub, mopt);
+        expected[g] = tatami_stats::median(false, *sub, mopt);
     }
 
-    tatami_stats::group_median::Options mopt;
+    tatami_stats::GroupMedianOptions mopt;
     mopt.skip_nan = true;
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_row, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_column, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_row, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_column, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_row, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_column, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_row, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_column, rgroups.data(), ngroup, mopt));
 
     mopt.num_threads = 3;
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_row, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *dense_column, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_row, rgroups.data(), ngroup, mopt));
-    EXPECT_EQ(expected, tatami_stats::group_median::apply(false, *sparse_column, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_row, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *dense_column, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_row, rgroups.data(), ngroup, mopt));
+    EXPECT_EQ(expected, tatami_stats::group_median(false, *sparse_column, rgroups.data(), ngroup, mopt));
 }
 
 TEST(GroupMedian, EdgeCases) {
-    tatami_stats::group_median::Options vopt;
+    tatami_stats::GroupMedianOptions vopt;
     vopt.skip_nan = true;
 
     {
@@ -253,28 +253,28 @@ TEST(GroupMedian, EdgeCases) {
                 }
             };
 
-            check_ok(tatami_stats::group_median::apply(true, *dense_row, grouping.data(), ngroups, {}));
-            check_ok(tatami_stats::group_median::apply(true, *dense_column, grouping.data(), ngroups, {}));
-            check_ok(tatami_stats::group_median::apply(true, *sparse_row, grouping.data(), ngroups, {}));
-            check_ok(tatami_stats::group_median::apply(true, *sparse_column, grouping.data(), ngroups, {}));
+            check_ok(tatami_stats::group_median(true, *dense_row, grouping.data(), ngroups, {}));
+            check_ok(tatami_stats::group_median(true, *dense_column, grouping.data(), ngroups, {}));
+            check_ok(tatami_stats::group_median(true, *sparse_row, grouping.data(), ngroups, {}));
+            check_ok(tatami_stats::group_median(true, *sparse_column, grouping.data(), ngroups, {}));
 
-            check_ok(tatami_stats::group_median::apply(true, *dense_row, grouping.data(), ngroups, vopt));
-            check_ok(tatami_stats::group_median::apply(true, *dense_column, grouping.data(), ngroups, vopt));
-            check_ok(tatami_stats::group_median::apply(true, *sparse_row, grouping.data(), ngroups, vopt));
-            check_ok(tatami_stats::group_median::apply(true, *sparse_column, grouping.data(), ngroups, vopt));
+            check_ok(tatami_stats::group_median(true, *dense_row, grouping.data(), ngroups, vopt));
+            check_ok(tatami_stats::group_median(true, *dense_column, grouping.data(), ngroups, vopt));
+            check_ok(tatami_stats::group_median(true, *sparse_row, grouping.data(), ngroups, vopt));
+            check_ok(tatami_stats::group_median(true, *sparse_column, grouping.data(), ngroups, vopt));
         }
 
         {
             const int* group = NULL; 
-            EXPECT_EQ(tatami_stats::group_median::apply(false, *dense_row, group, 0, {}).size(), 0);
-            EXPECT_EQ(tatami_stats::group_median::apply(false, *dense_column, group, 0, {}).size(), 0);
-            EXPECT_EQ(tatami_stats::group_median::apply(false, *sparse_row, group, 0, {}).size(), 0);
-            EXPECT_EQ(tatami_stats::group_median::apply(false, *sparse_column, group, 0, {}).size(), 0);
+            EXPECT_EQ(tatami_stats::group_median(false, *dense_row, group, 0, {}).size(), 0);
+            EXPECT_EQ(tatami_stats::group_median(false, *dense_column, group, 0, {}).size(), 0);
+            EXPECT_EQ(tatami_stats::group_median(false, *sparse_row, group, 0, {}).size(), 0);
+            EXPECT_EQ(tatami_stats::group_median(false, *sparse_column, group, 0, {}).size(), 0);
 
-            EXPECT_EQ(tatami_stats::group_median::apply(false, *dense_row, group, 0, vopt).size(), 0);
-            EXPECT_EQ(tatami_stats::group_median::apply(false, *dense_column, group, 0, vopt).size(), 0);
-            EXPECT_EQ(tatami_stats::group_median::apply(false, *sparse_row, group, 0, vopt).size(), 0);
-            EXPECT_EQ(tatami_stats::group_median::apply(false, *sparse_column, group, 0, vopt).size(), 0);
+            EXPECT_EQ(tatami_stats::group_median(false, *dense_row, group, 0, vopt).size(), 0);
+            EXPECT_EQ(tatami_stats::group_median(false, *dense_column, group, 0, vopt).size(), 0);
+            EXPECT_EQ(tatami_stats::group_median(false, *sparse_row, group, 0, vopt).size(), 0);
+            EXPECT_EQ(tatami_stats::group_median(false, *sparse_column, group, 0, vopt).size(), 0);
         }
     }
 
@@ -300,15 +300,15 @@ TEST(GroupMedian, EdgeCases) {
             }
         };
 
-        check_ok(tatami_stats::group_median::apply(true, *dense_row, grouping.data(), ngroups, {}));
-        check_ok(tatami_stats::group_median::apply(true, *dense_column, grouping.data(), ngroups, {}));
-        check_ok(tatami_stats::group_median::apply(true, *sparse_row, grouping.data(), ngroups, {}));
-        check_ok(tatami_stats::group_median::apply(true, *sparse_column, grouping.data(), ngroups, {}));
+        check_ok(tatami_stats::group_median(true, *dense_row, grouping.data(), ngroups, {}));
+        check_ok(tatami_stats::group_median(true, *dense_column, grouping.data(), ngroups, {}));
+        check_ok(tatami_stats::group_median(true, *sparse_row, grouping.data(), ngroups, {}));
+        check_ok(tatami_stats::group_median(true, *sparse_column, grouping.data(), ngroups, {}));
 
-        check_ok(tatami_stats::group_median::apply(true, *dense_row, grouping.data(), ngroups, vopt));
-        check_ok(tatami_stats::group_median::apply(true, *dense_column, grouping.data(), ngroups, vopt));
-        check_ok(tatami_stats::group_median::apply(true, *sparse_row, grouping.data(), ngroups, vopt));
-        check_ok(tatami_stats::group_median::apply(true, *sparse_column, grouping.data(), ngroups, vopt));
+        check_ok(tatami_stats::group_median(true, *dense_row, grouping.data(), ngroups, vopt));
+        check_ok(tatami_stats::group_median(true, *dense_column, grouping.data(), ngroups, vopt));
+        check_ok(tatami_stats::group_median(true, *sparse_row, grouping.data(), ngroups, vopt));
+        check_ok(tatami_stats::group_median(true, *sparse_column, grouping.data(), ngroups, vopt));
     }
 }
 
@@ -339,8 +339,8 @@ TEST(GroupMedian, NewType) {
     for (size_t r = 0; r < NR; ++r) {
         rgrouping.push_back(r % rgroup);
     }
-    auto rexpected = tatami_stats::group_median::apply(true, *ref, cgrouping.data(), cgroup, {});
-    auto cexpected = tatami_stats::group_median::apply(false, *ref, rgrouping.data(), rgroup, {});
+    auto rexpected = tatami_stats::group_median(true, *ref, cgrouping.data(), cgroup, {});
+    auto cexpected = tatami_stats::group_median(false, *ref, rgrouping.data(), rgroup, {});
 
     std::vector<std::int8_t> ivec(dump.begin(), dump.end());
     auto dense_row = std::make_shared<tatami::DenseRowMatrix<std::int8_t, std::uint8_t> >(NR, NC, std::move(ivec));
@@ -348,27 +348,27 @@ TEST(GroupMedian, NewType) {
     auto sparse_row = tatami::convert_to_compressed_sparse<std::int8_t, std::uint8_t>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<std::int8_t, std::uint8_t>(*dense_row, false, {});
 
-    EXPECT_EQ(tatami_stats::group_median::apply(true, *dense_row, cgrouping.data(), cgroup, {}), rexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(true, *dense_column, cgrouping.data(), cgroup, {}), rexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(true, *sparse_row, cgrouping.data(), cgroup, {}), rexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(true, *sparse_column, cgrouping.data(), cgroup, {}), rexpected);
+    EXPECT_EQ(tatami_stats::group_median(true, *dense_row, cgrouping.data(), cgroup, {}), rexpected);
+    EXPECT_EQ(tatami_stats::group_median(true, *dense_column, cgrouping.data(), cgroup, {}), rexpected);
+    EXPECT_EQ(tatami_stats::group_median(true, *sparse_row, cgrouping.data(), cgroup, {}), rexpected);
+    EXPECT_EQ(tatami_stats::group_median(true, *sparse_column, cgrouping.data(), cgroup, {}), rexpected);
 
-    EXPECT_EQ(tatami_stats::group_median::apply(false, *dense_row, rgrouping.data(), rgroup, {}), cexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(false, *dense_column, rgrouping.data(), rgroup, {}), cexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(false, *sparse_row, rgrouping.data(), rgroup, {}), cexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(false, *sparse_column, rgrouping.data(), rgroup, {}), cexpected);
+    EXPECT_EQ(tatami_stats::group_median(false, *dense_row, rgrouping.data(), rgroup, {}), cexpected);
+    EXPECT_EQ(tatami_stats::group_median(false, *dense_column, rgrouping.data(), rgroup, {}), cexpected);
+    EXPECT_EQ(tatami_stats::group_median(false, *sparse_row, rgrouping.data(), rgroup, {}), cexpected);
+    EXPECT_EQ(tatami_stats::group_median(false, *sparse_column, rgrouping.data(), rgroup, {}), cexpected);
 
     // Checking that it works with skipping NaNs.
-    tatami_stats::group_median::Options mopt;
+    tatami_stats::GroupMedianOptions mopt;
     mopt.skip_nan = true;
 
-    EXPECT_EQ(tatami_stats::group_median::apply(true, *dense_row, cgrouping.data(), cgroup, mopt), rexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(true, *dense_column, cgrouping.data(), cgroup, mopt), rexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(true, *sparse_row, cgrouping.data(), cgroup, mopt), rexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(true, *sparse_column, cgrouping.data(), cgroup, mopt), rexpected);
+    EXPECT_EQ(tatami_stats::group_median(true, *dense_row, cgrouping.data(), cgroup, mopt), rexpected);
+    EXPECT_EQ(tatami_stats::group_median(true, *dense_column, cgrouping.data(), cgroup, mopt), rexpected);
+    EXPECT_EQ(tatami_stats::group_median(true, *sparse_row, cgrouping.data(), cgroup, mopt), rexpected);
+    EXPECT_EQ(tatami_stats::group_median(true, *sparse_column, cgrouping.data(), cgroup, mopt), rexpected);
 
-    EXPECT_EQ(tatami_stats::group_median::apply(false, *dense_row, rgrouping.data(), rgroup, mopt), cexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(false, *dense_column, rgrouping.data(), rgroup, mopt), cexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(false, *sparse_row, rgrouping.data(), rgroup, mopt), cexpected);
-    EXPECT_EQ(tatami_stats::group_median::apply(false, *sparse_column, rgrouping.data(), rgroup, mopt), cexpected);
+    EXPECT_EQ(tatami_stats::group_median(false, *dense_row, rgrouping.data(), rgroup, mopt), cexpected);
+    EXPECT_EQ(tatami_stats::group_median(false, *dense_column, rgrouping.data(), rgroup, mopt), cexpected);
+    EXPECT_EQ(tatami_stats::group_median(false, *sparse_row, rgrouping.data(), rgroup, mopt), cexpected);
+    EXPECT_EQ(tatami_stats::group_median(false, *sparse_column, rgrouping.data(), rgroup, mopt), cexpected);
 }

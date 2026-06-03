@@ -22,15 +22,9 @@
 namespace tatami_stats {
 
 /**
- * @brief Functions for computing dimension-wise quantiles.
- * @namespace tatami_stats::quantiles
+ * @brief Options for `quantile()`.
  */
-namespace quantile {
-
-/**
- * @brief Quantile calculation options.
- */
-struct Options {
+struct QuantileOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
      * If false, NaNs are assumed to be absent, and the behavior of the quantile calculation in the presence of NaNs is undefined.
@@ -55,19 +49,19 @@ struct Options {
  * @param row Whether to compute the quantile for each row.
  * If false, the quantile is computed for each column instead.
  * @param mat Instance of a `tatami::Matrix`.
- * @param quantile Probability of the quantile to compute.
+ * @param prob Probability of the quantile to compute.
  * This should be in \f$[0, 1]\f$.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column quantiles.
  * @param qopt Quantile calculation options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply(
+void quantile(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat,
-    const double quantile,
+    const double prob,
     Output_* const output,
-    const Options& qopt
+    const QuantileOptions& qopt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
@@ -84,10 +78,10 @@ void apply(
         internal::nanable_ifelse<Value_>(
             qopt.skip_nan,
             [&]() -> void {
-                qcalcs_var.emplace(otherdim, quantile);
+                qcalcs_var.emplace(otherdim, prob);
             },
             [&]() -> void {
-                qcalcs_fixed.emplace(otherdim, quantile);
+                qcalcs_fixed.emplace(otherdim, prob);
             }
         );
 
@@ -141,7 +135,7 @@ void apply(
 }
 
 /**
- * Overload of `apply()` that allocates memory for the output quantiles.
+ * Overload of `quantile()` that allocates memory for the output quantiles.
  *
  * @tparam Value_ Numeric type of the input values.
  * @tparam Index_ Integer type of the row/column indices.
@@ -151,7 +145,7 @@ void apply(
  * @param row Whether to compute the quantile for each row.
  * If false, the quantile is computed for each column instead.
  * @param mat Instance of a `tatami::Matrix`.
- * @param quantile Probability of the quantile to compute.
+ * @param prob Probability of the quantile to compute.
  * This should be in \f$[0, 1]\f$.
  * @param qopt Quantile calculation options.
  *
@@ -159,18 +153,16 @@ void apply(
  * containing the row/column quantiles.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> apply(
+std::vector<Output_> quantile(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat,
-    const double quantile,
-    const Options& qopt
+    const double prob,
+    const QuantileOptions& qopt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     auto output = sanisizer::create<std::vector<Output_> >(dim);
-    apply(row, mat, quantile, output.data(), qopt);
+    quantile(row, mat, prob, output.data(), qopt);
     return output;
-}
-
 }
 
 }

@@ -21,15 +21,9 @@
 namespace tatami_stats {
 
 /**
- * @brief Functions for computing dimension-wise per-group variances.
- * @namespace tatami_stats::group_variance
+ * @brief Options for `group_variance()`.
  */
-namespace group_variance {
-
-/**
- * @brief Grouped summation options.
- */
-struct Options {
+struct GroupVarianceOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
      * If false, NaNs are assumed to be absent, and the behavior of the summation in the presence of NaNs is undefined.
@@ -44,24 +38,24 @@ struct Options {
 };
 
 /**
- * @brief Result buffers for `apply()`.
+ * @brief Result buffers for `group_variance()`.
  *
  * @tparam Output_ Floating-point type of the output data.
  * This should be capable of storing NaNs.
  */
 template<typename Output_>
-struct Buffers {
+struct GroupVarianceBuffers {
     /**
      * Vector of length equal to the number of groups.
      * Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for `row = true`, columns otherwise).
-     * After `apply()`, this is filled with the sample mean of each row/column for the corresponding group.
+     * After `group_variance()`, this is filled with the sample mean of each row/column for the corresponding group.
      */
     std::vector<Output_*> mean;
 
     /**
      * Vector of length equal to the number of groups.
      * Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for `row = true`, columns otherwise).
-     * After `apply()`, this is filled with the sample variance of each row/column for the corresponding group.
+     * After `group_variance()`, this is filled with the sample variance of each row/column for the corresponding group.
      */
     std::vector<Output_*> variance;
 };
@@ -70,7 +64,13 @@ struct Buffers {
  * @cond
  */
 template<typename Index_, typename Output_>
-void finish_means(const std::size_t num_groups, const std::vector<Index_>& group_size, std::vector<Output_>& means, const Index_ i, std::vector<Output_*>& output_means) {
+void group_variance_finish_means(
+    const std::size_t num_groups,
+    const std::vector<Index_>& group_size,
+    std::vector<Output_>& means,
+    const Index_ i,
+    std::vector<Output_*>& output_means
+) {
     for (std::size_t b = 0; b < num_groups; ++b) {
         if (group_size[b]) {
             means[b] /= group_size[b];
@@ -82,13 +82,13 @@ void finish_means(const std::size_t num_groups, const std::vector<Index_>& group
 }
 
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply_direct_noskip(
+void group_variance_direct_noskip(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat, 
     const Group_* const group, 
     const std::size_t num_groups, 
-    Buffers<Output_>& output,
-    const Options& vopt
+    GroupVarianceBuffers<Output_>& output,
+    const GroupVarianceOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
@@ -116,7 +116,7 @@ void apply_direct_noskip(
                     cur_means[g] += range.value[i];
                     ++cur_non_zeros[g];
                 }
-                finish_means(num_groups, group_sizes, cur_means, static_cast<Index_>(s + x), output.mean);
+                group_variance_finish_means(num_groups, group_sizes, cur_means, static_cast<Index_>(s + x), output.mean);
 
                 // Now computing the RSS.
                 for (Index_ i = 0; i < range.number; ++i) {
@@ -133,7 +133,7 @@ void apply_direct_noskip(
                 std::fill(cur_rss.begin(), cur_rss.end(), 0);
                 std::fill(cur_non_zeros.begin(), cur_non_zeros.end(), 0);
             }
-        }, dim, vopt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -149,7 +149,7 @@ void apply_direct_noskip(
                 for (Index_ j = 0; j < otherdim; ++j) {
                     cur_means[group[j]] += ptr[j];
                 }
-                finish_means(num_groups, group_sizes, cur_means, static_cast<Index_>(s + x), output.mean);
+                group_variance_finish_means(num_groups, group_sizes, cur_means, static_cast<Index_>(s + x), output.mean);
 
                 // Now computing the RSS.
                 for (Index_ j = 0; j < otherdim; ++j) {
@@ -164,18 +164,18 @@ void apply_direct_noskip(
                 std::fill(cur_means.begin(), cur_means.end(), 0);
                 std::fill(cur_rss.begin(), cur_rss.end(), 0);
             }
-        }, dim, vopt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply_direct_skip(
+void group_variance_direct_skip(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat, 
     const Group_* const group, 
     const std::size_t num_groups, 
-    Buffers<Output_>& output,
-    const Options& vopt
+    GroupVarianceBuffers<Output_>& output,
+    const GroupVarianceOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
@@ -212,7 +212,7 @@ void apply_direct_skip(
                 for (std::size_t g = 0; g < num_groups; ++g) {
                     cur_sizes[g] = full_group_sizes[g] - cur_sizes[g];
                 }
-                finish_means(num_groups, cur_sizes, cur_means, static_cast<Index_>(s + x), output.mean);
+                group_variance_finish_means(num_groups, cur_sizes, cur_means, static_cast<Index_>(s + x), output.mean);
 
                 // Computing the variance first.
                 for (Index_ i = 0; i < range.number; ++i) {
@@ -233,7 +233,7 @@ void apply_direct_skip(
                 std::fill(cur_non_zeros.begin(), cur_non_zeros.end(), 0);
                 std::fill(cur_sizes.begin(), cur_sizes.end(), 0);
             }
-        }, dim, vopt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -255,7 +255,7 @@ void apply_direct_skip(
                         ++cur_sizes[g];
                     }
                 }
-                finish_means(num_groups, cur_sizes, cur_means, static_cast<Index_>(s + x), output.mean);
+                group_variance_finish_means(num_groups, cur_sizes, cur_means, static_cast<Index_>(s + x), output.mean);
 
                 // Computing the variance first.
                 for (Index_ j = 0; j < otherdim; ++j) {
@@ -274,31 +274,31 @@ void apply_direct_skip(
                 std::fill(cur_rss.begin(), cur_rss.end(), 0);
                 std::fill(cur_sizes.begin(), cur_sizes.end(), 0);
             }
-        }, dim, vopt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply_running_noskip(
+void group_variance_running_noskip(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group, 
     const std::size_t num_groups, 
-    Buffers<Output_>& output,
-    const Options& vopt
+    GroupVarianceBuffers<Output_>& output,
+    const GroupVarianceOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
-    const bool do_parallel = vopt.num_threads > 1;
+    const bool do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_mean, all_partial_rss;
     if (do_parallel) {
         // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
-        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads - 1));
-        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads));
+        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads - 1));
+        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
     }
-    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<Index_> > > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<Index_> > > >(opt.num_threads);
 
     for (std::size_t g = 0; g < num_groups; ++g) {
         std::fill_n(output.mean[g], dim, 0);
@@ -393,7 +393,7 @@ void apply_running_noskip(
                 (*all_partial_rss)[thread - 1] = std::move(cur_rss);
             }
         }
-    }, otherdim, vopt.num_threads);
+    }, otherdim, opt.num_threads);
 
     if (!do_parallel) {
         const auto& cur_count = *(all_partial_count[0]);
@@ -450,27 +450,27 @@ void apply_running_noskip(
 }
 
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply_running_skip(
+void group_variance_running_skip(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group, 
     const std::size_t num_groups, 
-    Buffers<Output_>& output,
-    const Options& vopt
+    GroupVarianceBuffers<Output_>& output,
+    const GroupVarianceOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
-    const bool do_parallel = vopt.num_threads > 1;
+    const bool do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_mean, all_partial_rss;
     if (do_parallel) {
         // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
-        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads - 1));
-        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads));
+        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads - 1));
+        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
 
     }
-    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<std::vector<Index_> > > > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<std::vector<Index_> > > > >(opt.num_threads);
 
     for (std::size_t g = 0; g < num_groups; ++g) {
         std::fill_n(output.mean[g], dim, 0);
@@ -577,7 +577,7 @@ void apply_running_skip(
                 (*all_partial_rss)[thread - 1] = std::move(cur_rss);
             }
         }
-    }, otherdim, vopt.num_threads);
+    }, otherdim, opt.num_threads);
 
     if (!do_parallel) {
         const auto& cur_count = *(all_partial_count[0]);
@@ -664,13 +664,13 @@ void apply_running_skip(
  * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Group_, typename Output_>
-void apply(
+void group_variance(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
-    const Group_* group,
-    std::size_t num_groups,
-    Buffers<Output_>& output,
-    const Options& opt
+    const Group_* const group,
+    const std::size_t num_groups,
+    GroupVarianceBuffers<Output_>& output,
+    const GroupVarianceOptions& opt
 ) {
     assert(sanisizer::is_equal(num_groups, output.mean.size()));
     assert(sanisizer::is_equal(num_groups, output.variance.size()));
@@ -679,29 +679,29 @@ void apply(
         opt.skip_nan,
         [&]() -> void {
             if (mat.prefer_rows() == row) {
-                apply_direct_skip(row, mat, group, num_groups, output, opt);
+                group_variance_direct_skip(row, mat, group, num_groups, output, opt);
             } else {
-                apply_running_skip(row, mat, group, num_groups, output, opt);
+                group_variance_running_skip(row, mat, group, num_groups, output, opt);
             }
         },
         [&]() -> void {
             if (mat.prefer_rows() == row) {
-                apply_direct_noskip(row, mat, group, num_groups, output, opt);
+                group_variance_direct_noskip(row, mat, group, num_groups, output, opt);
             } else {
-                apply_running_noskip(row, mat, group, num_groups, output, opt);
+                group_variance_running_noskip(row, mat, group, num_groups, output, opt);
             }
         }
     );
 }
 
 /**
- * @brief Results of `apply()`.
+ * @brief Results of `group_variance()`.
  *
  * @tparam Output_ Floating-point type of the output data.
  * This should be capable of storing NaNs.
  */
 template<typename Output_>
-struct Result {
+struct GroupVarianceResult {
     /**
      * Vector of length equal to the number of groups.
      * Each element is a vector of length equal to the appropriate dimension extent (rows for `row = true`, columns otherwise),
@@ -738,18 +738,18 @@ struct Result {
  * @param opt Further options.
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_> 
-Result<Output_> apply(
+GroupVarianceResult<Output_> group_variance(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
-    const Group_* group,
-    std::size_t num_groups,
-    const Options& opt
+    const Group_* const group,
+    const std::size_t num_groups,
+    const GroupVarianceOptions& opt
 ) {
-    Result<Output_> output;
+    GroupVarianceResult<Output_> output;
     sanisizer::resize(output.mean, num_groups);
     sanisizer::resize(output.variance, num_groups);
 
-    Buffers<Output_> buffers;
+    GroupVarianceBuffers<Output_> buffers;
     sanisizer::resize(buffers.mean, num_groups);
     sanisizer::resize(buffers.variance, num_groups);
     const auto dim = (row ? mat.nrow() : mat.ncol());
@@ -761,10 +761,8 @@ Result<Output_> apply(
         buffers.variance[g] = output.variance[g].data();
     }
 
-    apply(row, mat, group, num_groups, buffers, opt);
+    group_variance(row, mat, group, num_groups, buffers, opt);
     return output;
-}
-
 }
 
 }

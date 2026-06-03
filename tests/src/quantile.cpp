@@ -45,33 +45,33 @@ TEST_P(QuantileTest, RowSimple) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto rref = tatami_stats::quantile::apply(true, *dense_row, prob, {});
+    auto rref = tatami_stats::quantile(true, *dense_row, prob, {});
     EXPECT_EQ(rref.size(), NR);
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_column, prob, {}));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_row, prob, {}));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_column, prob, {}));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_column, prob, {}));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_row, prob, {}));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_column, prob, {}));
 
     // Checking that the parallel code is the same.
-    tatami_stats::quantile::Options qopt;
+    tatami_stats::QuantileOptions qopt;
     qopt.num_threads = 3;
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_row, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_column, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_row, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_column, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_row, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_column, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_row, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_column, prob, qopt));
 
     // Checking that the results are the same with NaN skipping.
     qopt.num_threads = 1;
     qopt.skip_nan = true;
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_row, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_column, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_row, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_column, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_row, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_column, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_row, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_column, prob, qopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     auto unsorted_row = std::make_unique<tatami_test::ReversedIndicesWrapper<double, int> >(sparse_row);
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *unsorted_row, prob, {}));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *unsorted_row, prob, {}));
     auto unsorted_column = std::make_unique<tatami_test::ReversedIndicesWrapper<double, int> >(sparse_column);
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *unsorted_column, prob, {}));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *unsorted_column, prob, {}));
 }
 
 TEST_P(QuantileTest, ColumnSimple) {
@@ -106,33 +106,33 @@ TEST_P(QuantileTest, ColumnSimple) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto cref = tatami_stats::quantile::apply(false, *dense_row, prob, {});
+    auto cref = tatami_stats::quantile(false, *dense_row, prob, {});
     EXPECT_EQ(cref.size(), NC);
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_column, prob, {}));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_row, prob, {}));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_column, prob, {}));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_column, prob, {}));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_row, prob, {}));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_column, prob, {}));
 
     // Checking that the parallel code is the same.
-    tatami_stats::quantile::Options qopt;
+    tatami_stats::QuantileOptions qopt;
     qopt.num_threads = 3;
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_row, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_column, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_row, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_column, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_row, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_column, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_row, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_column, prob, qopt));
 
     // Checking that the results are the same when skipping NaNs.
     qopt.skip_nan = true;
     qopt.num_threads = 1;
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_row, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_column, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_row, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_column, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_row, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_column, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_row, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_column, prob, qopt));
 
     // Checking same results from matrices that can yield unsorted indices.
     auto unsorted_row = std::make_unique<tatami_test::ReversedIndicesWrapper<double, int> >(sparse_row);
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *unsorted_row, prob, {}));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *unsorted_row, prob, {}));
     auto unsorted_column = std::make_unique<tatami_test::ReversedIndicesWrapper<double, int> >(sparse_column);
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *unsorted_column, prob, {}));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *unsorted_column, prob, {}));
 }
 
 TEST_P(QuantileTest, RowWithNan) {
@@ -180,22 +180,22 @@ TEST_P(QuantileTest, RowWithNan) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     auto ref = std::make_unique<tatami::DenseRowMatrix<double, int> >(NR, NC - 1, std::move(stripped));
-    auto rref = tatami_stats::quantile::apply(true, *ref, prob, {});
-    auto cref = tatami_stats::quantile::apply(false, *ref, prob, {});
+    auto rref = tatami_stats::quantile(true, *ref, prob, {});
+    auto cref = tatami_stats::quantile(false, *ref, prob, {});
 
-    tatami_stats::quantile::Options qopt;
+    tatami_stats::QuantileOptions qopt;
     qopt.skip_nan = true;
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_row, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_column, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_row, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_column, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_row, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_column, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_row, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_column, prob, qopt));
 
     // Same results with parallelization.
     qopt.num_threads = 3;
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_row, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *dense_column, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_row, prob, qopt));
-    EXPECT_EQ(rref, tatami_stats::quantile::apply(true, *sparse_column, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_row, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *dense_column, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_row, prob, qopt));
+    EXPECT_EQ(rref, tatami_stats::quantile(true, *sparse_column, prob, qopt));
 }
 
 TEST_P(QuantileTest, ColumnWithNan) {
@@ -244,21 +244,21 @@ TEST_P(QuantileTest, ColumnWithNan) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     auto ref = std::make_unique<tatami::DenseColumnMatrix<double, int> >(NR - 1, NC, std::move(stripped));
-    auto cref = tatami_stats::quantile::apply(false, *ref, prob, {});
+    auto cref = tatami_stats::quantile(false, *ref, prob, {});
 
-    tatami_stats::quantile::Options qopt;
+    tatami_stats::QuantileOptions qopt;
     qopt.skip_nan = true;
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_row, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_column, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_row, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_column, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_row, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_column, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_row, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_column, prob, qopt));
 
     // Same results with parallelization.
     qopt.num_threads = 3;
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_row, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *dense_column, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_row, prob, qopt));
-    EXPECT_EQ(cref, tatami_stats::quantile::apply(false, *sparse_column, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_row, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *dense_column, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_row, prob, qopt));
+    EXPECT_EQ(cref, tatami_stats::quantile(false, *sparse_column, prob, qopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -279,26 +279,26 @@ TEST(Quantile, AllZero) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto ref = tatami_stats::quantile::apply(true, *dense_row, 0.5, {});
+    auto ref = tatami_stats::quantile(true, *dense_row, 0.5, {});
     EXPECT_EQ(ref, std::vector<double>(NR));
-    EXPECT_EQ(ref, tatami_stats::quantile::apply(true, *dense_column, 0.5, {}));
-    EXPECT_EQ(ref, tatami_stats::quantile::apply(true, *sparse_row, 0.5, {}));
-    EXPECT_EQ(ref, tatami_stats::quantile::apply(true, *sparse_column, 0.5, {}));
+    EXPECT_EQ(ref, tatami_stats::quantile(true, *dense_column, 0.5, {}));
+    EXPECT_EQ(ref, tatami_stats::quantile(true, *sparse_row, 0.5, {}));
+    EXPECT_EQ(ref, tatami_stats::quantile(true, *sparse_column, 0.5, {}));
 
-    ref = tatami_stats::quantile::apply(false, *dense_row, 0.5, {});
+    ref = tatami_stats::quantile(false, *dense_row, 0.5, {});
     EXPECT_EQ(ref, std::vector<double>(NC));
-    EXPECT_EQ(ref, tatami_stats::quantile::apply(false, *dense_column, 0.5, {}));
-    EXPECT_EQ(ref, tatami_stats::quantile::apply(false, *sparse_row, 0.5, {}));
-    EXPECT_EQ(ref, tatami_stats::quantile::apply(false, *sparse_column, 0.5, {}));
+    EXPECT_EQ(ref, tatami_stats::quantile(false, *dense_column, 0.5, {}));
+    EXPECT_EQ(ref, tatami_stats::quantile(false, *sparse_row, 0.5, {}));
+    EXPECT_EQ(ref, tatami_stats::quantile(false, *sparse_column, 0.5, {}));
 }
 
 TEST(Quantile, Empty) {
     auto dense = std::make_unique<tatami::DenseRowMatrix<double, int> >(111, 0, std::vector<double>());
 
-    auto cref = tatami_stats::quantile::apply(false, *dense, 0.5, {});
+    auto cref = tatami_stats::quantile(false, *dense, 0.5, {});
     EXPECT_EQ(cref.size(), 0);
 
-    auto rref = tatami_stats::quantile::apply(true, *dense, 0.5, {});
+    auto rref = tatami_stats::quantile(true, *dense, 0.5, {});
     EXPECT_TRUE(rref.size() > 0);
     for (auto r : rref) {
         EXPECT_TRUE(std::isnan(r));
@@ -320,8 +320,8 @@ TEST(Quantile, NewType) {
     }
 
     auto ref = std::make_unique<tatami::DenseRowMatrix<double, int> >(NR, NC, dump);
-    auto rexpected = tatami_stats::quantile::apply(true, *ref, 0.5, {});
-    auto cexpected = tatami_stats::quantile::apply(false, *ref, 0.5, {});
+    auto rexpected = tatami_stats::quantile(true, *ref, 0.5, {});
+    auto cexpected = tatami_stats::quantile(false, *ref, 0.5, {});
 
     std::vector<std::int8_t> ivec(dump.begin(), dump.end());
     auto dense_row = std::make_unique<tatami::DenseRowMatrix<std::int8_t, std::uint8_t> >(NR, NC, std::move(ivec));
@@ -329,27 +329,27 @@ TEST(Quantile, NewType) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    EXPECT_EQ(tatami_stats::quantile::apply(true, *dense_row, 0.5, {}), rexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(true, *dense_column, 0.5, {}), rexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(true, *sparse_row, 0.5, {}), rexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(true, *sparse_column, 0.5, {}), rexpected);
+    EXPECT_EQ(tatami_stats::quantile(true, *dense_row, 0.5, {}), rexpected);
+    EXPECT_EQ(tatami_stats::quantile(true, *dense_column, 0.5, {}), rexpected);
+    EXPECT_EQ(tatami_stats::quantile(true, *sparse_row, 0.5, {}), rexpected);
+    EXPECT_EQ(tatami_stats::quantile(true, *sparse_column, 0.5, {}), rexpected);
 
-    EXPECT_EQ(tatami_stats::quantile::apply(false, *dense_row, 0.5, {}), cexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(false, *dense_column, 0.5, {}), cexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(false, *sparse_row, 0.5, {}), cexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(false, *sparse_column, 0.5, {}), cexpected);
+    EXPECT_EQ(tatami_stats::quantile(false, *dense_row, 0.5, {}), cexpected);
+    EXPECT_EQ(tatami_stats::quantile(false, *dense_column, 0.5, {}), cexpected);
+    EXPECT_EQ(tatami_stats::quantile(false, *sparse_row, 0.5, {}), cexpected);
+    EXPECT_EQ(tatami_stats::quantile(false, *sparse_column, 0.5, {}), cexpected);
 
     // Skipping NaN.
-    tatami_stats::quantile::Options opt;
+    tatami_stats::QuantileOptions opt;
     opt.skip_nan = true;
 
-    EXPECT_EQ(tatami_stats::quantile::apply(true, *dense_row, 0.5, opt), rexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(true, *dense_column, 0.5, opt), rexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(true, *sparse_row, 0.5, opt), rexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(true, *sparse_column, 0.5, opt), rexpected);
+    EXPECT_EQ(tatami_stats::quantile(true, *dense_row, 0.5, opt), rexpected);
+    EXPECT_EQ(tatami_stats::quantile(true, *dense_column, 0.5, opt), rexpected);
+    EXPECT_EQ(tatami_stats::quantile(true, *sparse_row, 0.5, opt), rexpected);
+    EXPECT_EQ(tatami_stats::quantile(true, *sparse_column, 0.5, opt), rexpected);
 
-    EXPECT_EQ(tatami_stats::quantile::apply(false, *dense_row, 0.5, opt), cexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(false, *dense_column, 0.5, opt), cexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(false, *sparse_row, 0.5, opt), cexpected);
-    EXPECT_EQ(tatami_stats::quantile::apply(false, *sparse_column, 0.5, opt), cexpected);
+    EXPECT_EQ(tatami_stats::quantile(false, *dense_row, 0.5, opt), cexpected);
+    EXPECT_EQ(tatami_stats::quantile(false, *dense_column, 0.5, opt), cexpected);
+    EXPECT_EQ(tatami_stats::quantile(false, *sparse_row, 0.5, opt), cexpected);
+    EXPECT_EQ(tatami_stats::quantile(false, *sparse_column, 0.5, opt), cexpected);
 }

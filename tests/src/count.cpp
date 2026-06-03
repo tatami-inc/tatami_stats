@@ -6,8 +6,8 @@
 #include "tatami_test/tatami_test.hpp"
 
 template<typename Value_, typename Index_, class Condition_>
-std::vector<int> apply(const bool row, const tatami::Matrix<Value_, Index_>& mat, Condition_ condition, const tatami_stats::count::Options& opt) {
-    return tatami_stats::count::apply<int>(row, mat, std::move(condition), opt);
+std::vector<int> apply(const bool row, const tatami::Matrix<Value_, Index_>& mat, Condition_ condition, const tatami_stats::CountOptions& opt) {
+    return tatami_stats::count<int>(row, mat, std::move(condition), opt);
 }
 
 TEST(Count, ByRow) {
@@ -38,7 +38,7 @@ TEST(Count, ByRow) {
     EXPECT_EQ(ref, apply(true, *sparse_column, cond, {}));
 
     // Checking same results from parallel code.
-    tatami_stats::count::Options nopt;
+    tatami_stats::CountOptions nopt;
     nopt.num_threads = 3;
     EXPECT_EQ(ref, apply(true, *dense_row, cond, nopt));
     EXPECT_EQ(ref, apply(true, *dense_column, cond, nopt));
@@ -80,7 +80,7 @@ TEST(Count, ByColumn) {
     EXPECT_EQ(ref, apply(false, *sparse_column, cond, {}));
 
     // Checking same results from parallel code.
-    tatami_stats::count::Options nopt;
+    tatami_stats::CountOptions nopt;
     nopt.num_threads = 3;
     EXPECT_EQ(ref, apply(false, *dense_column, cond, nopt));
     EXPECT_EQ(ref, apply(false, *dense_column, cond, nopt));
@@ -102,7 +102,7 @@ TEST(Count, EmptyCounts) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     auto cond = [](double val) -> bool { return val > 0; };
-    tatami_stats::count::Options nopt;
+    tatami_stats::CountOptions nopt;
     nopt.num_threads = 3;
 
     std::vector<int> empty_c(NC);

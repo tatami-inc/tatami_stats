@@ -16,7 +16,7 @@ static void compare_double_vectors_of_vectors(const L_& left, const R_& right) {
 }
 
 static void compare_result(
-    const tatami_stats::group_variance::Result<double>& res,
+    const tatami_stats::GroupVarianceResult<double>& res,
     const std::vector<std::vector<double> >& expected_mean,
     const std::vector<std::vector<double> >& expected_variance
 ) {
@@ -50,37 +50,37 @@ TEST(GroupVariance, ByRow) {
     std::vector<std::vector<double> > expected_v(ngroup), expected_m(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        auto res = tatami_stats::variance::apply(true, *sub, {});
+        auto res = tatami_stats::variance(true, *sub, {});
         expected_m[g] = std::move(res.mean);
         expected_v[g] = std::move(res.variance);
     }
 
-    compare_result(tatami_stats::group_variance::apply(true, *dense_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
 
     // Checking that the parallel code is the same.
-    tatami_stats::group_variance::Options vopt;
+    tatami_stats::GroupVarianceOptions vopt;
     vopt.num_threads = 3;
-    compare_result(tatami_stats::group_variance::apply(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
 
     // Checking that we get the same result after skipping NaNs.
     vopt.num_threads = 1;
     vopt.skip_nan = true;
-    compare_result(tatami_stats::group_variance::apply(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    compare_result(tatami_stats::group_variance::apply(true, *unsorted_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *unsorted_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    compare_result(tatami_stats::group_variance::apply(true, *unsorted_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *unsorted_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
 }
 
 TEST(GroupVariance, ByRowWithNan) {
@@ -115,25 +115,25 @@ TEST(GroupVariance, ByRowWithNan) {
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
-        tatami_stats::variance::Options mopt;
+        tatami_stats::VarianceOptions mopt;
         mopt.skip_nan = true;
-        auto res = tatami_stats::variance::apply(true, *sub, mopt);
+        auto res = tatami_stats::variance(true, *sub, mopt);
         expected_m[g] = std::move(res.mean);
         expected_v[g] = std::move(res.variance);
     }
 
-    tatami_stats::group_variance::Options mopt;
+    tatami_stats::GroupVarianceOptions mopt;
     mopt.skip_nan = true;
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_row, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
 
     mopt.num_threads = 3;
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_row, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
 }
 
 TEST(GroupVariance, ByColumn) {
@@ -162,29 +162,29 @@ TEST(GroupVariance, ByColumn) {
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        auto res = tatami_stats::variance::apply(false, *sub, {});
+        auto res = tatami_stats::variance(false, *sub, {});
         expected_m[g] = std::move(res.mean);
         expected_v[g] = std::move(res.variance);
     }
 
-    compare_result(tatami_stats::group_variance::apply(false, *dense_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *dense_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
 
     // Checking that the parallel code is the same.
-    tatami_stats::group_variance::Options sopt;
+    tatami_stats::GroupVarianceOptions sopt;
     sopt.num_threads = 3;
-    compare_result(tatami_stats::group_variance::apply(false, *dense_row, rgroups.data(), ngroup, sopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *dense_column, rgroups.data(), ngroup, sopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_row, rgroups.data(), ngroup, sopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_column, rgroups.data(), ngroup, sopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, sopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, sopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, sopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, sopt), expected_m, expected_v);
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    compare_result(tatami_stats::group_variance::apply(false, *unsorted_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *unsorted_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    compare_result(tatami_stats::group_variance::apply(false, *unsorted_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *unsorted_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
 }
 
 TEST(GroupVariance, ByColumnWithNan) {
@@ -219,29 +219,29 @@ TEST(GroupVariance, ByColumnWithNan) {
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
-        tatami_stats::variance::Options mopt;
+        tatami_stats::VarianceOptions mopt;
         mopt.skip_nan = true;
-        auto res = tatami_stats::variance::apply(false, *sub, mopt);
+        auto res = tatami_stats::variance(false, *sub, mopt);
         expected_m[g] = std::move(res.mean);
         expected_v[g] = std::move(res.variance);
     }
 
-    tatami_stats::group_variance::Options mopt;
+    tatami_stats::GroupVarianceOptions mopt;
     mopt.skip_nan = true;
-    compare_result(tatami_stats::group_variance::apply(false, *dense_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
 
     mopt.num_threads = 3;
-    compare_result(tatami_stats::group_variance::apply(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
 }
 
 TEST(GroupVariance, EdgeCases) {
-    tatami_stats::group_variance::Options vopt;
+    tatami_stats::GroupVarianceOptions vopt;
     vopt.skip_nan = true;
 
     {
@@ -254,7 +254,7 @@ TEST(GroupVariance, EdgeCases) {
             int ngroups = 3;
             std::vector<int> grouping { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0 };
 
-            auto check_ok = [&](const tatami_stats::group_variance::Result<double>& res) -> void {
+            auto check_ok = [&](const tatami_stats::GroupVarianceResult<double>& res) -> void {
                 EXPECT_EQ(res.mean.size(), ngroups);
                 EXPECT_EQ(res.variance.size(), ngroups);
                 for (int g = 0; g < ngroups; ++g) {
@@ -263,33 +263,33 @@ TEST(GroupVariance, EdgeCases) {
                 }
             };
 
-            check_ok(tatami_stats::group_variance::apply(true, *dense_row, grouping.data(), ngroups, {}));
-            check_ok(tatami_stats::group_variance::apply(true, *dense_column, grouping.data(), ngroups, {}));
-            check_ok(tatami_stats::group_variance::apply(true, *sparse_row, grouping.data(), ngroups, {}));
-            check_ok(tatami_stats::group_variance::apply(true, *sparse_column, grouping.data(), ngroups, {}));
+            check_ok(tatami_stats::group_variance(true, *dense_row, grouping.data(), ngroups, {}));
+            check_ok(tatami_stats::group_variance(true, *dense_column, grouping.data(), ngroups, {}));
+            check_ok(tatami_stats::group_variance(true, *sparse_row, grouping.data(), ngroups, {}));
+            check_ok(tatami_stats::group_variance(true, *sparse_column, grouping.data(), ngroups, {}));
 
-            check_ok(tatami_stats::group_variance::apply(true, *dense_row, grouping.data(), ngroups, vopt));
-            check_ok(tatami_stats::group_variance::apply(true, *dense_column, grouping.data(), ngroups, vopt));
-            check_ok(tatami_stats::group_variance::apply(true, *sparse_row, grouping.data(), ngroups, vopt));
-            check_ok(tatami_stats::group_variance::apply(true, *sparse_column, grouping.data(), ngroups, vopt));
+            check_ok(tatami_stats::group_variance(true, *dense_row, grouping.data(), ngroups, vopt));
+            check_ok(tatami_stats::group_variance(true, *dense_column, grouping.data(), ngroups, vopt));
+            check_ok(tatami_stats::group_variance(true, *sparse_row, grouping.data(), ngroups, vopt));
+            check_ok(tatami_stats::group_variance(true, *sparse_column, grouping.data(), ngroups, vopt));
         }
 
         {
-            auto check_ok = [&](const tatami_stats::group_variance::Result<double>& res) -> void {
+            auto check_ok = [&](const tatami_stats::GroupVarianceResult<double>& res) -> void {
                 EXPECT_EQ(res.mean.size(), 0);
                 EXPECT_EQ(res.variance.size(), 0);
             };
 
             const int* group = NULL; 
-            check_ok(tatami_stats::group_variance::apply(false, *dense_row, group, 0, {}));
-            check_ok(tatami_stats::group_variance::apply(false, *dense_column, group, 0, {}));
-            check_ok(tatami_stats::group_variance::apply(false, *sparse_row, group, 0, {}));
-            check_ok(tatami_stats::group_variance::apply(false, *sparse_column, group, 0, {}));
+            check_ok(tatami_stats::group_variance(false, *dense_row, group, 0, {}));
+            check_ok(tatami_stats::group_variance(false, *dense_column, group, 0, {}));
+            check_ok(tatami_stats::group_variance(false, *sparse_row, group, 0, {}));
+            check_ok(tatami_stats::group_variance(false, *sparse_column, group, 0, {}));
 
-            check_ok(tatami_stats::group_variance::apply(false, *dense_row, group, 0, vopt));
-            check_ok(tatami_stats::group_variance::apply(false, *dense_column, group, 0, vopt));
-            check_ok(tatami_stats::group_variance::apply(false, *sparse_row, group, 0, vopt));
-            check_ok(tatami_stats::group_variance::apply(false, *sparse_column, group, 0, vopt));
+            check_ok(tatami_stats::group_variance(false, *dense_row, group, 0, vopt));
+            check_ok(tatami_stats::group_variance(false, *dense_column, group, 0, vopt));
+            check_ok(tatami_stats::group_variance(false, *sparse_row, group, 0, vopt));
+            check_ok(tatami_stats::group_variance(false, *sparse_column, group, 0, vopt));
         }
     }
 
@@ -303,7 +303,7 @@ TEST(GroupVariance, EdgeCases) {
         int ngroups = 4;
         std::vector<int> grouping(10, ngroups - 1);
 
-        auto check_ok = [&](const tatami_stats::group_variance::Result<double>& res) -> void {
+        auto check_ok = [&](const tatami_stats::GroupVarianceResult<double>& res) -> void {
             EXPECT_EQ(res.mean.size(), ngroups);
             EXPECT_EQ(res.variance.size(), ngroups);
             for (int i = 0; i < ngroups - 1; ++i) {
@@ -318,15 +318,15 @@ TEST(GroupVariance, EdgeCases) {
             }
         };
 
-        check_ok(tatami_stats::group_variance::apply(true, *dense_row, grouping.data(), ngroups, {}));
-        check_ok(tatami_stats::group_variance::apply(true, *dense_column, grouping.data(), ngroups, {}));
-        check_ok(tatami_stats::group_variance::apply(true, *sparse_row, grouping.data(), ngroups, {}));
-        check_ok(tatami_stats::group_variance::apply(true, *sparse_column, grouping.data(), ngroups, {}));
+        check_ok(tatami_stats::group_variance(true, *dense_row, grouping.data(), ngroups, {}));
+        check_ok(tatami_stats::group_variance(true, *dense_column, grouping.data(), ngroups, {}));
+        check_ok(tatami_stats::group_variance(true, *sparse_row, grouping.data(), ngroups, {}));
+        check_ok(tatami_stats::group_variance(true, *sparse_column, grouping.data(), ngroups, {}));
 
-        check_ok(tatami_stats::group_variance::apply(true, *dense_row, grouping.data(), ngroups, vopt));
-        check_ok(tatami_stats::group_variance::apply(true, *dense_column, grouping.data(), ngroups, vopt));
-        check_ok(tatami_stats::group_variance::apply(true, *sparse_row, grouping.data(), ngroups, vopt));
-        check_ok(tatami_stats::group_variance::apply(true, *sparse_column, grouping.data(), ngroups, vopt));
+        check_ok(tatami_stats::group_variance(true, *dense_row, grouping.data(), ngroups, vopt));
+        check_ok(tatami_stats::group_variance(true, *dense_column, grouping.data(), ngroups, vopt));
+        check_ok(tatami_stats::group_variance(true, *sparse_row, grouping.data(), ngroups, vopt));
+        check_ok(tatami_stats::group_variance(true, *sparse_column, grouping.data(), ngroups, vopt));
     }
 }
 
@@ -355,8 +355,8 @@ TEST(GroupVariance, NewType) {
     for (size_t r = 0; r < NR; ++r) {
         rgrouping.push_back(r % rgroup);
     }
-    auto rexpected = tatami_stats::group_variance::apply(true, *ref, cgrouping.data(), cgroup, {});
-    auto cexpected = tatami_stats::group_variance::apply(false, *ref, rgrouping.data(), rgroup, {});
+    auto rexpected = tatami_stats::group_variance(true, *ref, cgrouping.data(), cgroup, {});
+    auto cexpected = tatami_stats::group_variance(false, *ref, rgrouping.data(), rgroup, {});
 
     std::vector<std::int8_t> ivec(dump.begin(), dump.end());
     auto dense_row = std::make_shared<tatami::DenseRowMatrix<std::int8_t, std::uint8_t> >(NR, NC, std::move(ivec));
@@ -364,29 +364,29 @@ TEST(GroupVariance, NewType) {
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
     auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
-    compare_result(tatami_stats::group_variance::apply(true, *dense_row, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_row, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_column, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.variance);
+    compare_result(tatami_stats::group_variance(true, *dense_row, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.variance);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.variance);
+    compare_result(tatami_stats::group_variance(true, *sparse_row, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.variance);
+    compare_result(tatami_stats::group_variance(true, *sparse_column, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.variance);
 
-    compare_result(tatami_stats::group_variance::apply(false, *dense_row, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(false, *dense_column, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_row, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_column, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.variance);
+    compare_result(tatami_stats::group_variance(false, *dense_row, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.variance);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.variance);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.variance);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.variance);
 
     // Still behaves with NaN skipping.
-    tatami_stats::group_variance::Options vopt;
+    tatami_stats::GroupVarianceOptions vopt;
     vopt.skip_nan = true;
 
-    compare_result(tatami_stats::group_variance::apply(true, *dense_row, cgrouping.data(), cgroup, vopt), rexpected.mean, rexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(true, *dense_column, cgrouping.data(), cgroup, vopt), rexpected.mean, rexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_row, cgrouping.data(), cgroup, vopt), rexpected.mean, rexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(true, *sparse_column, cgrouping.data(), cgroup, vopt), rexpected.mean, rexpected.variance);
+    compare_result(tatami_stats::group_variance(true, *dense_row, cgrouping.data(), cgroup, vopt), rexpected.mean, rexpected.variance);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgrouping.data(), cgroup, vopt), rexpected.mean, rexpected.variance);
+    compare_result(tatami_stats::group_variance(true, *sparse_row, cgrouping.data(), cgroup, vopt), rexpected.mean, rexpected.variance);
+    compare_result(tatami_stats::group_variance(true, *sparse_column, cgrouping.data(), cgroup, vopt), rexpected.mean, rexpected.variance);
 
-    compare_result(tatami_stats::group_variance::apply(false, *dense_row, rgrouping.data(), rgroup, vopt), cexpected.mean, cexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(false, *dense_column, rgrouping.data(), rgroup, vopt), cexpected.mean, cexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_row, rgrouping.data(), rgroup, vopt), cexpected.mean, cexpected.variance);
-    compare_result(tatami_stats::group_variance::apply(false, *sparse_column, rgrouping.data(), rgroup, vopt), cexpected.mean, cexpected.variance);
+    compare_result(tatami_stats::group_variance(false, *dense_row, rgrouping.data(), rgroup, vopt), cexpected.mean, cexpected.variance);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgrouping.data(), rgroup, vopt), cexpected.mean, cexpected.variance);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgrouping.data(), rgroup, vopt), cexpected.mean, cexpected.variance);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgrouping.data(), rgroup, vopt), cexpected.mean, cexpected.variance);
 }
 
 TEST(GroupVariance, DirtyOutputs) {
@@ -411,7 +411,7 @@ TEST(GroupVariance, DirtyOutputs) {
     }
     auto group_sizes = tatami_stats::tabulate_groups<int, int>(grouping.data(), NR);
 
-    auto ref = tatami_stats::group_variance::apply(false, *dense_row, grouping.data(), ngroup, {});
+    auto ref = tatami_stats::group_variance(false, *dense_row, grouping.data(), ngroup, {});
     std::vector<double> expected_m, expected_v;
     for (int g = 0; g < ngroup; ++g) {
         expected_m.insert(expected_m.end(), ref.mean[g].begin(), ref.mean[g].end());
@@ -420,59 +420,59 @@ TEST(GroupVariance, DirtyOutputs) {
 
     std::vector<double> dirty_m(ngroup * NC, -1);
     std::vector<double> dirty_v(ngroup * NC, -1);
-    tatami_stats::group_variance::Buffers<double> buffers;
+    tatami_stats::GroupVarianceBuffers<double> buffers;
     for (int g = 0; g < ngroup; ++g) {
         buffers.mean.push_back(dirty_m.data() + g * NC);
         buffers.variance.push_back(dirty_v.data() + g * NC);
     }
 
-    tatami_stats::group_variance::apply(false, *dense_row, grouping.data(), ngroup, buffers, {});
+    tatami_stats::group_variance(false, *dense_row, grouping.data(), ngroup, buffers, {});
     compare_double_vectors(expected_m, dirty_m);
     compare_double_vectors(expected_v, dirty_v);
 
     std::fill(dirty_m.begin(), dirty_m.end(), -1);
     std::fill(dirty_v.begin(), dirty_v.end(), -1);
-    tatami_stats::group_variance::apply(false, *dense_column, grouping.data(), ngroup, buffers, {});
+    tatami_stats::group_variance(false, *dense_column, grouping.data(), ngroup, buffers, {});
     compare_double_vectors(expected_m, dirty_m);
     compare_double_vectors(expected_v, dirty_v);
 
     std::fill(dirty_m.begin(), dirty_m.end(), -1);
     std::fill(dirty_v.begin(), dirty_v.end(), -1);
-    tatami_stats::group_variance::apply(false, *sparse_row, grouping.data(), ngroup, buffers, {});
+    tatami_stats::group_variance(false, *sparse_row, grouping.data(), ngroup, buffers, {});
     compare_double_vectors(expected_m, dirty_m);
     compare_double_vectors(expected_v, dirty_v);
 
     std::fill(dirty_m.begin(), dirty_m.end(), -1);
     std::fill(dirty_v.begin(), dirty_v.end(), -1);
-    tatami_stats::group_variance::apply(false, *sparse_column, grouping.data(), ngroup, buffers, {});
+    tatami_stats::group_variance(false, *sparse_column, grouping.data(), ngroup, buffers, {});
     compare_double_vectors(expected_m, dirty_m);
     compare_double_vectors(expected_v, dirty_v);
 
     // Still behaves correctly with NaN skipping.
-    tatami_stats::group_variance::Options mopt;
+    tatami_stats::GroupVarianceOptions mopt;
     mopt.skip_nan = true;
 
     std::fill(dirty_m.begin(), dirty_m.end(), -1);
     std::fill(dirty_v.begin(), dirty_v.end(), -1);
-    tatami_stats::group_variance::apply(false, *dense_row, grouping.data(), ngroup, buffers, mopt);
+    tatami_stats::group_variance(false, *dense_row, grouping.data(), ngroup, buffers, mopt);
     compare_double_vectors(expected_m, dirty_m);
     compare_double_vectors(expected_v, dirty_v);
 
     std::fill(dirty_m.begin(), dirty_m.end(), -1);
     std::fill(dirty_v.begin(), dirty_v.end(), -1);
-    tatami_stats::group_variance::apply(false, *dense_column, grouping.data(), ngroup, buffers, mopt);
+    tatami_stats::group_variance(false, *dense_column, grouping.data(), ngroup, buffers, mopt);
     compare_double_vectors(expected_m, dirty_m);
     compare_double_vectors(expected_v, dirty_v);
 
     std::fill(dirty_m.begin(), dirty_m.end(), -1);
     std::fill(dirty_v.begin(), dirty_v.end(), -1);
-    tatami_stats::group_variance::apply(false, *sparse_row, grouping.data(), ngroup, buffers, mopt);
+    tatami_stats::group_variance(false, *sparse_row, grouping.data(), ngroup, buffers, mopt);
     compare_double_vectors(expected_m, dirty_m);
     compare_double_vectors(expected_v, dirty_v);
 
     std::fill(dirty_m.begin(), dirty_m.end(), -1);
     std::fill(dirty_v.begin(), dirty_v.end(), -1);
-    tatami_stats::group_variance::apply(false, *sparse_column, grouping.data(), ngroup, buffers, mopt);
+    tatami_stats::group_variance(false, *sparse_column, grouping.data(), ngroup, buffers, mopt);
     compare_double_vectors(expected_m, dirty_m);
     compare_double_vectors(expected_v, dirty_v);
 }

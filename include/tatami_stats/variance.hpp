@@ -24,15 +24,9 @@
 namespace tatami_stats {
 
 /**
- * @brief Functions for computing dimension-wise variances.
- * @namespace tatami_stats::variances
+ * @brief Options for `variance()`.
  */
-namespace variance {
-
-/**
- * @brief Variance calculation options.
- */
-struct Options {
+struct VarianceOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
      * If false, NaNs are assumed to be absent, and the behavior of the variance calculation in the presence of NaNs is undefined.
@@ -47,22 +41,22 @@ struct Options {
 };
 
 /**
- * @brief Result buffers for `apply()`.
+ * @brief Result buffers for `variance()`.
  *
  * @tparam Output_ Floating-point type of the output data.
  * This should be capable of storing NaNs.
  */
 template<typename Output_>
-struct Buffers {
+struct VarianceBuffers {
     /**
      * Pointer to an array of length equal to the appropriate dimension extent (rows for `row = true`, columns otherwise).
-     * After `apply()`, this is filled with the sample mean of each row/column.
+     * After `variance()`, this is filled with the sample mean of each row/column.
      */
     Output_* mean;
 
     /**
      * Pointer to an array of length equal to the appropriate dimension extent (rows for `row = true`, columns otherwise).
-     * After `apply()`, this is filled with the sample variance of each row/column.
+     * After `variance()`, this is filled with the sample variance of each row/column.
      */
     Output_* variance;
 };
@@ -71,7 +65,7 @@ struct Buffers {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply_direct_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buffers<Output_>& output, const Options& vopt) {
+void variance_direct_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
@@ -107,7 +101,7 @@ void apply_direct_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, Bu
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void apply_direct_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buffers<Output_>& output, const Options& vopt) {
+void variance_direct_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
@@ -148,7 +142,7 @@ void apply_direct_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buff
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void apply_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buffers<Output_>& output, const Options& vopt) {
+void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
@@ -262,7 +256,7 @@ void apply_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, B
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void apply_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buffers<Output_>& output, const Options& vopt) {
+void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
@@ -422,34 +416,34 @@ void apply_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, Buf
  * @param vopt Variance calculation options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void apply(bool row, const tatami::Matrix<Value_, Index_>& mat, Buffers<Output_>& output, const Options& vopt) {
+void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
     internal::nanable_ifelse<Value_>(
         vopt.skip_nan,
         [&]() -> void {
             if (mat.prefer_rows() == row) {
-                apply_direct_skip(row, mat, output, vopt);
+                variance_direct_skip(row, mat, output, vopt);
             } else {
-                apply_running_skip(row, mat, output, vopt);
+                variance_running_skip(row, mat, output, vopt);
             }
         },
         [&]() -> void {
             if (mat.prefer_rows() == row) {
-                apply_direct_noskip(row, mat, output, vopt);
+                variance_direct_noskip(row, mat, output, vopt);
             } else {
-                apply_running_noskip(row, mat, output, vopt);
+                variance_running_noskip(row, mat, output, vopt);
             }
         }
     );
 }
 
 /**
- * @brief Results of `apply()`.
+ * @brief Results of `variance()`.
  *
  * @tparam Output_ Floating-point type of the output data.
  * This should be capable of storing NaNs.
  */
 template<typename Output_>
-struct Result {
+struct VarianceResult {
     /**
      * Vector of length equal to the appropriate dimension extent (rows for `row = true`, columns otherwise),
      * containing the sample mean of each row/column.
@@ -464,7 +458,7 @@ struct Result {
 };
 
 /**
- * Overload of `apply()` that allocates memory for the output arrays.
+ * Overload of `variance()` that allocates memory for the output arrays.
  *
  * @tparam Output_ Floating-point type of the output data.
  * This should be capable of storing NaNs.
@@ -479,20 +473,18 @@ struct Result {
  * @return The mean and variance of each row/column.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-Result<Output_> apply(bool row, const tatami::Matrix<Value_, Index_>& mat, const Options& vopt) {
-    Result<Output_> output;
+VarianceResult<Output_> variance(bool row, const tatami::Matrix<Value_, Index_>& mat, const VarianceOptions& vopt) {
+    VarianceResult<Output_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
     tatami::resize_container_to_Index_size(output.mean, dim);
     tatami::resize_container_to_Index_size(output.variance, dim);
 
-    Buffers<Output_> buffers;
+    VarianceBuffers<Output_> buffers;
     buffers.mean = output.mean.data();
     buffers.variance = output.variance.data();
 
-    apply(row, mat, buffers, vopt);
+    variance(row, mat, buffers, vopt);
     return output;
-}
-
 }
 
 }

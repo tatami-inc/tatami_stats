@@ -20,15 +20,9 @@
 namespace tatami_stats {
 
 /**
- * @brief Functions for computing dimension-wise counts.
- * @namespace tatami_stats::count
+ * @brief Options for `count()`.
  */
-namespace count {
-
-/**
- * @brief Counting options.
- */
-struct Options {
+struct CountOptions {
     /**
      * Number of threads to use when computing variances across a `tatami::Matrix`.
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
@@ -40,7 +34,7 @@ struct Options {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_, class Condition_>
-void apply_direct(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const Options& copt) {
+void count_direct(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const CountOptions& copt) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     const Index_ otherdim = (row ? mat.ncol() : mat.nrow());
 
@@ -85,7 +79,7 @@ void apply_direct(const bool row, const tatami::Matrix<Value_, Index_>& mat, Out
 }
 
 template<typename Value_, typename Index_, typename Output_, class Condition_>
-void apply_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const Options& copt) {
+void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const CountOptions& copt) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     const Index_ otherdim = (row ? mat.ncol() : mat.nrow());
 
@@ -192,16 +186,16 @@ void apply_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
  * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_, class Condition_>
-void apply(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const Options& opt) {
+void count(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const CountOptions& opt) {
     if (mat.prefer_rows() == row) {
-        apply_direct(row, mat, output, std::move(condition), opt);
+        count_direct(row, mat, output, std::move(condition), opt);
     } else {
-        apply_running(row, mat, output, std::move(condition), opt);
+        count_running(row, mat, output, std::move(condition), opt);
     }
 }
 
 /**
- * Overload of `apply()` that allocates memory for the output vector.
+ * Overload of `count()` that allocates memory for the output vector.
  *
  * @tparam Output_ Numeric type of the output count.
  * To avoid overflow, we recommend using a type that is large enough to hold the dimension extents of `mat`.
@@ -218,13 +212,11 @@ void apply(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* c
  * @param opt Further options.
  */
 template<typename Output_, typename Value_, typename Index_, class Condition_>
-std::vector<Output_> apply(const bool row, const tatami::Matrix<Value_, Index_>& mat, Condition_ condition, const Options& opt) {
+std::vector<Output_> count(const bool row, const tatami::Matrix<Value_, Index_>& mat, Condition_ condition, const CountOptions& opt) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     auto output = sanisizer::create<std::vector<Output_> >(dim);
-    apply(row, mat, output.data(), std::move(condition), opt);
+    count(row, mat, output.data(), std::move(condition), opt);
     return output;
-}
-
 }
 
 }
