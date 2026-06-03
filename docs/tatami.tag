@@ -43,10 +43,10 @@
     <namespace>tatami_stats::medians</namespace>
   </compound>
   <compound kind="file">
-    <name>quantiles.hpp</name>
+    <name>quantile.hpp</name>
     <path>tatami_stats/</path>
-    <filename>quantiles_8hpp.html</filename>
-    <class kind="struct">tatami_stats::quantiles::Options</class>
+    <filename>quantile_8hpp.html</filename>
+    <class kind="struct">tatami_stats::quantile::Options</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::quantiles</namespace>
   </compound>
@@ -318,20 +318,20 @@
     </member>
   </compound>
   <compound kind="struct">
-    <name>tatami_stats::quantiles::Options</name>
-    <filename>structtatami__stats_1_1quantiles_1_1Options.html</filename>
+    <name>tatami_stats::quantile::Options</name>
+    <filename>structtatami__stats_1_1quantile_1_1Options.html</filename>
     <member kind="variable">
       <type>bool</type>
       <name>skip_nan</name>
-      <anchorfile>structtatami__stats_1_1quantiles_1_1Options.html</anchorfile>
-      <anchor>a1132c1939d3a1759873e80152b25c6f9</anchor>
+      <anchorfile>structtatami__stats_1_1quantile_1_1Options.html</anchorfile>
+      <anchor>a8467ebb791eeac3bd6428836fffc9989</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
-      <anchorfile>structtatami__stats_1_1quantiles_1_1Options.html</anchorfile>
-      <anchor>aaa4e6358105ecf531a34b1f22c5014f0</anchor>
+      <anchorfile>structtatami__stats_1_1quantile_1_1Options.html</anchorfile>
+      <anchor>a686398ce515a8ec2701c72889ffddbb9</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -646,28 +646,6 @@
   <compound kind="namespace">
     <name>tatami_stats::quantiles</name>
     <filename>namespacetatami__stats_1_1quantiles.html</filename>
-    <class kind="struct">tatami_stats::quantiles::Options</class>
-    <member kind="function">
-      <type>void</type>
-      <name>apply</name>
-      <anchorfile>namespacetatami__stats_1_1quantiles.html</anchorfile>
-      <anchor>a42d985ea3e2af3e4d4e4dcc37dceb6a2</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const double quantile, Output_ *output, const Options &amp;qopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1quantiles.html</anchorfile>
-      <anchor>a491901f6add59fe07bfa18a6731c863f</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const double quantile, const Options &amp;qopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; Output_ &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1quantiles.html</anchorfile>
-      <anchor>aa9fd95208124d6bd205e7ab0951e954a</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const double quantile, const Options &amp;qopt)</arglist>
-    </member>
   </compound>
   <compound kind="namespace">
     <name>tatami_stats::ranges</name>
