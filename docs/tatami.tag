@@ -46,14 +46,13 @@
     <namespace>tatami_stats</namespace>
   </compound>
   <compound kind="file">
-    <name>ranges.hpp</name>
+    <name>range.hpp</name>
     <path>tatami_stats/</path>
-    <filename>ranges_8hpp.html</filename>
-    <class kind="struct">tatami_stats::ranges::Options</class>
-    <class kind="class">tatami_stats::ranges::RunningDense</class>
-    <class kind="class">tatami_stats::ranges::RunningSparse</class>
+    <filename>range_8hpp.html</filename>
+    <class kind="struct">tatami_stats::RangeOptions</class>
+    <class kind="struct">tatami_stats::RangeBuffers</class>
+    <class kind="struct">tatami_stats::RangeResult</class>
     <namespace>tatami_stats</namespace>
-    <namespace>tatami_stats::ranges</namespace>
   </compound>
   <compound kind="file">
     <name>sums.hpp</name>
@@ -312,24 +311,6 @@
     </member>
   </compound>
   <compound kind="struct">
-    <name>tatami_stats::ranges::Options</name>
-    <filename>structtatami__stats_1_1ranges_1_1Options.html</filename>
-    <member kind="variable">
-      <type>bool</type>
-      <name>skip_nan</name>
-      <anchorfile>structtatami__stats_1_1ranges_1_1Options.html</anchorfile>
-      <anchor>a15b5deec811e94c441d714abdad16692</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>num_threads</name>
-      <anchorfile>structtatami__stats_1_1ranges_1_1Options.html</anchorfile>
-      <anchor>a51e1104cc5b2e9be96310f110e1fcd33</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
     <name>tatami_stats::sums::Options</name>
     <filename>structtatami__stats_1_1sums_1_1Options.html</filename>
     <member kind="variable">
@@ -365,32 +346,60 @@
       <arglist></arglist>
     </member>
   </compound>
-  <compound kind="class">
-    <name>tatami_stats::ranges::RunningDense</name>
-    <filename>classtatami__stats_1_1ranges_1_1RunningDense.html</filename>
+  <compound kind="struct">
+    <name>tatami_stats::RangeBuffers</name>
+    <filename>structtatami__stats_1_1RangeBuffers.html</filename>
     <templarg>typename Output_</templarg>
-    <templarg>typename Value_</templarg>
-    <templarg>typename Index_</templarg>
-    <member kind="function">
-      <type></type>
-      <name>RunningDense</name>
-      <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
-      <anchor>add07104bcd5b8a8c8417ef087643a36e</anchor>
-      <arglist>(Index_ num, Output_ *store_min, Output_ *store_max, bool skip_nan)</arglist>
+    <member kind="variable">
+      <type>Output_ *</type>
+      <name>minimum</name>
+      <anchorfile>structtatami__stats_1_1RangeBuffers.html</anchorfile>
+      <anchor>afe91ad4486e8aa33d2f4cc78cc3afb9c</anchor>
+      <arglist></arglist>
     </member>
-    <member kind="function">
-      <type>void</type>
-      <name>add</name>
-      <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
-      <anchor>a31eb613e1eb32ab3ec0e6033d1c7cf4e</anchor>
-      <arglist>(const Value_ *ptr)</arglist>
+    <member kind="variable">
+      <type>Output_ *</type>
+      <name>maximum</name>
+      <anchorfile>structtatami__stats_1_1RangeBuffers.html</anchorfile>
+      <anchor>ab9cd8249399e2e213d62aa3dc9b8f21c</anchor>
+      <arglist></arglist>
     </member>
-    <member kind="function">
-      <type>void</type>
-      <name>finish</name>
-      <anchorfile>classtatami__stats_1_1ranges_1_1RunningDense.html</anchorfile>
-      <anchor>a4c62d8472891293e434e329cad403454</anchor>
-      <arglist>()</arglist>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::RangeOptions</name>
+    <filename>structtatami__stats_1_1RangeOptions.html</filename>
+    <member kind="variable">
+      <type>bool</type>
+      <name>skip_nan</name>
+      <anchorfile>structtatami__stats_1_1RangeOptions.html</anchorfile>
+      <anchor>a11805ebc4488735cf4418c50163dbb85</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>num_threads</name>
+      <anchorfile>structtatami__stats_1_1RangeOptions.html</anchorfile>
+      <anchor>ae11a188daf7965a81abb5706205f25a3</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::RangeResult</name>
+    <filename>structtatami__stats_1_1RangeResult.html</filename>
+    <templarg>typename Output_</templarg>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ &gt;</type>
+      <name>minimum</name>
+      <anchorfile>structtatami__stats_1_1RangeResult.html</anchorfile>
+      <anchor>afc9b54e80185c8740486f6d287834bae</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ &gt;</type>
+      <name>maximum</name>
+      <anchorfile>structtatami__stats_1_1RangeResult.html</anchorfile>
+      <anchor>abd514236d2132c48d2c4aed304969467</anchor>
+      <arglist></arglist>
     </member>
   </compound>
   <compound kind="class">
@@ -412,34 +421,6 @@
       <anchorfile>classtatami__stats_1_1sums_1_1RunningDense.html</anchorfile>
       <anchor>a1171923aa2b5441d00fb495e8faa6c1e</anchor>
       <arglist>(const Value_ *ptr)</arglist>
-    </member>
-  </compound>
-  <compound kind="class">
-    <name>tatami_stats::ranges::RunningSparse</name>
-    <filename>classtatami__stats_1_1ranges_1_1RunningSparse.html</filename>
-    <templarg>typename Output_</templarg>
-    <templarg>typename Value_</templarg>
-    <templarg>typename Index_</templarg>
-    <member kind="function">
-      <type></type>
-      <name>RunningSparse</name>
-      <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
-      <anchor>ac58f2377e5f55cece93f70d36ae0ae9d</anchor>
-      <arglist>(Index_ num, Output_ *store_min, Output_ *store_max, bool skip_nan, Index_ subtract=0)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>add</name>
-      <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
-      <anchor>a867b0713e62d612b37fcea2fa8b43f71</anchor>
-      <arglist>(const Value_ *value, const Index_ *index, Index_ number)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>finish</name>
-      <anchorfile>classtatami__stats_1_1ranges_1_1RunningSparse.html</anchorfile>
-      <anchor>a57b239b04439652337df9db6cecad1e0</anchor>
-      <arglist>()</arglist>
     </member>
   </compound>
   <compound kind="class">
@@ -523,7 +504,6 @@
     <name>tatami_stats</name>
     <filename>namespacetatami__stats.html</filename>
     <namespace>tatami_stats::grouped_sums</namespace>
-    <namespace>tatami_stats::ranges</namespace>
     <namespace>tatami_stats::sums</namespace>
     <class kind="struct">tatami_stats::CountOptions</class>
     <class kind="struct">tatami_stats::GroupMedianOptions</class>
@@ -534,6 +514,9 @@
     <class kind="class">tatami_stats::LocalOutputBuffers</class>
     <class kind="struct">tatami_stats::MedianOptions</class>
     <class kind="struct">tatami_stats::QuantileOptions</class>
+    <class kind="struct">tatami_stats::RangeBuffers</class>
+    <class kind="struct">tatami_stats::RangeOptions</class>
+    <class kind="struct">tatami_stats::RangeResult</class>
     <class kind="struct">tatami_stats::VarianceBuffers</class>
     <class kind="struct">tatami_stats::VarianceOptions</class>
     <class kind="struct">tatami_stats::VarianceResult</class>
@@ -608,6 +591,20 @@
       <arglist>(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const double prob, const QuantileOptions &amp;qopt)</arglist>
     </member>
     <member kind="function">
+      <type>void</type>
+      <name>range</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>a97bd6c0090005d7070c59c3e8585868d</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RangeBuffers&lt; Output_ &gt; &amp;output, const RangeOptions &amp;ropt)</arglist>
+    </member>
+    <member kind="function">
+      <type>RangeResult&lt; Output_ &gt;</type>
+      <name>range</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>abd63e1c877897a7ed9558403fc116aae</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const RangeOptions &amp;ropt)</arglist>
+    </member>
+    <member kind="function">
       <type>Number_</type>
       <name>total_groups</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
@@ -660,48 +657,6 @@
       <anchorfile>namespacetatami__stats_1_1grouped__sums.html</anchorfile>
       <anchor>a6a4e926c9181a4ad7eaab0570dafa9af</anchor>
       <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const Options &amp;sopt)</arglist>
-    </member>
-  </compound>
-  <compound kind="namespace">
-    <name>tatami_stats::ranges</name>
-    <filename>namespacetatami__stats_1_1ranges.html</filename>
-    <class kind="struct">tatami_stats::ranges::Options</class>
-    <class kind="class">tatami_stats::ranges::RunningDense</class>
-    <class kind="class">tatami_stats::ranges::RunningSparse</class>
-    <member kind="function">
-      <type>Value_</type>
-      <name>direct</name>
-      <anchorfile>namespacetatami__stats_1_1ranges.html</anchorfile>
-      <anchor>ac651411beec3c6ed51df1c5ff4680551</anchor>
-      <arglist>(const Value_ *ptr, Index_ num, bool minimum, bool skip_nan)</arglist>
-    </member>
-    <member kind="function">
-      <type>Value_</type>
-      <name>direct</name>
-      <anchorfile>namespacetatami__stats_1_1ranges.html</anchorfile>
-      <anchor>aebe6fbfef688e635402bcaf1298dacff</anchor>
-      <arglist>(const Value_ *value, Index_ num_nonzero, Index_ num_all, bool minimum, bool skip_nan)</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>apply</name>
-      <anchorfile>namespacetatami__stats_1_1ranges.html</anchorfile>
-      <anchor>a5804f697bfa2e7a3e9b5fdc9c59a561b</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *min_out, Output_ *max_out, const Options &amp;ropt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::pair&lt; std::vector&lt; Output_ &gt;, std::vector&lt; Output_ &gt; &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1ranges.html</anchorfile>
-      <anchor>a97a6ad2ef47fbd5e4c35e0298d953509</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;ropt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::pair&lt; std::vector&lt; Output_ &gt;, std::vector&lt; Output_ &gt; &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1ranges.html</anchorfile>
-      <anchor>a358a512724528f5c2286bc1e13955cbd</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Options &amp;ropt)</arglist>
     </member>
   </compound>
   <compound kind="namespace">

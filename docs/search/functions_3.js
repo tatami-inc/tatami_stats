@@ -28,5 +28,5 @@ var searchData=
   ['densecolumnmatrix_25',['DenseColumnMatrix',['https://tatami-inc.github.io/tatami/classtatami_1_1DenseColumnMatrix.html#a6c1572e70ac74409cd1629615622a9cc',1,'tatami::DenseColumnMatrix']]],
   ['densematrix_26',['DenseMatrix',['https://tatami-inc.github.io/tatami/classtatami_1_1DenseMatrix.html#a5f8e120b64757c5cdd176502de58603e',1,'tatami::DenseMatrix']]],
   ['denserowmatrix_27',['DenseRowMatrix',['https://tatami-inc.github.io/tatami/classtatami_1_1DenseRowMatrix.html#a17956d69228777bc58124f80ea1eb37e',1,'tatami::DenseRowMatrix']]],
-  ['direct_28',['direct',['../namespacetatami__stats_1_1ranges.html#ac651411beec3c6ed51df1c5ff4680551',1,'tatami_stats::ranges::direct(const Value_ *ptr, Index_ num, bool minimum, bool skip_nan)'],['../namespacetatami__stats_1_1ranges.html#aebe6fbfef688e635402bcaf1298dacff',1,'tatami_stats::ranges::direct(const Value_ *value, Index_ num_nonzero, Index_ num_all, bool minimum, bool skip_nan)'],['../namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92',1,'tatami_stats::sums::direct()']]]
+  ['direct_28',['direct',['../namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92',1,'tatami_stats::sums']]]
 ];
