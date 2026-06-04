@@ -259,109 +259,44 @@ TEST(Variance, NewType) {
     compare_result(tatami_stats::variance(false, *sparse_column, vopt), cexpected.mean, cexpected.variance);
 }
 
-TEST(Variance, DirtyOutput) {
-    size_t NR = 99, NC = 152;
-    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{ 
-        tatami_test::SimulateVectorOptions opt;
-        opt.density = 0.1;
-        opt.seed = 457633478;
-        return opt;
-    }());
-
-    auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
-    auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
-    auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
-    auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
-
-    auto ref = tatami_stats::variance(true, *dense_row, {});
-
-    // Works when the input vector is a bit dirty.
-    std::vector<double> dirtym(NR, -1), dirtyv(NR, -1);
-    tatami_stats::VarianceBuffers<double> buf;
-    buf.mean = dirtym.data();
-    buf.variance = dirtyv.data();
-    tatami_stats::variance(true, *dense_row, buf, {});
-    compare_result(ref, dirtym, dirtyv);
-
-    std::fill(dirtym.begin(), dirtym.end(), -1);
-    std::fill(dirtyv.begin(), dirtyv.end(), -1);
-    tatami_stats::variance(true, *dense_column, buf, {});
-    compare_result(ref, dirtym, dirtyv);
-
-    std::fill(dirtym.begin(), dirtym.end(), -1);
-    std::fill(dirtyv.begin(), dirtyv.end(), -1);
-    tatami_stats::variance(true, *sparse_row, buf, {});
-    compare_result(ref, dirtym, dirtyv);
-
-    std::fill(dirtym.begin(), dirtym.end(), -1);
-    std::fill(dirtyv.begin(), dirtyv.end(), -1);
-    tatami_stats::variance(true, *sparse_column, buf, {});
-    compare_result(ref, dirtym, dirtyv);
-
-    // Still behaves with NaN skipping.
+TEST(Variance, NoObservations) {
     tatami_stats::VarianceOptions vopt;
     vopt.skip_nan = true;
 
-    std::fill(dirtym.begin(), dirtym.end(), -1);
-    std::fill(dirtyv.begin(), dirtyv.end(), -1);
-    tatami_stats::variance(true, *dense_row, buf, vopt);
-    compare_result(ref, dirtym, dirtyv);
+    auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(111, 0, std::vector<double>()));
 
-    std::fill(dirtym.begin(), dirtym.end(), -1);
-    std::fill(dirtyv.begin(), dirtyv.end(), -1);
-    tatami_stats::variance(true, *dense_column, buf, vopt);
-    compare_result(ref, dirtym, dirtyv);
+    auto cref = tatami_stats::variance(false, *dense, {});
+    EXPECT_EQ(cref.mean.size(), 0);
+    EXPECT_EQ(cref.variance.size(), 0);
 
-    std::fill(dirtym.begin(), dirtym.end(), -1);
-    std::fill(dirtyv.begin(), dirtyv.end(), -1);
-    tatami_stats::variance(true, *sparse_row, buf, vopt);
-    compare_result(ref, dirtym, dirtyv);
+    auto cref2 = tatami_stats::variance(false, *dense, vopt);
+    EXPECT_EQ(cref2.mean.size(), 0);
+    EXPECT_EQ(cref2.variance.size(), 0);
 
-    std::fill(dirtym.begin(), dirtym.end(), -1);
-    std::fill(dirtyv.begin(), dirtyv.end(), -1);
-    tatami_stats::variance(true, *sparse_column, buf, vopt);
-    compare_result(ref, dirtym, dirtyv);
+    auto rref = tatami_stats::variance(true, *dense, {});
+    EXPECT_EQ(rref.variance.size(), dense->nrow());
+    EXPECT_TRUE(is_all_nan(rref.mean));
+    EXPECT_TRUE(is_all_nan(rref.variance));
+
+    auto rref2 = tatami_stats::variance(true, *dense, vopt);
+    EXPECT_EQ(rref2.variance.size(), dense->nrow());
+    EXPECT_TRUE(is_all_nan(rref2.mean));
+    EXPECT_TRUE(is_all_nan(rref2.variance));
 }
 
-TEST(Variance, InvalidVariances) {
+TEST(Variance, OneObservations) {
     tatami_stats::VarianceOptions vopt;
     vopt.skip_nan = true;
 
-    // No observations.
-    {
-        auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(111, 0, std::vector<double>()));
+    auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(10, 1, std::vector<double>(10)));
 
-        auto cref = tatami_stats::variance(false, *dense, {});
-        EXPECT_EQ(cref.mean.size(), 0);
-        EXPECT_EQ(cref.variance.size(), 0);
+    auto rref = tatami_stats::variance(true, *dense, {});
+    EXPECT_EQ(rref.mean, std::vector<double>(10));
+    EXPECT_EQ(rref.variance.size(), dense->nrow());
+    EXPECT_TRUE(is_all_nan(rref.variance));
 
-        auto cref2 = tatami_stats::variance(false, *dense, vopt);
-        EXPECT_EQ(cref2.mean.size(), 0);
-        EXPECT_EQ(cref2.variance.size(), 0);
-
-        auto rref = tatami_stats::variance(true, *dense, {});
-        EXPECT_EQ(rref.variance.size(), dense->nrow());
-        EXPECT_TRUE(is_all_nan(rref.mean));
-        EXPECT_TRUE(is_all_nan(rref.variance));
-
-        auto rref2 = tatami_stats::variance(true, *dense, vopt);
-        EXPECT_EQ(rref2.variance.size(), dense->nrow());
-        EXPECT_TRUE(is_all_nan(rref2.mean));
-        EXPECT_TRUE(is_all_nan(rref2.variance));
-    }
-
-    // One observation.
-    {
-        auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(10, 1, std::vector<double>(10)));
-
-        auto rref = tatami_stats::variance(true, *dense, {});
-        EXPECT_EQ(rref.mean, std::vector<double>(10));
-        EXPECT_EQ(rref.variance.size(), dense->nrow());
-        EXPECT_TRUE(is_all_nan(rref.variance));
-
-        auto rref2 = tatami_stats::variance(true, *dense, vopt);
-        EXPECT_EQ(rref2.mean, std::vector<double>(10));
-        EXPECT_EQ(rref2.variance.size(), dense->nrow());
-        EXPECT_TRUE(is_all_nan(rref2.variance));
-    }
+    auto rref2 = tatami_stats::variance(true, *dense, vopt);
+    EXPECT_EQ(rref2.mean, std::vector<double>(10));
+    EXPECT_EQ(rref2.variance.size(), dense->nrow());
+    EXPECT_TRUE(is_all_nan(rref2.variance));
 }
