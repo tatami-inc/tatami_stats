@@ -65,16 +65,16 @@ struct VarianceBuffers {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_>
-void variance_direct_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
+void variance_direct_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
     if (mat.sparse()) {
-        tatami::Options opt;
-        opt.sparse_extract_index = false;
+        tatami::Options topt;
+        topt.sparse_extract_index = false;
 
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             quickstats::RssWorkspace<Output_> work;
             for (Index_ x = 0; x < l; ++x) {
@@ -83,7 +83,7 @@ void variance_direct_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat,
                 output.mean[x + s] = res.mean;
                 output.variance[x + s] = quickstats::rss_to_variance(otherdim, res.rss);
             }
-        }, dim, vopt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -96,21 +96,21 @@ void variance_direct_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat,
                 output.mean[x + s] = res.mean;
                 output.variance[x + s] = quickstats::rss_to_variance(otherdim, res.rss);
             }
-        }, dim, vopt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void variance_direct_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
+void variance_direct_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
     if (mat.sparse()) {
-        tatami::Options opt;
-        opt.sparse_extract_index = false;
+        tatami::Options topt;
+        topt.sparse_extract_index = false;
 
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             quickstats::RssWorkspace<Output_> work;
             for (Index_ x = 0; x < l; ++x) {
@@ -122,7 +122,7 @@ void variance_direct_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, V
                 output.mean[x + s] = res.mean;
                 output.variance[x + s] = quickstats::rss_to_variance(new_total, res.rss);
             }
-        }, dim, vopt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -137,24 +137,24 @@ void variance_direct_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, V
                 output.mean[x + s] = res.mean;
                 output.variance[x + s] = quickstats::rss_to_variance(new_total, res.rss);
             }
-        }, dim, vopt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
+void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
-    const bool do_parallel = vopt.num_threads > 1;
+    const bool do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_mean, all_partial_rss;
     std::optional<std::vector<Index_> > all_partial_count;
     if (do_parallel) {
         // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
-        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_rss->size())> >(vopt.num_threads - 1));
-        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads));
-        all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(vopt.num_threads));
+        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_rss->size())> >(opt.num_threads - 1));
+        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
+        all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads));
     }
 
     std::fill_n(output.variance, dim, 0);
@@ -183,9 +183,9 @@ void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat
         }
 
         if (is_sparse) {
-            tatami::Options opt;
-            opt.sparse_ordered_index = false;
-            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, opt);
+            tatami::Options topt;
+            topt.sparse_ordered_index = false;
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
             auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
@@ -216,7 +216,7 @@ void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat
                 (*all_partial_rss)[thread - 1] = std::move(cur_rss);
             }
         }
-    }, otherdim, vopt.num_threads);
+    }, otherdim, opt.num_threads);
 
     // Don't check nused > 1, as it's possible for do_parallel = true with nused = 1 if not all threads are used.
     // This would cause us to leave output.mean and output.variance empty.
@@ -256,20 +256,20 @@ void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
+void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
-    assert(vopt.num_threads > 0);
-    const bool do_parallel = vopt.num_threads > 1;
+    assert(opt.num_threads > 0);
+    const bool do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_mean, all_partial_rss;
     if (do_parallel) {
         // -1, as we'll repurpose the output buffers to store the output of the first thread.
-        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_rss->size())> >(vopt.num_threads - 1));
-        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(vopt.num_threads));
+        all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_rss->size())> >(opt.num_threads - 1));
+        all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
     }
-    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<Index_> > > >(vopt.num_threads);
+    auto all_partial_count = sanisizer::create<std::vector<std::optional<std::vector<Index_> > > >(opt.num_threads);
 
     std::fill_n(output.variance, dim, 0);
     std::fill_n(output.mean, dim, 0);
@@ -299,9 +299,9 @@ void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, 
         auto cur_count = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
         if (is_sparse) {
-            tatami::Options opt;
-            opt.sparse_ordered_index = false;
-            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, opt);
+            tatami::Options topt;
+            topt.sparse_ordered_index = false;
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
             auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
@@ -345,7 +345,7 @@ void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, 
                 (*all_partial_rss)[thread - 1] = std::move(cur_rss);
             }
         }
-    }, otherdim, vopt.num_threads);
+    }, otherdim, opt.num_threads);
 
     // Don't check nused > 1, as it's possible for do_parallel = true with nused = 1 if not all threads are used.
     // This would cause us to leave output.mean and output.variance empty.
@@ -413,24 +413,24 @@ void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, 
  * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Buffers to output arrays.
  * On output, this will contain the row/column variances.
- * @param vopt Variance calculation options.
+ * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& vopt) {
+void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& opt) {
     internal::nanable_ifelse<Value_>(
-        vopt.skip_nan,
+        opt.skip_nan,
         [&]() -> void {
             if (mat.prefer_rows() == row) {
-                variance_direct_skip(row, mat, output, vopt);
+                variance_direct_skip(row, mat, output, opt);
             } else {
-                variance_running_skip(row, mat, output, vopt);
+                variance_running_skip(row, mat, output, opt);
             }
         },
         [&]() -> void {
             if (mat.prefer_rows() == row) {
-                variance_direct_noskip(row, mat, output, vopt);
+                variance_direct_noskip(row, mat, output, opt);
             } else {
-                variance_running_noskip(row, mat, output, vopt);
+                variance_running_noskip(row, mat, output, opt);
             }
         }
     );
@@ -468,12 +468,12 @@ struct VarianceResult {
  * @param row Whether to compute the variance for each row.
  * If false, the variance is computed for each column instead.
  * @param mat Instance of a `tatami::Matrix`.
- * @param vopt Variance calculation options.
+ * @param opt Further options.
  *
  * @return The mean and variance of each row/column.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-VarianceResult<Output_> variance(bool row, const tatami::Matrix<Value_, Index_>& mat, const VarianceOptions& vopt) {
+VarianceResult<Output_> variance(bool row, const tatami::Matrix<Value_, Index_>& mat, const VarianceOptions& opt) {
     VarianceResult<Output_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
     tatami::resize_container_to_Index_size(output.mean, dim);
@@ -483,7 +483,7 @@ VarianceResult<Output_> variance(bool row, const tatami::Matrix<Value_, Index_>&
     buffers.mean = output.mean.data();
     buffers.variance = output.variance.data();
 
-    variance(row, mat, buffers, vopt);
+    variance(row, mat, buffers, opt);
     return output;
 }
 

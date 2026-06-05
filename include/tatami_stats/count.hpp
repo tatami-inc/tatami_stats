@@ -24,7 +24,7 @@ namespace tatami_stats {
  */
 struct CountOptions {
     /**
-     * Number of threads to use when computing variances across a `tatami::Matrix`.
+     * Number of threads to use when counting across a `tatami::Matrix`.
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
@@ -34,19 +34,19 @@ struct CountOptions {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_, class Condition_>
-void count_direct(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const CountOptions& copt) {
+void count_direct(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const CountOptions& opt) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     const Index_ otherdim = (row ? mat.ncol() : mat.nrow());
 
     if (mat.sparse()) {
-        tatami::Options opt;
-        opt.sparse_ordered_index = false;
+        tatami::Options topt;
+        topt.sparse_ordered_index = false;
         const bool count_zero = condition(0);
 
         tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
+            auto ext = tatami::consecutive_extractor<true>(mat, row, start, len, topt);
             auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(otherdim);
-            auto ext = tatami::consecutive_extractor<true>(mat, row, start, len, opt);
 
             for (Index_ x = 0; x < len; ++x) {
                 auto range = ext->fetch(xbuffer.data(), ibuffer.data());
@@ -59,7 +59,7 @@ void count_direct(const bool row, const tatami::Matrix<Value_, Index_>& mat, Out
                 }
                 output[x + start] = target;
             }
-        }, dim, copt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
@@ -74,19 +74,19 @@ void count_direct(const bool row, const tatami::Matrix<Value_, Index_>& mat, Out
                 }
                 output[x + start] = target;
             }
-        }, dim, copt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
 template<typename Value_, typename Index_, typename Output_, class Condition_>
-void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const CountOptions& copt) {
+void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, Condition_ condition, const CountOptions& opt) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     const Index_ otherdim = (row ? mat.ncol() : mat.nrow());
 
-    const bool do_parallel = copt.num_threads > 1;
+    const bool do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_count;
     if (do_parallel) {
-        all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(copt.num_threads - 1));
+        all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads - 1));
     }
 
     // Checking if we should count zeros in the sparse case.
@@ -112,12 +112,11 @@ void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
         }
 
         if (is_sparse) {
-            tatami::Options opt;
-            opt.sparse_ordered_index = false;
-
+            tatami::Options topt;
+            topt.sparse_ordered_index = false;
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, start, len, topt);
             auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
-            auto ext = tatami::consecutive_extractor<true>(mat, !row, start, len, opt);
             auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
             for (Index_ x = 0; x < len; ++x) {
@@ -150,7 +149,7 @@ void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
         if (thread) {
             (*all_partial_count)[thread - 1] = std::move(cur_count);
         }
-    }, otherdim, copt.num_threads);
+    }, otherdim, opt.num_threads);
 
     if (do_parallel) {
         // Skip the first thread as we already put its counts in 'output'.
@@ -179,7 +178,7 @@ void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
  * If false, the count is performed within each column instead.
  * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
- * On output, this will contain the row/column variances.
+ * On output, this will contain the row/column counts.
  * @param condition Function to indicate whether a value should be counted. 
  * This function is responsible for handling any NaNs that might be present in `p`.
  * This function should be thread-safe.

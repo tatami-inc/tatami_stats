@@ -54,7 +54,7 @@ struct GroupMedianOptions {
  * @param[out] output Pointer to an array of pointers of length equal to the number of groups.
  * Each inner pointer should reference an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column medians for each group (indexed according to the assignment in `group`).
- * @param mopt Median calculation options.
+ * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Group_, typename Output_>
 void group_median(
@@ -63,7 +63,7 @@ void group_median(
     const Group_* const group,
     const std::size_t num_groups,
     std::vector<Output_*>& output,
-    const GroupMedianOptions& mopt
+    const GroupMedianOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
@@ -81,11 +81,11 @@ void group_median(
         }
 
         if (mat.sparse()) {
-            tatami::Options opt;
-            opt.sparse_ordered_index = false;
-
-            auto ext = tatami::consecutive_extractor<true>(mat, row, start, len, opt);
+            tatami::Options topt;
+            topt.sparse_ordered_index = false;
+            auto ext = tatami::consecutive_extractor<true>(mat, row, start, len, topt);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(otherdim);
+
             for (Index_ i = 0; i < len; ++i) {
                 auto range = ext->fetch(xbuffer.data(), ibuffer.data());
                 for (Index_ j = 0; j < range.number; ++j) {
@@ -94,7 +94,7 @@ void group_median(
 
                 for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = median_direct<Output_, Value_, Index_>(w.data(), w.size(), group_sizes[g], mopt.skip_nan);
+                    output[g][i + start] = median_direct<Output_, Value_, Index_>(w.data(), w.size(), group_sizes[g], opt.skip_nan);
                     w.clear();
                 }
             }
@@ -109,12 +109,12 @@ void group_median(
 
                 for (I<decltype(num_groups)> g = 0; g < num_groups; ++g) {
                     auto& w = workspace[g];
-                    output[g][i + start] = median_direct<Output_, Value_, Index_>(w.data(), w.size(), mopt.skip_nan);
+                    output[g][i + start] = median_direct<Output_, Value_, Index_>(w.data(), w.size(), opt.skip_nan);
                     w.clear();
                 }
             }
         }
-    }, dim, mopt.num_threads);
+    }, dim, opt.num_threads);
 }
 
 /**
@@ -132,7 +132,7 @@ void group_median(
  * Each value should be an integer that specifies the group assignment.
  * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  * @param num_groups Number of groups, i.e., \f$N\f$.
- * @param mopt Median calculation options.
+ * @param opt Further options.
  *
  * @return Vector of length equal to the number of groups.
  * Each element is a vector of length equal to the number of rows (if `row = true`) or columns (otherwise),
@@ -144,17 +144,16 @@ std::vector<std::vector<Output_> > group_median(
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
     const std::size_t num_groups,
-    const GroupMedianOptions& mopt
+    const GroupMedianOptions& opt
 ) {
     auto output = sanisizer::create<std::vector<std::vector<Output_> > >(num_groups);
-    std::vector<Output_*> outptrs;
-    sanisizer::reserve(outptrs, num_groups);
+    auto outptrs = sanisizer::create<std::vector<Output_*> >(num_groups);
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    for (auto& o : output) {
-        tatami::resize_container_to_Index_size(o, dim);
-        outptrs.push_back(o.data());
+    for (std::size_t g = 0; g < num_groups; ++g) {
+        tatami::resize_container_to_Index_size(output[g], dim);
+        outptrs[g] = output[g].data();
     }
-    group_median(row, mat, group, num_groups, outptrs, mopt);
+    group_median(row, mat, group, num_groups, outptrs, opt);
     return output;
 }
 

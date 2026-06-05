@@ -26,7 +26,7 @@ namespace tatami_stats {
 struct GroupVarianceOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
-     * If false, NaNs are assumed to be absent, and the behavior of the summation in the presence of NaNs is undefined.
+     * If false, NaNs are assumed to be absent, and the behavior of the variance calculation in the presence of NaNs is undefined.
      */
     bool skip_nan = false;
 
@@ -658,9 +658,8 @@ void group_variance_running_skip(
  * Each value should be an integer that specifies the group assignment.
  * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  * @param num_groups Number of groups, i.e., \f$N\f$.
- * @param[out] output Pointer to an array of pointers of length equal to the number of groups.
- * Each inner pointer should reference an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
- * On output, this will contain the row/column variances for each group (indexed according to the assignment in `group`).
+ * @param[out] output Buffers in which to store the results.
+ * On output, each array stores the means and variances of the corresponding group.
  * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Group_, typename Output_>
@@ -732,10 +731,9 @@ struct GroupVarianceResult {
  * Each value should be an integer that specifies the group assignment.
  * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  * @param num_groups Number of groups, i.e., \f$N\f$.
- * @param[out] output Pointer to an array of pointers of length equal to the number of groups.
- * Each inner pointer should reference an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
- * On output, this will contain the row/column variances for each group (indexed according to the assignment in `group`).
  * @param opt Further options.
+ *
+ * @return Variance and mean of each group for each row/column.
  */
 template<typename Output_ = double, typename Value_, typename Index_, typename Group_> 
 GroupVarianceResult<Output_> group_variance(

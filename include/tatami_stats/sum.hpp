@@ -40,19 +40,19 @@ struct SumOptions {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_>
-void sum_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const SumOptions& sopt) {
+void sum_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const SumOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
     if (mat.is_sparse()) {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-            tatami::Options opt;
-            opt.sparse_extract_index = false;
-            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
+            tatami::Options topt;
+            topt.sparse_extract_index = false;
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
 
             internal::nanable_ifelse<Value_>(
-                sopt.skip_nan,
+                opt.skip_nan,
                 [&]() -> void {
                     for (Index_ x = 0; x < l; ++x) {
                         const auto out = ext->fetch(vbuffer.data(), NULL);
@@ -74,7 +74,7 @@ void sum_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* ou
                     }
                 }
             );
-        }, dim, sopt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -82,7 +82,7 @@ void sum_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* ou
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
 
             internal::nanable_ifelse<Value_>(
-                sopt.skip_nan,
+                opt.skip_nan,
                 [&]() -> void {
                     for (Index_ x = 0; x < l; ++x) {
                         const auto ptr = ext->fetch(buffer.data());
@@ -104,19 +104,19 @@ void sum_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* ou
                     }
                 }
             );
-        }, dim, sopt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void sum_running(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const SumOptions& sopt) {
+void sum_running(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const SumOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
-    const bool do_parallel = (sopt.num_threads > 1);
+    const bool do_parallel = (opt.num_threads > 1);
     std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_sum;
     if (do_parallel) {
-        all_partial_sum.emplace(sanisizer::cast<I<decltype(all_partial_sum->size())> >(sopt.num_threads - 1));
+        all_partial_sum.emplace(sanisizer::cast<I<decltype(all_partial_sum->size())> >(opt.num_threads - 1));
     }
 
     std::fill_n(output, dim, 0);
@@ -136,14 +136,16 @@ void sum_running(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* o
         }
 
         if (mat.is_sparse()) {
-            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l);
+            tatami::Options topt;
+            topt.sparse_ordered_index = false; // ordering doesn't matter.
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
             for (Index_ x = 0; x < l; ++x) {
                 const auto out = ext->fetch(vbuffer.data(), ibuffer.data());
                 internal::nanable_ifelse<Value_>(
-                    sopt.skip_nan,
+                    opt.skip_nan,
                     [&]() -> void {
                         for (Index_ i = 0; i < out.number; ++i) {
                             const auto val = out.value[i];
@@ -167,7 +169,7 @@ void sum_running(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* o
             for (Index_ x = 0; x < l; ++x) {
                 const auto ptr = ext->fetch(buffer.data());
                 internal::nanable_ifelse<Value_>(
-                    sopt.skip_nan,
+                    opt.skip_nan,
                     [&]() -> void {
                         for (Index_ i = 0; i < dim; ++i) {
                             const auto val = ptr[i];
@@ -190,7 +192,7 @@ void sum_running(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* o
                 (*all_partial_sum)[thread - 1] = std::move(cur_sum);
             }
         }
-    }, otherdim, sopt.num_threads);
+    }, otherdim, opt.num_threads);
 
     if (do_parallel) {
         for (int u = 1; u < nused; ++u) {
@@ -221,14 +223,14 @@ void sum_running(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* o
  * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column sums.
- * @param sopt Summation options.
+ * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void sum(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const SumOptions& sopt) {
+void sum(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, const SumOptions& opt) {
     if (mat.prefer_rows() == row) {
-        sum_direct(row, mat, output, sopt);
+        sum_direct(row, mat, output, opt);
     } else {
-        sum_running(row, mat, output, sopt);
+        sum_running(row, mat, output, opt);
     }
 }
 
@@ -243,16 +245,16 @@ void sum(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, c
  * @param row Whether to compute the sum for each row.
  * If false, the sum is computed for each column instead.
  * @param mat Instance of a `tatami::Matrix`.
- * @param sopt Summation options.
+ * @param opt Further options.
  *
  * @return Vector of length equal to the number of rows (if `row = true`) or columns (otherwise),
  * containing the row/column sums.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> sum(bool row, const tatami::Matrix<Value_, Index_>& mat, const SumOptions& sopt) {
+std::vector<Output_> sum(bool row, const tatami::Matrix<Value_, Index_>& mat, const SumOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     auto output = sanisizer::create<std::vector<Output_> >(dim);
-    sum(row, mat, output.data(), sopt);
+    sum(row, mat, output.data(), opt);
     return output;
 }
 

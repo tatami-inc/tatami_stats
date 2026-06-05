@@ -18,7 +18,7 @@
 namespace tatami_stats {
 
 /**
- * @brief Range calculation options.
+ * @brief Options for `range()`.
  */
 struct RangeOptions {
     /**
@@ -167,22 +167,22 @@ struct RangeBuffers {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_>
-void range_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& ropt) {
+void range_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
     if (mat.is_sparse()) {
-        tatami::Options opt;
-        opt.sparse_extract_index = false;
+        tatami::Options topt;
+        topt.sparse_extract_index = false;
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), NULL);
-                output.minimum[x + s] = min_direct(out.value, out.number, otherdim, ropt.skip_nan);
-                output.maximum[x + s] = max_direct(out.value, out.number, otherdim, ropt.skip_nan);
+                output.minimum[x + s] = min_direct(out.value, out.number, otherdim, opt.skip_nan);
+                output.maximum[x + s] = max_direct(out.value, out.number, otherdim, opt.skip_nan);
             }
-        }, dim, ropt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -190,24 +190,24 @@ void range_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuff
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             for (Index_ x = 0; x < l; ++x) {
                 auto ptr = ext->fetch(buffer.data());
-                output.minimum[x + s] = min_direct(ptr, otherdim, ropt.skip_nan);
-                output.maximum[x + s] = max_direct(ptr, otherdim, ropt.skip_nan);
+                output.minimum[x + s] = min_direct(ptr, otherdim, opt.skip_nan);
+                output.maximum[x + s] = max_direct(ptr, otherdim, opt.skip_nan);
             }
-        }, dim, ropt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& ropt) {
+void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
-    const bool do_parallel = ropt.num_threads > 1; 
+    const bool do_parallel = opt.num_threads > 1; 
     std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_min, all_partial_max;
     if (do_parallel) {
-        all_partial_min.emplace(sanisizer::cast<I<decltype(all_partial_min->size())> >(ropt.num_threads - 1));
-        all_partial_max.emplace(sanisizer::cast<I<decltype(all_partial_max->size())> >(ropt.num_threads - 1));
+        all_partial_min.emplace(sanisizer::cast<I<decltype(all_partial_min->size())> >(opt.num_threads - 1));
+        all_partial_max.emplace(sanisizer::cast<I<decltype(all_partial_max->size())> >(opt.num_threads - 1));
     }
 
     constexpr auto min_placeholder = choose_minimum_placeholder<Value_>();
@@ -235,9 +235,9 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
         }
 
         if (is_sparse) {
-            tatami::Options opt;
-            opt.sparse_ordered_index = false;
-            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, opt);
+            tatami::Options topt;
+            topt.sparse_ordered_index = false;
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
             auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
@@ -249,7 +249,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                     // For the first observed vector in each thread,
                     // we can optimize it a little as we don't need to read existing min/max.
                     internal::nanable_ifelse<Value_>(
-                        ropt.skip_nan,
+                        opt.skip_nan,
                         [&]() -> void {
                             for (Index_ i = 0; i < out.number; ++i) {
                                 const auto val = out.value[i];
@@ -313,7 +313,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                     // For the first observed vector in each thread,
                     // we can optimize it a little as we don't need to read existing min/max.
                     internal::nanable_ifelse<Value_>(
-                        ropt.skip_nan,
+                        opt.skip_nan,
                         [&]() -> void {
                             for (Index_ i = 0; i < dim; ++i) {
                                 const auto val = ptr[i];
@@ -351,7 +351,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                 (*all_partial_max)[thread - 1] = std::move(cur_max);
             }
         }
-    }, otherdim, ropt.num_threads);
+    }, otherdim, opt.num_threads);
 
     if (do_parallel) {
         for (int u = 1; u < nused; ++u) {
@@ -385,14 +385,14 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
  * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Buffers to output arrays.
  * On output, this will contain the row/column variances.
- * @param ropt Further options options.
+ * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void range(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& ropt) {
+void range(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& opt) {
     if (mat.prefer_rows() == row) {
-        range_direct(row, mat, output, ropt);
+        range_direct(row, mat, output, opt);
     } else {
-        range_running(row, mat, output, ropt);
+        range_running(row, mat, output, opt);
     }
 }
 
@@ -428,12 +428,12 @@ struct RangeResult {
  * @param row Whether to compute the range for each row.
  * If false, the range is computed for each column instead.
  * @param mat Instance of a `tatami::Matrix`.
- * @param ropt Further options.
+ * @param opt Further options.
  *
  * @return Minimum and maximum for each row/column.
  */
 template<typename Value_, typename Index_, typename Output_ = Value_>
-RangeResult<Output_> range(bool row, const tatami::Matrix<Value_, Index_>& mat, const RangeOptions& ropt) {
+RangeResult<Output_> range(bool row, const tatami::Matrix<Value_, Index_>& mat, const RangeOptions& opt) {
     RangeResult<Output_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
     tatami::resize_container_to_Index_size(output.minimum, dim);
@@ -442,7 +442,7 @@ RangeResult<Output_> range(bool row, const tatami::Matrix<Value_, Index_>& mat, 
     RangeBuffers<Output_> buffers;
     buffers.minimum = output.minimum.data();
     buffers.maximum = output.maximum.data();
-    range(row, mat, buffers, ropt);
+    range(row, mat, buffers, opt);
 
     return output;
 }

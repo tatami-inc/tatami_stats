@@ -84,28 +84,28 @@ Output_ median_direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool sk
  * @param mat Instance of a `tatami::Matrix`.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column medians.
- * @param mopt Median calculation options.
+ * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void median(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, const MedianOptions& mopt) {
+void median(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* const output, const MedianOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
     if (mat.sparse()) {
-        tatami::Options opt;
-        opt.sparse_extract_index = false;
-        opt.sparse_ordered_index = false; // we'll be sorting by value anyway.
+        tatami::Options topt;
+        topt.sparse_extract_index = false;
+        topt.sparse_ordered_index = false; // we'll be sorting by value anyway.
 
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
-            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, topt);
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             auto vbuffer = buffer.data();
             for (Index_ x = 0; x < l; ++x) {
                 auto range = ext->fetch(vbuffer, NULL);
                 tatami::copy_n(range.value, range.number, vbuffer);
-                output[x + s] = median_direct<Output_>(vbuffer, range.number, otherdim, mopt.skip_nan);
+                output[x + s] = median_direct<Output_>(vbuffer, range.number, otherdim, opt.skip_nan);
             }
-        }, dim, mopt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -114,9 +114,9 @@ void median(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* 
             for (Index_ x = 0; x < l; ++x) {
                 auto ptr = ext->fetch(buffer.data());
                 tatami::copy_n(ptr, otherdim, buffer.data());
-                output[x + s] = median_direct<Output_>(buffer.data(), otherdim, mopt.skip_nan);
+                output[x + s] = median_direct<Output_>(buffer.data(), otherdim, opt.skip_nan);
             }
-        }, dim, mopt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
@@ -131,15 +131,16 @@ void median(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* 
  * @param row Whether to compute the median for each row.
  * If false, the median is computed for each column instead.
  * @param mat Instance of a `tatami::Matrix`.
- * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
+ * @param opt Further options.
+ *
+ * @return Vector of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column medians.
- * @param mopt Median calculation options.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-std::vector<Output_> median(const bool row, const tatami::Matrix<Value_, Index_>& mat, const MedianOptions& mopt) {
+std::vector<Output_> median(const bool row, const tatami::Matrix<Value_, Index_>& mat, const MedianOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     auto output = sanisizer::create<std::vector<Output_> >(dim);
-    median(row, mat, output.data(), mopt);
+    median(row, mat, output.data(), opt);
     return output;
 }
 

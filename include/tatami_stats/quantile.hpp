@@ -53,7 +53,7 @@ struct QuantileOptions {
  * This should be in \f$[0, 1]\f$.
  * @param[out] output Pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, this will contain the row/column quantiles.
- * @param qopt Quantile calculation options.
+ * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_>
 void quantile(
@@ -61,7 +61,7 @@ void quantile(
     const tatami::Matrix<Value_, Index_>& mat,
     const double prob,
     Output_* const output,
-    const QuantileOptions& qopt
+    const QuantileOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
@@ -76,7 +76,7 @@ void quantile(
         std::optional<quickstats::SingleQuantileVariableNumber<Output_> > qcalcs_var;
         // Index_ is safe to cast to std::size_t as that's part of the tatami contract.
         internal::nanable_ifelse<Value_>(
-            qopt.skip_nan,
+            opt.skip_nan,
             [&]() -> void {
                 qcalcs_var.emplace(otherdim, prob);
             },
@@ -86,11 +86,10 @@ void quantile(
         );
 
         if (mat.sparse()) {
-            tatami::Options opt;
-            opt.sparse_extract_index = false;
-            opt.sparse_ordered_index = false; // we'll be sorting by value anyway.
-
-            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, opt);
+            tatami::Options topt;
+            topt.sparse_extract_index = false;
+            topt.sparse_ordered_index = false; // we'll be sorting by value anyway.
+            auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, topt);
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             auto vbuffer = buffer.data();
 
@@ -99,7 +98,7 @@ void quantile(
                 tatami::copy_n(range.value, range.number, vbuffer);
 
                 internal::nanable_ifelse<Value_>(
-                    qopt.skip_nan,
+                    opt.skip_nan,
                     [&]() -> void {
                         const auto new_non_zeros = shift_nans(vbuffer, range.number);
                         output[x + s] = (*qcalcs_var)(otherdim - (range.number - new_non_zeros), new_non_zeros, vbuffer);
@@ -120,7 +119,7 @@ void quantile(
                 tatami::copy_n(raw, otherdim, bufptr);
 
                 internal::nanable_ifelse<Value_>(
-                    qopt.skip_nan,
+                    opt.skip_nan,
                     [&]() -> void {
                         const auto new_total = shift_nans(bufptr, otherdim);
                         output[x + s] = (*qcalcs_var)(new_total, bufptr);
@@ -131,7 +130,7 @@ void quantile(
                 );
             }
         }
-    }, dim, qopt.num_threads);
+    }, dim, opt.num_threads);
 }
 
 /**
@@ -147,7 +146,7 @@ void quantile(
  * @param mat Instance of a `tatami::Matrix`.
  * @param prob Probability of the quantile to compute.
  * This should be in \f$[0, 1]\f$.
- * @param qopt Quantile calculation options.
+ * @param opt Further options.
  *
  * @return Vector of length equal to the number of rows (if `row = true`) or columns (otherwise),
  * containing the row/column quantiles.
@@ -157,11 +156,11 @@ std::vector<Output_> quantile(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const double prob,
-    const QuantileOptions& qopt
+    const QuantileOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     auto output = sanisizer::create<std::vector<Output_> >(dim);
-    quantile(row, mat, prob, output.data(), qopt);
+    quantile(row, mat, prob, output.data(), opt);
     return output;
 }
 

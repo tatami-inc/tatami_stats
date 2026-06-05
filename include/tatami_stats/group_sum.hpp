@@ -46,7 +46,7 @@ void group_sum_direct(
     const Group_* group,
     const std::size_t num_groups,
     std::vector<Output_*>& output,
-    const GroupSumOptions& sopt
+    const GroupSumOptions& opt
 ) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     const Index_ otherdim = (row ? mat.ncol() : mat.nrow());
@@ -63,7 +63,7 @@ void group_sum_direct(
                 std::fill(tmp.begin(), tmp.end(), static_cast<Output_>(0));
 
                 internal::nanable_ifelse<Value_>(
-                    sopt.skip_nan,
+                    opt.skip_nan,
                     [&]() -> void {
                         for (Index_ j = 0; j < range.number; ++j) {
                             const auto val = range.value[j];
@@ -83,7 +83,7 @@ void group_sum_direct(
                     output[g][start + x] = tmp[g];
                 }
             }
-        }, dim, sopt.num_threads);
+        }, dim, opt.num_threads);
 
     } else {
         tatami::parallelize([&](int, Index_ start, Index_ len) -> void {
@@ -96,7 +96,7 @@ void group_sum_direct(
                 std::fill(tmp.begin(), tmp.end(), static_cast<Output_>(0));
 
                 internal::nanable_ifelse<Value_>(
-                    sopt.skip_nan,
+                    opt.skip_nan,
                     [&]() -> void {
                         for (Index_ j = 0; j < otherdim; ++j) {
                             const auto val = ptr[j];
@@ -116,7 +116,7 @@ void group_sum_direct(
                     output[g][start + x] = tmp[g];
                 }
             }
-        }, dim, sopt.num_threads);
+        }, dim, opt.num_threads);
     }
 }
 
@@ -127,16 +127,16 @@ void group_sum_running(
     const Group_* group,
     const std::size_t num_groups,
     std::vector<Output_*>& output,
-    const GroupSumOptions& sopt
+    const GroupSumOptions& opt
 ) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     const Index_ otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
-    const auto do_parallel = sopt.num_threads > 1;
+    const auto do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_sums;
     if (do_parallel) {
-        all_partial_sums.emplace(sanisizer::cast<I<decltype(all_partial_sums->size())> >(sopt.num_threads - 1));
+        all_partial_sums.emplace(sanisizer::cast<I<decltype(all_partial_sums->size())> >(opt.num_threads - 1));
     }
 
     for (std::size_t g = 0; g < num_groups; ++g) {
@@ -168,9 +168,9 @@ void group_sum_running(
         if (is_sparse) {
             // Order within each observed vector doesn't affect numerical precision of the outcome,
             // as addition order for each objective vector is already well-defined for a running calculation.
-            tatami::Options opt;
-            opt.sparse_ordered_index = false; 
-            auto ext = tatami::consecutive_extractor<true>(mat, !row, start, len, opt);
+            tatami::Options topt;
+            topt.sparse_ordered_index = false; 
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, start, len, topt);
             auto xbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
@@ -179,7 +179,7 @@ void group_sum_running(
                 const auto sum_ptr = sum_ptrs[group[start + x]];
 
                 internal::nanable_ifelse<Value_>(
-                    sopt.skip_nan,
+                    opt.skip_nan,
                     [&]() -> void {
                         for (Index_ i = 0; i < range.number; ++i) {
                             const auto val = range.value[i];
@@ -205,7 +205,7 @@ void group_sum_running(
                 const auto sum_ptr = sum_ptrs[group[start + x]];
 
                 internal::nanable_ifelse<Value_>(
-                    sopt.skip_nan,
+                    opt.skip_nan,
                     [&]() -> void {
                         for (Index_ d = 0; d < dim; ++d) {
                             const auto val = ptr[d];
@@ -228,7 +228,7 @@ void group_sum_running(
                 (*all_partial_sums)[thread - 1] = std::move(cur_sums);
             }
         }
-    }, otherdim, sopt.num_threads);
+    }, otherdim, opt.num_threads);
 
     if (do_parallel) {
         for (std::size_t g = 0; g < num_groups; ++g) {
@@ -266,7 +266,7 @@ void group_sum_running(
  * @param[out] output Vector of length equal to the number of groups.
  * Each element is a pointer to an array of length equal to the number of rows (if `row = true`) or columns (otherwise).
  * On output, each array will contain the row/column sums for the corresponding group. 
- * @param sopt Summation options.
+ * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Group_, typename Output_>
 void group_sum(
@@ -275,12 +275,12 @@ void group_sum(
     const Group_* group,
     const std::size_t num_groups,
     std::vector<Output_*>& output,
-    const GroupSumOptions& sopt
+    const GroupSumOptions& opt
 ) {
     if (mat.prefer_rows() == row) {
-        group_sum_direct(row, mat, group, num_groups, output, sopt);
+        group_sum_direct(row, mat, group, num_groups, output, opt);
     } else {
-        group_sum_running(row, mat, group, num_groups, output, sopt);
+        group_sum_running(row, mat, group, num_groups, output, opt);
     }
 }
 
@@ -301,7 +301,7 @@ void group_sum(
  * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  * @param num_groups Number of groups, i.e., \f$N\f$.
  * This can be determined by calling `tatami_stats::total_groups()` on `group`.
- * @param sopt Summation options.
+ * @param opt Further options.
  *
  * @return Vector of length equal to the number of groups.
  * Each element is a vector of length equal to the number of rows (if `row = true`) or columns (otherwise),
@@ -313,7 +313,7 @@ std::vector<std::vector<Output_> > group_sum(
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* group,
     const std::size_t num_groups,
-    const GroupSumOptions& sopt
+    const GroupSumOptions& opt
 ) {
     auto output = sanisizer::create<std::vector<std::vector<Output_> > >(num_groups);
     auto ptrs = sanisizer::create<std::vector<Output_*> >(num_groups);
@@ -322,7 +322,7 @@ std::vector<std::vector<Output_> > group_sum(
         tatami::resize_container_to_Index_size(output[g], dim);
         ptrs[g] = output[g].data();
     }
-    group_sum(row, mat, group, num_groups, ptrs, sopt);
+    group_sum(row, mat, group, num_groups, ptrs, opt);
     return output;
 }
 
