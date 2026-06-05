@@ -127,12 +127,12 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Output_&gt;</div>
 <div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespacetatami__stats.html#a1133dbab46ab7349216912c98029821b">   59</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacetatami__stats.html#a1133dbab46ab7349216912c98029821b">quantile</a>(</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespacetatami__stats.html#a57171c02a9c1f651e396ee60df2a44d3">   59</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacetatami__stats.html#a57171c02a9c1f651e396ee60df2a44d3">quantile</a>(</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> row,</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat,</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> prob,</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    Output_* <span class="keyword">const</span> output,</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1QuantileOptions.html">QuantileOptions</a>&amp; qopt</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1QuantileOptions.html">QuantileOptions</a>&amp; opt</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>) {</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">const</span> <span class="keyword">auto</span> otherdim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>());</div>
@@ -147,7 +147,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        std::optional&lt;quickstats::SingleQuantileVariableNumber&lt;Output_&gt; &gt; qcalcs_var;</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="comment">// Index_ is safe to cast to std::size_t as that&#39;s part of the tatami contract.</span></div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        internal::nanable_ifelse&lt;Value_&gt;(</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            qopt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            opt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                qcalcs_var.emplace(otherdim, prob);</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            },</div>
@@ -157,80 +157,79 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        );</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">if</span> (mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#af84772cc4e911a87948d45a1edcabbd0">sparse</a>()) {</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <a class="code hl_structRef" href="https://tatami-inc.github.io/tatami/structtatami_1_1Options.html">tatami::Options</a> opt;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            opt.<a class="code hl_variableRef" href="https://tatami-inc.github.io/tatami/structtatami_1_1Options.html#a192a47606233c7f5c76bb1e7a62867a5">sparse_extract_index</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            opt.<a class="code hl_variableRef" href="https://tatami-inc.github.io/tatami/structtatami_1_1Options.html#a4d2e6f2631a7e813bfbf3f215594a79b">sparse_ordered_index</a> = <span class="keyword">false</span>; <span class="comment">// we&#39;ll be sorting by value anyway.</span></div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keyword">auto</span> ext = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ae5cfcdf9fa34c6d0cd6b672472d407b3">tatami::consecutive_extractor&lt;true&gt;</a>(mat, row, s, l, opt);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keyword">auto</span> buffer = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size&lt;std::vector&lt;Value_&gt;</a> &gt;(otherdim);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="keyword">auto</span> vbuffer = buffer.data();</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keywordflow">for</span> (Index_ x = 0; x &lt; l; ++x) {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <span class="keyword">auto</span> <a class="code hl_function" href="namespacetatami__stats.html#a97bd6c0090005d7070c59c3e8585868d">range</a> = ext-&gt;fetch(vbuffer, NULL);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a>(<a class="code hl_function" href="namespacetatami__stats.html#a97bd6c0090005d7070c59c3e8585868d">range</a>.value, <a class="code hl_function" href="namespacetatami__stats.html#a97bd6c0090005d7070c59c3e8585868d">range</a>.number, vbuffer);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                    qopt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                        const auto new_non_zeros = shift_nans(vbuffer, range.number);</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                        output[x + s] = (*qcalcs_var)(otherdim - (range.number - new_non_zeros), new_non_zeros, vbuffer);</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    },</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                        output[x + s] = (*qcalcs_fixed)(range.number, vbuffer);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                    }</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                );</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            }</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keyword">auto</span> buffer = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size&lt;std::vector&lt;Value_&gt;</a> &gt;(otherdim);</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keyword">auto</span> ext = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ae5cfcdf9fa34c6d0cd6b672472d407b3">tatami::consecutive_extractor&lt;false&gt;</a>(mat, row, s, l);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keywordflow">for</span> (Index_ x = 0; x &lt; l; ++x) {</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="keyword">auto</span> bufptr = buffer.data();</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                <span class="keyword">auto</span> raw = ext-&gt;fetch(bufptr);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a>(raw, otherdim, bufptr);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                    qopt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                        const auto new_total = shift_nans(bufptr, otherdim);</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                        output[x + s] = (*qcalcs_var)(new_total, bufptr);</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                    },</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                        output[x + s] = (*qcalcs_fixed)(bufptr);</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                    }</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                );</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            }</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        }</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    }, dim, qopt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a44dbdd238da6a3822721e1fb5a17203d">num_threads</a>);</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <a class="code hl_structRef" href="https://tatami-inc.github.io/tatami/structtatami_1_1Options.html">tatami::Options</a> topt;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            topt.<a class="code hl_variableRef" href="https://tatami-inc.github.io/tatami/structtatami_1_1Options.html#a192a47606233c7f5c76bb1e7a62867a5">sparse_extract_index</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            topt.<a class="code hl_variableRef" href="https://tatami-inc.github.io/tatami/structtatami_1_1Options.html#a4d2e6f2631a7e813bfbf3f215594a79b">sparse_ordered_index</a> = <span class="keyword">false</span>; <span class="comment">// we&#39;ll be sorting by value anyway.</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <span class="keyword">auto</span> ext = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ae5cfcdf9fa34c6d0cd6b672472d407b3">tatami::consecutive_extractor&lt;true&gt;</a>(mat, row, s, l, topt);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keyword">auto</span> buffer = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size&lt;std::vector&lt;Value_&gt;</a> &gt;(otherdim);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keyword">auto</span> vbuffer = buffer.data();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">for</span> (Index_ x = 0; x &lt; l; ++x) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="keyword">auto</span> <a class="code hl_function" href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">range</a> = ext-&gt;fetch(vbuffer, NULL);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a>(<a class="code hl_function" href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">range</a>.value, <a class="code hl_function" href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">range</a>.number, vbuffer);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                    opt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                        const auto new_non_zeros = shift_nans(vbuffer, range.number);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                        output[x + s] = (*qcalcs_var)(otherdim - (range.number - new_non_zeros), new_non_zeros, vbuffer);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                    },</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                        output[x + s] = (*qcalcs_fixed)(range.number, vbuffer);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                    }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                );</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keyword">auto</span> buffer = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size&lt;std::vector&lt;Value_&gt;</a> &gt;(otherdim);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keyword">auto</span> ext = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ae5cfcdf9fa34c6d0cd6b672472d407b3">tatami::consecutive_extractor&lt;false&gt;</a>(mat, row, s, l);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="keywordflow">for</span> (Index_ x = 0; x &lt; l; ++x) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                <span class="keyword">auto</span> bufptr = buffer.data();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="keyword">auto</span> raw = ext-&gt;fetch(bufptr);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a>(raw, otherdim, bufptr);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                    opt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                        const auto new_total = shift_nans(bufptr, otherdim);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                        output[x + s] = (*qcalcs_var)(new_total, bufptr);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                    },</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                        output[x + s] = (*qcalcs_fixed)(bufptr);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                    }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                );</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    }, dim, opt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a44dbdd238da6a3822721e1fb5a17203d">num_threads</a>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}</div>
 </div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Output_ = <span class="keywordtype">double</span>, <span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_&gt;</div>
-<div class="foldopen" id="foldopen00156" data-start="{" data-end="}">
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="namespacetatami__stats.html#a32616b33c9eec7599005585699335e0f">  156</a></span>std::vector&lt;Output_&gt; <a class="code hl_function" href="namespacetatami__stats.html#a1133dbab46ab7349216912c98029821b">quantile</a>(</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> row,</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat,</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> prob,</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1QuantileOptions.html">QuantileOptions</a>&amp; qopt</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>) {</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">auto</span> output = sanisizer::create&lt;std::vector&lt;Output_&gt; &gt;(dim);</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <a class="code hl_function" href="namespacetatami__stats.html#a1133dbab46ab7349216912c98029821b">quantile</a>(row, mat, prob, output.data(), qopt);</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">return</span> output;</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Output_ = <span class="keywordtype">double</span>, <span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_&gt;</div>
+<div class="foldopen" id="foldopen00155" data-start="{" data-end="}">
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="namespacetatami__stats.html#a2234f36e19560dcc655246c6cb9d0410">  155</a></span>std::vector&lt;Output_&gt; <a class="code hl_function" href="namespacetatami__stats.html#a57171c02a9c1f651e396ee60df2a44d3">quantile</a>(</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> row,</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat,</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> prob,</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1QuantileOptions.html">QuantileOptions</a>&amp; opt</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">auto</span> output = sanisizer::create&lt;std::vector&lt;Output_&gt; &gt;(dim);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_function" href="namespacetatami__stats.html#a57171c02a9c1f651e396ee60df2a44d3">quantile</a>(row, mat, prob, output.data(), opt);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">return</span> output;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>}</div>
 </div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>}</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>}</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_a1f6fec43d5bae3f831841646bc02377b"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">tatami::Matrix::ncol</a></div><div class="ttdeci">virtual Index_ ncol() const=0</div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_a54fe7b4baf78069d35ff00357a1b6cc6"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">tatami::Matrix::nrow</a></div><div class="ttdeci">virtual Index_ nrow() const=0</div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_af84772cc4e911a87948d45a1edcabbd0"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#af84772cc4e911a87948d45a1edcabbd0">tatami::Matrix::sparse</a></div><div class="ttdeci">virtual std::unique_ptr&lt; MyopicSparseExtractor&lt; Value_, Index_ &gt; &gt; sparse(bool row, const Options &amp;opt) const=0</div></div>
 <div class="ttc" id="anamespacetatami__stats_html"><div class="ttname"><a href="namespacetatami__stats.html">tatami_stats</a></div><div class="ttdoc">Functions to compute statistics from a tatami::Matrix.</div><div class="ttdef"><b>Definition</b> count.hpp:20</div></div>
-<div class="ttc" id="anamespacetatami__stats_html_a1133dbab46ab7349216912c98029821b"><div class="ttname"><a href="namespacetatami__stats.html#a1133dbab46ab7349216912c98029821b">tatami_stats::quantile</a></div><div class="ttdeci">void quantile(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const double prob, Output_ *const output, const QuantileOptions &amp;qopt)</div><div class="ttdef"><b>Definition</b> quantile.hpp:59</div></div>
-<div class="ttc" id="anamespacetatami__stats_html_a97bd6c0090005d7070c59c3e8585868d"><div class="ttname"><a href="namespacetatami__stats.html#a97bd6c0090005d7070c59c3e8585868d">tatami_stats::range</a></div><div class="ttdeci">void range(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RangeBuffers&lt; Output_ &gt; &amp;output, const RangeOptions &amp;ropt)</div><div class="ttdef"><b>Definition</b> range.hpp:391</div></div>
+<div class="ttc" id="anamespacetatami__stats_html_a57171c02a9c1f651e396ee60df2a44d3"><div class="ttname"><a href="namespacetatami__stats.html#a57171c02a9c1f651e396ee60df2a44d3">tatami_stats::quantile</a></div><div class="ttdeci">void quantile(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const double prob, Output_ *const output, const QuantileOptions &amp;opt)</div><div class="ttdef"><b>Definition</b> quantile.hpp:59</div></div>
+<div class="ttc" id="anamespacetatami__stats_html_a7744693451913c2be630f12ecfb9a201"><div class="ttname"><a href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">tatami_stats::range</a></div><div class="ttdeci">void range(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RangeBuffers&lt; Output_ &gt; &amp;output, const RangeOptions &amp;opt)</div><div class="ttdef"><b>Definition</b> range.hpp:391</div></div>
 <div class="ttc" id="anamespacetatami_html_a9c3979c60e3d7e066be533f7ee3a2f97"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a></div><div class="ttdeci">int parallelize(Function_ fun, const Index_ tasks, const int workers)</div></div>
 <div class="ttc" id="anamespacetatami_html_aca84df9f6331751c29b0bcc0ca656af7"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a></div><div class="ttdeci">Value_ * copy_n(const Value_ *const input, const Size_ n, Value_ *const output)</div></div>
 <div class="ttc" id="anamespacetatami_html_ada885a7e7ae9dcafcaf98cde30622afc"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size</a></div><div class="ttdeci">Container_ create_container_of_Index_size(const Index_ x, Args_ &amp;&amp;... args)</div></div>

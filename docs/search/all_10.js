@@ -18,7 +18,7 @@ var searchData=
   ['specialcompareoperation_15',['SpecialCompareOperation',['https://tatami-inc.github.io/tatami/namespacetatami.html#a4ef624db40413dabc3fea554fc936d39',1,'tatami']]],
   ['statistics_20for_20tatami_16',['Matrix statistics for tatami',['../index.html',1,'']]],
   ['substitute_5fhelpers_2ehpp_17',['substitute_helpers.hpp',['https://tatami-inc.github.io/tatami/substitute__helpers_8hpp.html',1,'']]],
-  ['sum_18',['sum',['../namespacetatami__stats.html#adfaa890c5bf7717c30ee0ae65c840f12',1,'tatami_stats::sum(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, const SumOptions &amp;sopt)'],['../namespacetatami__stats.html#af3ad9a0e58c20c7b5012d6b202e0bba0',1,'tatami_stats::sum(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const SumOptions &amp;sopt)']]],
+  ['sum_18',['sum',['../namespacetatami__stats.html#ac9c9b11bc8af6e6a1497cc088b17f054',1,'tatami_stats::sum(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, const SumOptions &amp;opt)'],['../namespacetatami__stats.html#aeadf1ce1d2d7b95d5085a6ac7a49864b',1,'tatami_stats::sum(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const SumOptions &amp;opt)']]],
   ['sum_2ehpp_19',['sum.hpp',['../sum_8hpp.html',1,'']]],
   ['sumoptions_20',['SumOptions',['../structtatami__stats_1_1SumOptions.html',1,'tatami_stats']]]
 ];
