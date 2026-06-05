@@ -4,5 +4,5 @@ var searchData=
   ['sparserange_2ehpp_1',['SparseRange.hpp',['https://tatami-inc.github.io/tatami/SparseRange_8hpp.html',1,'']]],
   ['sparsifiedwrapper_2ehpp_2',['SparsifiedWrapper.hpp',['https://tatami-inc.github.io/tatami/SparsifiedWrapper_8hpp.html',1,'']]],
   ['substitute_5fhelpers_2ehpp_3',['substitute_helpers.hpp',['https://tatami-inc.github.io/tatami/substitute__helpers_8hpp.html',1,'']]],
-  ['sums_2ehpp_4',['sums.hpp',['../sums_8hpp.html',1,'']]]
+  ['sum_2ehpp_4',['sum.hpp',['../sum_8hpp.html',1,'']]]
 ];

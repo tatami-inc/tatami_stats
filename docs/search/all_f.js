@@ -10,7 +10,5 @@ var searchData=
   ['retrieve_5fcompressed_5fsparse_5fcontents_7',['retrieve_compressed_sparse_contents',['https://tatami-inc.github.io/tatami/namespacetatami.html#a7e0ab534fd3195a57abcb47272d41ded',1,'tatami']]],
   ['retrieve_5ffragmented_5fsparse_5fcontents_8',['retrieve_fragmented_sparse_contents',['https://tatami-inc.github.io/tatami/namespacetatami.html#a4b4feed54780ff0d6ec18a38a5752f22',1,'tatami']]],
   ['retrievecompressedsparsecontentsoptions_9',['RetrieveCompressedSparseContentsOptions',['https://tatami-inc.github.io/tatami/structtatami_1_1RetrieveCompressedSparseContentsOptions.html',1,'tatami']]],
-  ['retrievefragmentedsparsecontentsoptions_10',['RetrieveFragmentedSparseContentsOptions',['https://tatami-inc.github.io/tatami/structtatami_1_1RetrieveFragmentedSparseContentsOptions.html',1,'tatami']]],
-  ['runningdense_11',['RunningDense',['../classtatami__stats_1_1sums_1_1RunningDense.html',1,'tatami_stats::sums::RunningDense&lt; Output_, Value_, Index_ &gt;'],['../classtatami__stats_1_1sums_1_1RunningDense.html#accf7b5a8d3df2682b38ec0cb6851d2c4',1,'tatami_stats::sums::RunningDense::RunningDense()']]],
-  ['runningsparse_12',['RunningSparse',['../classtatami__stats_1_1sums_1_1RunningSparse.html',1,'tatami_stats::sums::RunningSparse&lt; Output_, Value_, Index_ &gt;'],['../classtatami__stats_1_1sums_1_1RunningSparse.html#abcbadacc65ee6a6cee5bc6e668db180f',1,'tatami_stats::sums::RunningSparse::RunningSparse()']]]
+  ['retrievefragmentedsparsecontentsoptions_10',['RetrieveFragmentedSparseContentsOptions',['https://tatami-inc.github.io/tatami/structtatami_1_1RetrieveFragmentedSparseContentsOptions.html',1,'tatami']]]
 ];

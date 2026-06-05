@@ -5,6 +5,6 @@ var searchData=
   ['boolean_5fhelpers_2ehpp_2',['boolean_helpers.hpp',['https://tatami-inc.github.io/tatami/binary_2boolean__helpers_8hpp.html',1,'(Global Namespace)'],['https://tatami-inc.github.io/tatami/unary_2boolean__helpers_8hpp.html',1,'(Global Namespace)']]],
   ['boolean_5futils_2ehpp_3',['boolean_utils.hpp',['https://tatami-inc.github.io/tatami/boolean__utils_8hpp.html',1,'']]],
   ['booleanoperation_4',['BooleanOperation',['https://tatami-inc.github.io/tatami/namespacetatami.html#a4e5eea599200bfb6bc42f184118be28a',1,'tatami']]],
-  ['by_5fcolumn_5',['by_column',['../namespacetatami__stats_1_1grouped__sums.html#a6a4e926c9181a4ad7eaab0570dafa9af',1,'tatami_stats::grouped_sums::by_column()'],['../namespacetatami__stats_1_1sums.html#aeb23fbdf5e4a5a9b9f2f24f9655cf2ce',1,'tatami_stats::sums::by_column()']]],
-  ['by_5frow_6',['by_row',['../namespacetatami__stats_1_1grouped__sums.html#a0113733e29712a742ec0e50a6d2e3401',1,'tatami_stats::grouped_sums::by_row()'],['../namespacetatami__stats_1_1sums.html#a789933d544ed5e4a6b4f682f03db56e2',1,'tatami_stats::sums::by_row()']]]
+  ['by_5fcolumn_5',['by_column',['../namespacetatami__stats_1_1grouped__sums.html#a6a4e926c9181a4ad7eaab0570dafa9af',1,'tatami_stats::grouped_sums']]],
+  ['by_5frow_6',['by_row',['../namespacetatami__stats_1_1grouped__sums.html#a0113733e29712a742ec0e50a6d2e3401',1,'tatami_stats::grouped_sums']]]
 ];

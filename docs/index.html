@@ -122,10 +122,8 @@ $(function(){ initResizable(false); });
 <h1>Lower-level functionality</h1>
 <p>The <code>apply()</code> function in each statistic's namespace offers more control over the calculation of each statistic. For example, instead of creating a new vector, we can fill an existing array with the sums:</p>
 <div class="fragment"><div class="line">std::vector&lt;double&gt; my_output(mat-&gt;nrow());</div>
-<div class="line"><a class="code hl_struct" href="structtatami__stats_1_1sums_1_1Options.html">tatami_stats::sums::Options</a> sopt;</div>
-<div class="line"><a class="code hl_function" href="namespacetatami__stats_1_1sums.html#ae53e59fface3d5ea5cb654598f579af9">tatami_stats::sums::apply</a>(<span class="comment">/* row = */</span> <span class="keyword">true</span>, mat.get(), output.data(), sopt);</div>
-<div class="ttc" id="anamespacetatami__stats_1_1sums_html_ae53e59fface3d5ea5cb654598f579af9"><div class="ttname"><a href="namespacetatami__stats_1_1sums.html#ae53e59fface3d5ea5cb654598f579af9">tatami_stats::sums::apply</a></div><div class="ttdeci">void apply(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, const Options &amp;sopt)</div><div class="ttdef"><b>Definition</b> sums.hpp:212</div></div>
-<div class="ttc" id="astructtatami__stats_1_1sums_1_1Options_html"><div class="ttname"><a href="structtatami__stats_1_1sums_1_1Options.html">tatami_stats::sums::Options</a></div><div class="ttdoc">Summation options.</div><div class="ttdef"><b>Definition</b> sums.hpp:29</div></div>
+<div class="line">tatami_stats::sums::Options sopt;</div>
+<div class="line">tatami_stats::sums::apply(<span class="comment">/* row = */</span> <span class="keyword">true</span>, mat.get(), output.data(), sopt);</div>
 </div><!-- fragment --><p>Some of the algorithms expose low-level functions for even more fine-grained control. For example, we can manage the loop over the matrix rows ourselves, computing the mean and median for each row:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> ext = mat-&gt;dense_row();</div>
 <div class="line">std::vector&lt;double&gt; buffer(ncols);</div>
@@ -134,7 +132,7 @@ $(function(){ initResizable(false); });
 <div class="line">    <span class="keyword">auto</span> ptr = ext-&gt;fetch(r, buffer.data());</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Need to count the number of values in the denominator.</span></div>
-<div class="line">    <span class="keyword">auto</span> sum = <a class="code hl_function" href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">tatami_stats::sums::direct</a>(ptr, ncols, <span class="comment">/* skip_nan= */</span> <span class="keyword">true</span>);</div>
+<div class="line">    <span class="keyword">auto</span> sum = tatami_stats::sums::direct(ptr, ncols, <span class="comment">/* skip_nan= */</span> <span class="keyword">true</span>);</div>
 <div class="line">    <span class="keywordtype">size_t</span> num_notna = 0;</div>
 <div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; ncols; ++c) {</div>
 <div class="line">        num_notna += !std::isnan(ptr[c]);</div>
@@ -145,9 +143,8 @@ $(function(){ initResizable(false); });
 <div class="line">    <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a>(ptr, ncols, buffer.data());</div>
 <div class="line">    med_output[r] = tatami_stats::medians::direct(ptr, ncols, <span class="comment">/* skip_nan= */</span> <span class="keyword">true</span>);</div>
 <div class="line">}</div>
-<div class="ttc" id="anamespacetatami__stats_1_1sums_html_af95ccf6d0eea5492a7ccd6c1c003df92"><div class="ttname"><a href="namespacetatami__stats_1_1sums.html#af95ccf6d0eea5492a7ccd6c1c003df92">tatami_stats::sums::direct</a></div><div class="ttdeci">Output_ direct(const Value_ *ptr, Index_ num, bool skip_nan)</div><div class="ttdef"><b>Definition</b> sums.hpp:59</div></div>
 <div class="ttc" id="anamespacetatami_html_aca84df9f6331751c29b0bcc0ca656af7"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a></div><div class="ttdeci">Value_ * copy_n(const Value_ *const input, const Size_ n, Value_ *const output)</div></div>
-</div><!-- fragment --><p>These low-level functions allow developers to compute multiple statistics with a single pass through the matrix. In contrast, calling <code><a class="el" href="namespacetatami__stats_1_1sums.html#a789933d544ed5e4a6b4f682f03db56e2">tatami_stats::sums::by_row</a></code> and <code>tatami_stats::medians::by_row</code> separately would extract data from the matrix twice, which may be expensive for file-backed matrices.</p>
+</div><!-- fragment --><p>These low-level functions allow developers to compute multiple statistics with a single pass through the matrix. In contrast, calling <code>tatami_stats::sums::by_row</code> and <code>tatami_stats::medians::by_row</code> separately would extract data from the matrix twice, which may be expensive for file-backed matrices.</p>
 <h1>Building projects</h1>
 <h2>CMake with <code>FetchContent</code></h2>
 <p>If you're using CMake, you just need to add something like this to your <code>CMakeLists.txt</code>:</p>
