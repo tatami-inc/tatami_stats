@@ -94,7 +94,6 @@ $(function(){ initResizable(false); });
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">tatami_stats Namespace Reference</div></div>
@@ -104,12 +103,6 @@ $(function(){ initResizable(false); });
 <p>Functions to compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1grouped__sums.html">grouped_sums</a></td></tr>
-<tr class="memdesc:namespacetatami__stats_1_1grouped__sums"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions for computing dimension-wise grouped sums. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1CountOptions.html">CountOptions</a></td></tr>
@@ -117,6 +110,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupMedianOptions.html">GroupMedianOptions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="#ab70fac32c7dab5f22803aced34612227">group_median()</a></code>.  <a href="structtatami__stats_1_1GroupMedianOptions.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="#a6cc6c591b9a26a77ca7db585760ab6c0">group_sum()</a></code>.  <a href="structtatami__stats_1_1GroupSumOptions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupVarianceBuffers.html">GroupVarianceBuffers</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Result buffers for <code><a class="el" href="#ac7476ce5e6db67ed8d137d14077d6a10">group_variance()</a></code>.  <a href="structtatami__stats_1_1GroupVarianceBuffers.html#details">More...</a><br /></td></tr>
@@ -175,6 +171,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ab0540c22b358d31f0f16dab8a113599a" id="r_ab0540c22b358d31f0f16dab8a113599a"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
 <tr class="memitem:ab0540c22b358d31f0f16dab8a113599a"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab0540c22b358d31f0f16dab8a113599a">group_median</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const <a class="el" href="structtatami__stats_1_1GroupMedianOptions.html">GroupMedianOptions</a> &amp;mopt)</td></tr>
 <tr class="separator:ab0540c22b358d31f0f16dab8a113599a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cc6c591b9a26a77ca7db585760ab6c0" id="r_a6cc6c591b9a26a77ca7db585760ab6c0"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
+<tr class="memitem:a6cc6c591b9a26a77ca7db585760ab6c0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a6cc6c591b9a26a77ca7db585760ab6c0">group_sum</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, std::vector&lt; Output_ * &gt; &amp;output, const <a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a> &amp;sopt)</td></tr>
+<tr class="separator:a6cc6c591b9a26a77ca7db585760ab6c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a8398462d0d1bffe73df4ba398e5bcf" id="r_a2a8398462d0d1bffe73df4ba398e5bcf"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
+<tr class="memitem:a2a8398462d0d1bffe73df4ba398e5bcf"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a2a8398462d0d1bffe73df4ba398e5bcf">group_sum</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, const <a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a> &amp;sopt)</td></tr>
+<tr class="separator:a2a8398462d0d1bffe73df4ba398e5bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7476ce5e6db67ed8d137d14077d6a10" id="r_ac7476ce5e6db67ed8d137d14077d6a10"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
 <tr class="memitem:ac7476ce5e6db67ed8d137d14077d6a10"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac7476ce5e6db67ed8d137d14077d6a10">group_variance</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, <a class="el" href="structtatami__stats_1_1GroupVarianceBuffers.html">GroupVarianceBuffers</a>&lt; Output_ &gt; &amp;output, const <a class="el" href="structtatami__stats_1_1GroupVarianceOptions.html">GroupVarianceOptions</a> &amp;opt)</td></tr>
 <tr class="separator:ac7476ce5e6db67ed8d137d14077d6a10"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -452,6 +454,129 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Vector of length equal to the number of groups. Each element is a vector of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise), containing the row/column medians for the corresponding group. </dd></dl>
+
+</div>
+</div>
+<a id="a6cc6c591b9a26a77ca7db585760ab6c0" name="a6cc6c591b9a26a77ca7db585760ab6c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cc6c591b9a26a77ca7db585760ab6c0">&#9670;&#160;</a></span>group_sum() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void tatami_stats::group_sum </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Group_ *</td>          <td class="paramname"><span class="paramname"><em>group</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_groups</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Output_ * &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>output</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sopt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute per-group sums for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output value. It is assumed that this is large enough to store the sums.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute group-wise sums within each row. If false, sums are computed within the column instead. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns (if <code>row = true</code>) or rows (otherwise). Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., \(N\). This can be determined by calling <code><a class="el" href="#af1c45653a7d1b140a6fcdd76ceffe32a">tatami_stats::total_groups()</a></code> on <code>group</code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise). On output, each array will contain the row/column sums for the corresponding group. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">sopt</td><td>Summation options. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2a8398462d0d1bffe73df4ba398e5bcf" name="a2a8398462d0d1bffe73df4ba398e5bcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a8398462d0d1bffe73df4ba398e5bcf">&#9670;&#160;</a></span>group_sum() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::vector&lt; Output_ &gt; &gt; tatami_stats::group_sum </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Group_ *</td>          <td class="paramname"><span class="paramname"><em>group</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_groups</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sopt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Overload of <code><a class="el" href="#a6cc6c591b9a26a77ca7db585760ab6c0">group_sum()</a></code> that allocates memory for the output sums.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Output_</td><td>Numeric type of the output value. It is assumed that this is large enough to store the sums. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute group-wise sums within each row. If false, sums are computed within the column instead. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns (if <code>row = true</code>) or rows (otherwise). Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., \(N\). This can be determined by calling <code><a class="el" href="#af1c45653a7d1b140a6fcdd76ceffe32a">tatami_stats::total_groups()</a></code> on <code>group</code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">sopt</td><td>Summation options.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Vector of length equal to the number of groups. Each element is a vector of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise), containing the row/column sums for the corresponding group. </dd></dl>
 
 </div>
 </div>

@@ -24,14 +24,6 @@
     <namespace>tatami_stats</namespace>
   </compound>
   <compound kind="file">
-    <name>grouped_sums.hpp</name>
-    <path>tatami_stats/</path>
-    <filename>grouped__sums_8hpp.html</filename>
-    <class kind="struct">tatami_stats::grouped_sums::Options</class>
-    <namespace>tatami_stats</namespace>
-    <namespace>tatami_stats::grouped_sums</namespace>
-  </compound>
-  <compound kind="file">
     <name>median.hpp</name>
     <path>tatami_stats/</path>
     <filename>median_8hpp.html</filename>
@@ -110,6 +102,24 @@
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1GroupMedianOptions.html</anchorfile>
       <anchor>a9cb9eefbb96e15372c0569e0b66424f2</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::GroupSumOptions</name>
+    <filename>structtatami__stats_1_1GroupSumOptions.html</filename>
+    <member kind="variable">
+      <type>bool</type>
+      <name>skip_nan</name>
+      <anchorfile>structtatami__stats_1_1GroupSumOptions.html</anchorfile>
+      <anchor>a7a150c21b91acc8aabc758dbcca2f2a2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>num_threads</name>
+      <anchorfile>structtatami__stats_1_1GroupSumOptions.html</anchorfile>
+      <anchor>aa4a3d9b39472a9eef474654e26c2cc36</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -290,24 +300,6 @@
     </member>
   </compound>
   <compound kind="struct">
-    <name>tatami_stats::grouped_sums::Options</name>
-    <filename>structtatami__stats_1_1grouped__sums_1_1Options.html</filename>
-    <member kind="variable">
-      <type>bool</type>
-      <name>skip_nan</name>
-      <anchorfile>structtatami__stats_1_1grouped__sums_1_1Options.html</anchorfile>
-      <anchor>a0eefb6cb47a631d15c577f54fbb47941</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>num_threads</name>
-      <anchorfile>structtatami__stats_1_1grouped__sums_1_1Options.html</anchorfile>
-      <anchor>a842e43a694e59214407423b646bd8e3d</anchor>
-      <arglist></arglist>
-    </member>
-  </compound>
-  <compound kind="struct">
     <name>tatami_stats::QuantileOptions</name>
     <filename>structtatami__stats_1_1QuantileOptions.html</filename>
     <member kind="variable">
@@ -458,9 +450,9 @@
   <compound kind="namespace">
     <name>tatami_stats</name>
     <filename>namespacetatami__stats.html</filename>
-    <namespace>tatami_stats::grouped_sums</namespace>
     <class kind="struct">tatami_stats::CountOptions</class>
     <class kind="struct">tatami_stats::GroupMedianOptions</class>
+    <class kind="struct">tatami_stats::GroupSumOptions</class>
     <class kind="struct">tatami_stats::GroupVarianceBuffers</class>
     <class kind="struct">tatami_stats::GroupVarianceOptions</class>
     <class kind="struct">tatami_stats::GroupVarianceResult</class>
@@ -502,6 +494,20 @@
       <anchorfile>namespacetatami__stats.html</anchorfile>
       <anchor>ab0540c22b358d31f0f16dab8a113599a</anchor>
       <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupMedianOptions &amp;mopt)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>group_sum</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>a6cc6c591b9a26a77ca7db585760ab6c0</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, std::vector&lt; Output_ * &gt; &amp;output, const GroupSumOptions &amp;sopt)</arglist>
+    </member>
+    <member kind="function">
+      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
+      <name>group_sum</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>a2a8398462d0d1bffe73df4ba398e5bcf</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, const GroupSumOptions &amp;sopt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -600,32 +606,6 @@
       <anchorfile>namespacetatami__stats.html</anchorfile>
       <anchor>af1f7492ecdf7283e2e8bf69d4944d5ad</anchor>
       <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const VarianceOptions &amp;vopt)</arglist>
-    </member>
-  </compound>
-  <compound kind="namespace">
-    <name>tatami_stats::grouped_sums</name>
-    <filename>namespacetatami__stats_1_1grouped__sums.html</filename>
-    <class kind="struct">tatami_stats::grouped_sums::Options</class>
-    <member kind="function">
-      <type>void</type>
-      <name>apply</name>
-      <anchorfile>namespacetatami__stats_1_1grouped__sums.html</anchorfile>
-      <anchor>adc7822ac6ec40105185d06a2b83d283e</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, std::size_t num_groups, Output_ **output, const Options &amp;sopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
-      <name>by_row</name>
-      <anchorfile>namespacetatami__stats_1_1grouped__sums.html</anchorfile>
-      <anchor>a0113733e29712a742ec0e50a6d2e3401</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const Options &amp;sopt)</arglist>
-    </member>
-    <member kind="function">
-      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
-      <name>by_column</name>
-      <anchorfile>namespacetatami__stats_1_1grouped__sums.html</anchorfile>
-      <anchor>a6a4e926c9181a4ad7eaab0570dafa9af</anchor>
-      <arglist>(const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const Options &amp;sopt)</arglist>
     </member>
   </compound>
   <compound kind="page">
