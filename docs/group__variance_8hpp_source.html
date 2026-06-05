@@ -770,20 +770,28 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
 <div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span> </div>
 <div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>    <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
-<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>        <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a>(output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceResult.html#a281f56a278e69315e854bfdb04165150">mean</a>[g], dim); </div>
-<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>        buffers.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceBuffers.html#a771ae7d9b063b96db8a64f443b591736">mean</a>[g] = output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceResult.html#a281f56a278e69315e854bfdb04165150">mean</a>[g].data();</div>
-<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>        <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a>(output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceResult.html#a7b5eed62d9b509969b10857ec86b3a42">variance</a>[g], dim); </div>
-<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span>        buffers.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceBuffers.html#a84e735182fe032cff9c7b8182151f4e1">variance</a>[g] = output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceResult.html#a7b5eed62d9b509969b10857ec86b3a42">variance</a>[g].data();</div>
-<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span>    }</div>
-<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span> </div>
-<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>    <a class="code hl_function" href="namespacetatami__stats.html#ac7476ce5e6db67ed8d137d14077d6a10">group_variance</a>(row, mat, group, num_groups, buffers, opt);</div>
-<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>    <span class="keywordflow">return</span> output;</div>
-<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>}</div>
+<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>        <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a>(output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceResult.html#a281f56a278e69315e854bfdb04165150">mean</a>[g], dim</div>
+<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>#ifdef TATAMI_STATS_TEST_DIRTY</div>
+<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>            , -1</div>
+<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span>#endif</div>
+<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span>        );</div>
+<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span>        buffers.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceBuffers.html#a771ae7d9b063b96db8a64f443b591736">mean</a>[g] = output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceResult.html#a281f56a278e69315e854bfdb04165150">mean</a>[g].data();</div>
+<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>        <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a>(output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceResult.html#a7b5eed62d9b509969b10857ec86b3a42">variance</a>[g], dim</div>
+<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>#ifdef TATAMI_STATS_TEST_DIRTY</div>
+<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>            , -1</div>
+<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>#endif</div>
+<div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>        );</div>
+<div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span>        buffers.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceBuffers.html#a84e735182fe032cff9c7b8182151f4e1">variance</a>[g] = output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceResult.html#a7b5eed62d9b509969b10857ec86b3a42">variance</a>[g].data();</div>
+<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>    }</div>
+<div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span> </div>
+<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>    <a class="code hl_function" href="namespacetatami__stats.html#ac7476ce5e6db67ed8d137d14077d6a10">group_variance</a>(row, mat, group, num_groups, buffers, opt);</div>
+<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>    <span class="keywordflow">return</span> output;</div>
+<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span>}</div>
 </div>
-<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span> </div>
-<div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>}</div>
-<div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span> </div>
-<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span> </div>
+<div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span>}</div>
+<div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span> </div>
+<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_a1f6fec43d5bae3f831841646bc02377b"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">tatami::Matrix::ncol</a></div><div class="ttdeci">virtual Index_ ncol() const=0</div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_a54fe7b4baf78069d35ff00357a1b6cc6"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">tatami::Matrix::nrow</a></div><div class="ttdeci">virtual Index_ nrow() const=0</div></div>

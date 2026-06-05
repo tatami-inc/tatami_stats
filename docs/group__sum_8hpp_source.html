@@ -357,17 +357,21 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keyword">auto</span> ptrs = sanisizer::create&lt;std::vector&lt;Output_*&gt; &gt;(num_groups);</div>
 <div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <span class="keyword">const</span> Index_ dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
 <div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a>(output[g], dim);</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        ptrs[g] = output[g].data();</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    }</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <a class="code hl_function" href="namespacetatami__stats.html#a914d2af37165ace4dcbe0a54ee065fd7">group_sum</a>(row, mat, group, num_groups, ptrs, opt);</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keywordflow">return</span> output;</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>}</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a>(output[g], dim</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>#ifdef TATAMI_STATS_TEST_DIRTY</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>            , -1</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>#endif</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        );</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        ptrs[g] = output[g].data();</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    }</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    <a class="code hl_function" href="namespacetatami__stats.html#a914d2af37165ace4dcbe0a54ee065fd7">group_sum</a>(row, mat, group, num_groups, ptrs, opt);</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="keywordflow">return</span> output;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>}</div>
 </div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>}</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>}</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_a1f6fec43d5bae3f831841646bc02377b"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">tatami::Matrix::ncol</a></div><div class="ttdeci">virtual Index_ ncol() const=0</div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_a54fe7b4baf78069d35ff00357a1b6cc6"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">tatami::Matrix::nrow</a></div><div class="ttdeci">virtual Index_ nrow() const=0</div></div>

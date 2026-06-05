@@ -302,15 +302,19 @@ $(function(){ initResizable(false); });
 <div class="foldopen" id="foldopen00254" data-start="{" data-end="}">
 <div class="line"><a id="l00254" name="l00254"></a><span class="lineno"><a class="line" href="namespacetatami__stats.html#aeadf1ce1d2d7b95d5085a6ac7a49864b">  254</a></span>std::vector&lt;Output_&gt; <a class="code hl_function" href="namespacetatami__stats.html#ac9c9b11bc8af6e6a1497cc088b17f054">sum</a>(<span class="keywordtype">bool</span> row, <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat, <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1SumOptions.html">SumOptions</a>&amp; opt) {</div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keyword">auto</span> output = sanisizer::create&lt;std::vector&lt;Output_&gt; &gt;(dim);</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <a class="code hl_function" href="namespacetatami__stats.html#ac9c9b11bc8af6e6a1497cc088b17f054">sum</a>(row, mat, output.data(), opt);</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="keywordflow">return</span> output;</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>}</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keyword">auto</span> output = sanisizer::create&lt;std::vector&lt;Output_&gt; &gt;(dim</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span><span class="preprocessor">#ifdef TATAMI_STATS_TEST_DIRTY</span></div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        , -1</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    );</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <a class="code hl_function" href="namespacetatami__stats.html#ac9c9b11bc8af6e6a1497cc088b17f054">sum</a>(row, mat, output.data(), opt);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <span class="keywordflow">return</span> output;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>}</div>
 </div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>}</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>}</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_a1f6fec43d5bae3f831841646bc02377b"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">tatami::Matrix::ncol</a></div><div class="ttdeci">virtual Index_ ncol() const=0</div></div>
 <div class="ttc" id="aclasstatami_1_1Matrix_html_a54fe7b4baf78069d35ff00357a1b6cc6"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">tatami::Matrix::nrow</a></div><div class="ttdeci">virtual Index_ nrow() const=0</div></div>
