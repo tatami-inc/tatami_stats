@@ -40,7 +40,7 @@ add_executable(
     src/range.cpp
     src/count.cpp
     src/group_median.cpp
-    src/grouped_sums.cpp
+    src/group_sum.cpp
     src/group_variance.cpp
     src/utils.cpp
 )

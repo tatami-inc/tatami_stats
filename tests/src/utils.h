@@ -12,6 +12,14 @@ void compare_double_vectors(const L_& left, const R_& right) {
     return;
 }
 
+template<class L_, class R_>
+void compare_double_vectors_of_vectors(const L_& left, const R_& right) {
+    ASSERT_EQ(left.size(), right.size());
+    for (size_t i = 0; i < left.size(); ++i) {
+        compare_double_vectors(left[i], right[i]);
+    }
+}
+
 template<class V_>
 bool is_all_nan(const V_& v) {
     for (auto x : v) {

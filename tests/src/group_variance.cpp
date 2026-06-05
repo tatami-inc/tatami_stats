@@ -7,14 +7,6 @@
 #include "tatami_test/tatami_test.hpp"
 #include "utils.h"
 
-template<class L_, class R_>
-static void compare_double_vectors_of_vectors(const L_& left, const R_& right) {
-    ASSERT_EQ(left.size(), right.size());
-    for (size_t i = 0; i < left.size(); ++i) {
-        compare_double_vectors(left[i], right[i]);
-    }
-}
-
 static void compare_result(
     const tatami_stats::GroupVarianceResult<double>& res,
     const std::vector<std::vector<double> >& expected_mean,
