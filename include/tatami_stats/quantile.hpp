@@ -159,7 +159,11 @@ std::vector<Output_> quantile(
     const QuantileOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    auto output = sanisizer::create<std::vector<Output_> >(dim);
+    auto output = sanisizer::create<std::vector<Output_> >(dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+        , -1
+#endif
+    );
     quantile(row, mat, prob, output.data(), opt);
     return output;
 }

@@ -476,8 +476,16 @@ template<typename Output_ = double, typename Value_, typename Index_>
 VarianceResult<Output_> variance(bool row, const tatami::Matrix<Value_, Index_>& mat, const VarianceOptions& opt) {
     VarianceResult<Output_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    tatami::resize_container_to_Index_size(output.mean, dim);
-    tatami::resize_container_to_Index_size(output.variance, dim);
+    tatami::resize_container_to_Index_size(output.mean, dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+        , -1
+#endif
+    );
+    tatami::resize_container_to_Index_size(output.variance, dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+        , -1
+#endif
+    );
 
     VarianceBuffers<Output_> buffers;
     buffers.mean = output.mean.data();

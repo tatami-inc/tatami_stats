@@ -436,8 +436,16 @@ template<typename Value_, typename Index_, typename Output_ = Value_>
 RangeResult<Output_> range(bool row, const tatami::Matrix<Value_, Index_>& mat, const RangeOptions& opt) {
     RangeResult<Output_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    tatami::resize_container_to_Index_size(output.minimum, dim);
-    tatami::resize_container_to_Index_size(output.maximum, dim);
+    tatami::resize_container_to_Index_size(output.minimum, dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+        , -1
+#endif
+    );
+    tatami::resize_container_to_Index_size(output.maximum, dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+        , -1
+#endif
+    );
 
     RangeBuffers<Output_> buffers;
     buffers.minimum = output.minimum.data();

@@ -753,9 +753,17 @@ GroupVarianceResult<Output_> group_variance(
     const auto dim = (row ? mat.nrow() : mat.ncol());
 
     for (std::size_t g = 0; g < num_groups; ++g) {
-        tatami::resize_container_to_Index_size(output.mean[g], dim); 
+        tatami::resize_container_to_Index_size(output.mean[g], dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+            , -1
+#endif
+        );
         buffers.mean[g] = output.mean[g].data();
-        tatami::resize_container_to_Index_size(output.variance[g], dim); 
+        tatami::resize_container_to_Index_size(output.variance[g], dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+            , -1
+#endif
+        );
         buffers.variance[g] = output.variance[g].data();
     }
 

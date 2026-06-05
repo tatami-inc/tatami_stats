@@ -213,7 +213,11 @@ void count(const bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* c
 template<typename Output_, typename Value_, typename Index_, class Condition_>
 std::vector<Output_> count(const bool row, const tatami::Matrix<Value_, Index_>& mat, Condition_ condition, const CountOptions& opt) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
-    auto output = sanisizer::create<std::vector<Output_> >(dim);
+    auto output = sanisizer::create<std::vector<Output_> >(dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+        , -1
+#endif
+    );
     count(row, mat, output.data(), std::move(condition), opt);
     return output;
 }

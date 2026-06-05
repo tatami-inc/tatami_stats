@@ -14,7 +14,21 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(DO_CODE_COVERAGE ON)
 endif()
 
-macro(decorate_test target)
+macro(make_test target)
+    add_executable(
+        ${target}
+        src/sum.cpp
+        src/variance.cpp
+        src/median.cpp
+        src/quantile.cpp
+        src/range.cpp
+        src/count.cpp
+        src/group_median.cpp
+        src/group_sum.cpp
+        src/group_variance.cpp
+        src/utils.cpp
+    )
+
     target_link_libraries(
         ${target}
         tatami_stats
@@ -31,17 +45,7 @@ macro(decorate_test target)
     gtest_discover_tests(${target})
 endmacro()
 
-add_executable(
-    libtest
-    src/sum.cpp
-    src/variance.cpp
-    src/median.cpp
-    src/quantile.cpp
-    src/range.cpp
-    src/count.cpp
-    src/group_median.cpp
-    src/group_sum.cpp
-    src/group_variance.cpp
-    src/utils.cpp
-)
-decorate_test(libtest)
+make_test(libtest)
+
+make_test(dirtytest)
+target_compile_definitions(dirtytest PUBLIC TATAMI_STATS_TEST_DIRTY=1)

@@ -150,7 +150,11 @@ std::vector<std::vector<Output_> > group_median(
     auto outptrs = sanisizer::create<std::vector<Output_*> >(num_groups);
     const auto dim = (row ? mat.nrow() : mat.ncol());
     for (std::size_t g = 0; g < num_groups; ++g) {
-        tatami::resize_container_to_Index_size(output[g], dim);
+        tatami::resize_container_to_Index_size(output[g], dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+            , -1
+#endif
+        );
         outptrs[g] = output[g].data();
     }
     group_median(row, mat, group, num_groups, outptrs, opt);

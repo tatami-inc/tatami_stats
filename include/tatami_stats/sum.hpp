@@ -253,7 +253,11 @@ void sum(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* output, c
 template<typename Output_ = double, typename Value_, typename Index_>
 std::vector<Output_> sum(bool row, const tatami::Matrix<Value_, Index_>& mat, const SumOptions& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    auto output = sanisizer::create<std::vector<Output_> >(dim);
+    auto output = sanisizer::create<std::vector<Output_> >(dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+        , -1
+#endif
+    );
     sum(row, mat, output.data(), opt);
     return output;
 }

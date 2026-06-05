@@ -319,7 +319,11 @@ std::vector<std::vector<Output_> > group_sum(
     auto ptrs = sanisizer::create<std::vector<Output_*> >(num_groups);
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
     for (std::size_t g = 0; g < num_groups; ++g) {
-        tatami::resize_container_to_Index_size(output[g], dim);
+        tatami::resize_container_to_Index_size(output[g], dim
+#ifdef TATAMI_STATS_TEST_DIRTY
+            , -1
+#endif
+        );
         ptrs[g] = output[g].data();
     }
     group_sum(row, mat, group, num_groups, ptrs, opt);
