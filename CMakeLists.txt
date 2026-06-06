@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.24)
 
 project(tatami_stats
-    VERSION 2.0.3
+    VERSION 3.0.0
     DESCRIPTION "Matrix statistics for tatami"
-    LANGUAGES CXX)
+    LANGUAGES CXX
+)
 
 add_library(tatami_stats INTERFACE)
 add_library(tatami::tatami_stats ALIAS tatami_stats)
