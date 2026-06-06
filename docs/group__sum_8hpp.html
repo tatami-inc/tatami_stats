@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats/utils.hpp File Reference</title>
+<title>tatami_stats: tatami_stats/group_sum.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -101,22 +101,19 @@ $(function(){ initResizable(false); });
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">utils.hpp File Reference</div></div>
+  <div class="headertitle"><div class="title">group_sum.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Utilities for computing matrix statistics.  
+<p>Compute group-wise sums from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.  
 <a href="#details">More...</a></p>
 
-<p><a href="utils_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="group__sum_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtatami__stats_1_1LocalOutputBuffer.html">tatami_stats::LocalOutputBuffer&lt; Output_ &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local output buffer for running calculations.  <a href="classtatami__stats_1_1LocalOutputBuffer.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtatami__stats_1_1LocalOutputBuffers.html">tatami_stats::LocalOutputBuffers&lt; Output_, GetOutput_ &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local output buffers for running calculations.  <a href="classtatami__stats_1_1LocalOutputBuffers.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupSumOptions.html">tatami_stats::GroupSumOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="namespacetatami__stats.html#a914d2af37165ace4dcbe0a54ee065fd7">group_sum()</a></code>.  <a href="structtatami__stats_1_1GroupSumOptions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -127,15 +124,15 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af1c45653a7d1b140a6fcdd76ceffe32a" id="r_af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memTemplParams" colspan="2">template&lt;typename Number_  = std::size_t, typename Group_ &gt; </td></tr>
-<tr class="memitem:af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memTemplItemLeft" align="right" valign="top">Number_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html#af1c45653a7d1b140a6fcdd76ceffe32a">tatami_stats::total_groups</a> (const Group_ *group, std::size_t n)</td></tr>
-<tr class="separator:af1c45653a7d1b140a6fcdd76ceffe32a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad46c11e3a7611f30d9695e600c5b7dd6" id="r_ad46c11e3a7611f30d9695e600c5b7dd6"><td class="memTemplParams" colspan="2">template&lt;typename Group_ , typename Size_ &gt; </td></tr>
-<tr class="memitem:ad46c11e3a7611f30d9695e600c5b7dd6"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Size_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html#ad46c11e3a7611f30d9695e600c5b7dd6">tatami_stats::tabulate_groups</a> (const Group_ *group, Size_ n)</td></tr>
-<tr class="separator:ad46c11e3a7611f30d9695e600c5b7dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a914d2af37165ace4dcbe0a54ee065fd7" id="r_a914d2af37165ace4dcbe0a54ee065fd7"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
+<tr class="memitem:a914d2af37165ace4dcbe0a54ee065fd7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html#a914d2af37165ace4dcbe0a54ee065fd7">tatami_stats::group_sum</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, std::vector&lt; Output_ * &gt; &amp;output, const <a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a> &amp;opt)</td></tr>
+<tr class="separator:a914d2af37165ace4dcbe0a54ee065fd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed9cbd9b45cde860ce180bd21760d3e9" id="r_aed9cbd9b45cde860ce180bd21760d3e9"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
+<tr class="memitem:aed9cbd9b45cde860ce180bd21760d3e9"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html#aed9cbd9b45cde860ce180bd21760d3e9">tatami_stats::group_sum</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, const <a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a> &amp;opt)</td></tr>
+<tr class="separator:aed9cbd9b45cde860ce180bd21760d3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Utilities for computing matrix statistics. </p>
+<div class="textblock"><p>Compute group-wise sums from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

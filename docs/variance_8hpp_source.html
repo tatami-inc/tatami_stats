@@ -103,7 +103,7 @@ $(function(){ initResizable(false); });
 <a href="variance_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TATAMI_STATS_VARIANCE_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TATAMI_STATS_VARIANCE_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;utils.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
@@ -469,7 +469,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Output_&gt;</div>
 <div class="foldopen" id="foldopen00419" data-start="{" data-end="}">
 <div class="line"><a id="l00419" name="l00419"></a><span class="lineno"><a class="line" href="namespacetatami__stats.html#af5b0ad69b65dafbeb145903572b421df">  419</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacetatami__stats.html#af5b0ad69b65dafbeb145903572b421df">variance</a>(<span class="keywordtype">bool</span> row, <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat, <a class="code hl_struct" href="structtatami__stats_1_1VarianceBuffers.html">VarianceBuffers&lt;Output_&gt;</a>&amp; output, <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1VarianceOptions.html">VarianceOptions</a>&amp; opt) {</div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>    internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>    nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>        opt.<a class="code hl_variable" href="structtatami__stats_1_1VarianceOptions.html#a7720cc1ed95e03d7945183d6978926ea">skip_nan</a>,</div>
 <div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>        [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>            if (mat.prefer_rows() == row) {</div>
@@ -553,7 +553,6 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="astructtatami__stats_1_1VarianceResult_html_aa48ad71e29a9ff3e7928a89929a42e95"><div class="ttname"><a href="structtatami__stats_1_1VarianceResult.html#aa48ad71e29a9ff3e7928a89929a42e95">tatami_stats::VarianceResult::variance</a></div><div class="ttdeci">std::vector&lt; Output_ &gt; variance</div><div class="ttdef"><b>Definition</b> variance.hpp:457</div></div>
 <div class="ttc" id="astructtatami__stats_1_1VarianceResult_html_af7eefe392238647ffaf7454b17014c9a"><div class="ttname"><a href="structtatami__stats_1_1VarianceResult.html#af7eefe392238647ffaf7454b17014c9a">tatami_stats::VarianceResult::mean</a></div><div class="ttdeci">std::vector&lt; Output_ &gt; mean</div><div class="ttdef"><b>Definition</b> variance.hpp:451</div></div>
 <div class="ttc" id="atatami_8hpp_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/tatami_8hpp.html">tatami.hpp</a></div></div>
-<div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Utilities for computing matrix statistics.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

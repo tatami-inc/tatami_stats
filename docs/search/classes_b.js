@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['pseudooraculardenseextractor_0',['PseudoOracularDenseExtractor',['https://tatami-inc.github.io/tatami/structtatami_1_1PseudoOracularDenseExtractor.html',1,'tatami']]],
-  ['pseudooracularsparseextractor_1',['PseudoOracularSparseExtractor',['https://tatami-inc.github.io/tatami/structtatami_1_1PseudoOracularSparseExtractor.html',1,'tatami']]]
+  ['quantileoptions_0',['QuantileOptions',['../structtatami__stats_1_1QuantileOptions.html',1,'tatami_stats']]]
 ];

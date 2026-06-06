@@ -100,10 +100,10 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">group_sum.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TATAMI_STATS_GROUPED_SUMS_HPP</span></div>
+<a href="group__sum_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TATAMI_STATS_GROUPED_SUMS_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TATAMI_STATS_GROUPED_SUMS_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;utils.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="sum_8hpp.html">sum.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
@@ -146,7 +146,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                <span class="keyword">auto</span> <a class="code hl_function" href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">range</a> = ext-&gt;fetch(xbuffer.data(), ibuffer.data());</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                std::fill(tmp.begin(), tmp.end(), <span class="keyword">static_cast&lt;</span>Output_<span class="keyword">&gt;</span>(0));</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                    opt.<a class="code hl_variable" href="structtatami__stats_1_1GroupSumOptions.html#a7a150c21b91acc8aabc758dbcca2f2a2">skip_nan</a>,</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                        for (Index_ j = 0; j &lt; range.number; ++j) {</div>
@@ -179,7 +179,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                <span class="keyword">auto</span> ptr = ext-&gt;fetch(xbuffer.data());</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                std::fill(tmp.begin(), tmp.end(), <span class="keyword">static_cast&lt;</span>Output_<span class="keyword">&gt;</span>(0));</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                    opt.skip_nan,</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                        for (Index_ j = 0; j &lt; otherdim; ++j) {</div>
@@ -262,7 +262,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                <span class="keyword">auto</span> <a class="code hl_function" href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">range</a> = ext-&gt;fetch(xbuffer.data(), ibuffer.data());</div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                <span class="keyword">const</span> <span class="keyword">auto</span> sum_ptr = sum_ptrs[group[start + x]];</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                    opt.skip_nan,</div>
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                        for (Index_ i = 0; i &lt; range.number; ++i) {</div>
@@ -288,7 +288,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>                <span class="keyword">auto</span> ptr = ext-&gt;fetch(buffer.data());</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                <span class="keyword">const</span> <span class="keyword">auto</span> sum_ptr = sum_ptrs[group[start + x]];</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>                nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>                    opt.skip_nan,</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                        for (Index_ d = 0; d &lt; dim; ++d) {</div>
@@ -393,7 +393,6 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="astructtatami__stats_1_1GroupSumOptions_html_aa4a3d9b39472a9eef474654e26c2cc36"><div class="ttname"><a href="structtatami__stats_1_1GroupSumOptions.html#aa4a3d9b39472a9eef474654e26c2cc36">tatami_stats::GroupSumOptions::num_threads</a></div><div class="ttdeci">int num_threads</div><div class="ttdef"><b>Definition</b> group_sum.hpp:36</div></div>
 <div class="ttc" id="asum_8hpp_html"><div class="ttname"><a href="sum_8hpp.html">sum.hpp</a></div><div class="ttdoc">Compute row and column sums from a tatami::Matrix.</div></div>
 <div class="ttc" id="atatami_8hpp_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/tatami_8hpp.html">tatami.hpp</a></div></div>
-<div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Utilities for computing matrix statistics.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

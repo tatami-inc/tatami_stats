@@ -103,7 +103,7 @@ $(function(){ initResizable(false); });
 <a href="group__variance_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TATAMI_STATS_GROUP_VARIANCE_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TATAMI_STATS_GROUP_VARIANCE_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;utils.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
@@ -722,7 +722,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>    assert(sanisizer::is_equal(num_groups, output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceBuffers.html#a771ae7d9b063b96db8a64f443b591736">mean</a>.size()));</div>
 <div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span>    assert(sanisizer::is_equal(num_groups, output.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceBuffers.html#a84e735182fe032cff9c7b8182151f4e1">variance</a>.size()));</div>
 <div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span> </div>
-<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>    internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>    nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>        opt.<a class="code hl_variable" href="structtatami__stats_1_1GroupVarianceOptions.html#a4c88585c22dad4d741e472cdbec6c233">skip_nan</a>,</div>
 <div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>        [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>            if (mat.prefer_rows() == row) {</div>
@@ -815,7 +815,6 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="astructtatami__stats_1_1GroupVarianceResult_html_a281f56a278e69315e854bfdb04165150"><div class="ttname"><a href="structtatami__stats_1_1GroupVarianceResult.html#a281f56a278e69315e854bfdb04165150">tatami_stats::GroupVarianceResult::mean</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; Output_ &gt; &gt; mean</div><div class="ttdef"><b>Definition</b> group_variance.hpp:709</div></div>
 <div class="ttc" id="astructtatami__stats_1_1GroupVarianceResult_html_a7b5eed62d9b509969b10857ec86b3a42"><div class="ttname"><a href="structtatami__stats_1_1GroupVarianceResult.html#a7b5eed62d9b509969b10857ec86b3a42">tatami_stats::GroupVarianceResult::variance</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; Output_ &gt; &gt; variance</div><div class="ttdef"><b>Definition</b> group_variance.hpp:716</div></div>
 <div class="ttc" id="atatami_8hpp_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/tatami_8hpp.html">tatami.hpp</a></div></div>
-<div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Utilities for computing matrix statistics.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

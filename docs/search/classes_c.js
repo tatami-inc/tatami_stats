@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['quantileoptions_0',['QuantileOptions',['../structtatami__stats_1_1QuantileOptions.html',1,'tatami_stats']]]
+  ['rangebuffers_0',['RangeBuffers',['../structtatami__stats_1_1RangeBuffers.html',1,'tatami_stats']]],
+  ['rangeoptions_1',['RangeOptions',['../structtatami__stats_1_1RangeOptions.html',1,'tatami_stats']]],
+  ['rangeresult_2',['RangeResult',['../structtatami__stats_1_1RangeResult.html',1,'tatami_stats']]],
+  ['retrievecompressedsparsecontentsoptions_3',['RetrieveCompressedSparseContentsOptions',['https://tatami-inc.github.io/tatami/structtatami_1_1RetrieveCompressedSparseContentsOptions.html',1,'tatami']]],
+  ['retrievefragmentedsparsecontentsoptions_4',['RetrieveFragmentedSparseContentsOptions',['https://tatami-inc.github.io/tatami/structtatami_1_1RetrieveFragmentedSparseContentsOptions.html',1,'tatami']]]
 ];

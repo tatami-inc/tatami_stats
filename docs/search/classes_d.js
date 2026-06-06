@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['rangebuffers_0',['RangeBuffers',['../structtatami__stats_1_1RangeBuffers.html',1,'tatami_stats']]],
-  ['rangeoptions_1',['RangeOptions',['../structtatami__stats_1_1RangeOptions.html',1,'tatami_stats']]],
-  ['rangeresult_2',['RangeResult',['../structtatami__stats_1_1RangeResult.html',1,'tatami_stats']]],
-  ['retrievecompressedsparsecontentsoptions_3',['RetrieveCompressedSparseContentsOptions',['https://tatami-inc.github.io/tatami/structtatami_1_1RetrieveCompressedSparseContentsOptions.html',1,'tatami']]],
-  ['retrievefragmentedsparsecontentsoptions_4',['RetrieveFragmentedSparseContentsOptions',['https://tatami-inc.github.io/tatami/structtatami_1_1RetrieveFragmentedSparseContentsOptions.html',1,'tatami']]]
+  ['somenumericarray_0',['SomeNumericArray',['https://tatami-inc.github.io/tatami/classtatami_1_1SomeNumericArray.html',1,'tatami']]],
+  ['sparserange_1',['SparseRange',['https://tatami-inc.github.io/tatami/structtatami_1_1SparseRange.html',1,'tatami']]],
+  ['sumoptions_2',['SumOptions',['../structtatami__stats_1_1SumOptions.html',1,'tatami_stats']]]
 ];

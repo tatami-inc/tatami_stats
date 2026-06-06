@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['data_0',['data',['https://tatami-inc.github.io/tatami/classtatami_1_1ArrayView.html#ad23ad79ab7ed43ebb652aa172e26977a',1,'tatami::ArrayView::data()'],['../classtatami__stats_1_1LocalOutputBuffer.html#a6945cd032378e8cd76a10e6ee0a437da',1,'tatami_stats::LocalOutputBuffer::data()'],['../classtatami__stats_1_1LocalOutputBuffer.html#ae53e9000251661be083d992e9f1cb8be',1,'tatami_stats::LocalOutputBuffer::data() const'],['../classtatami__stats_1_1LocalOutputBuffers.html#a534438174bda372d62582d39c575cd64',1,'tatami_stats::LocalOutputBuffers::data(std::size_t i)'],['../classtatami__stats_1_1LocalOutputBuffers.html#a344bb901aad5d25440d48bb1ad9116a3',1,'tatami_stats::LocalOutputBuffers::data(std::size_t i) const']]],
+  ['data_0',['data',['https://tatami-inc.github.io/tatami/classtatami_1_1ArrayView.html#ad23ad79ab7ed43ebb652aa172e26977a',1,'tatami::ArrayView']]],
   ['delayedbinaryisometricaddhelper_1',['DelayedBinaryIsometricAddHelper',['https://tatami-inc.github.io/tatami/namespacetatami.html#a57425b6548448b71576c04f16f4dc38d',1,'tatami']]],
   ['delayedbinaryisometricarithmetichelper_2',['DelayedBinaryIsometricArithmeticHelper',['https://tatami-inc.github.io/tatami/classtatami_1_1DelayedBinaryIsometricArithmeticHelper.html',1,'tatami']]],
   ['delayedbinaryisometricbooleanandhelper_3',['DelayedBinaryIsometricBooleanAndHelper',['https://tatami-inc.github.io/tatami/namespacetatami.html#abb2bedfee72494dd676f535b6e646944',1,'tatami']]],

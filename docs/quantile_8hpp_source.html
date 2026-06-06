@@ -103,7 +103,7 @@ $(function(){ initResizable(false); });
 <a href="quantile_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TATAMI_STATS_QUANTILE_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TATAMI_STATS_QUANTILE_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;utils.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
@@ -146,7 +146,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        std::optional&lt;quickstats::SingleQuantileFixedNumber&lt;Output_&gt; &gt; qcalcs_fixed;</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        std::optional&lt;quickstats::SingleQuantileVariableNumber&lt;Output_&gt; &gt; qcalcs_var;</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="comment">// Index_ is safe to cast to std::size_t as that&#39;s part of the tatami contract.</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            opt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                qcalcs_var.emplace(otherdim, prob);</div>
@@ -168,7 +168,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="keyword">auto</span> <a class="code hl_function" href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">range</a> = ext-&gt;fetch(vbuffer, NULL);</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a>(<a class="code hl_function" href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">range</a>.value, <a class="code hl_function" href="namespacetatami__stats.html#a7744693451913c2be630f12ecfb9a201">range</a>.number, vbuffer);</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                    opt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                        const auto new_non_zeros = shift_nans(vbuffer, range.number);</div>
@@ -189,7 +189,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="keyword">auto</span> raw = ext-&gt;fetch(bufptr);</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7">tatami::copy_n</a>(raw, otherdim, bufptr);</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                    opt.<a class="code hl_variable" href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">skip_nan</a>,</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                        const auto new_total = shift_nans(bufptr, otherdim);</div>
@@ -245,7 +245,6 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="astructtatami__stats_1_1QuantileOptions_html_a44dbdd238da6a3822721e1fb5a17203d"><div class="ttname"><a href="structtatami__stats_1_1QuantileOptions.html#a44dbdd238da6a3822721e1fb5a17203d">tatami_stats::QuantileOptions::num_threads</a></div><div class="ttdeci">int num_threads</div><div class="ttdef"><b>Definition</b> quantile.hpp:38</div></div>
 <div class="ttc" id="astructtatami__stats_1_1QuantileOptions_html_a6d1fe998979cd811775a5f74a3f2cd08"><div class="ttname"><a href="structtatami__stats_1_1QuantileOptions.html#a6d1fe998979cd811775a5f74a3f2cd08">tatami_stats::QuantileOptions::skip_nan</a></div><div class="ttdeci">bool skip_nan</div><div class="ttdef"><b>Definition</b> quantile.hpp:32</div></div>
 <div class="ttc" id="atatami_8hpp_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/tatami_8hpp.html">tatami.hpp</a></div></div>
-<div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Utilities for computing matrix statistics.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

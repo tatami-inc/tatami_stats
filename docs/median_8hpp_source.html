@@ -103,7 +103,7 @@ $(function(){ initResizable(false); });
 <a href="median_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TATAMI_STATS_MEDIAN_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TATAMI_STATS_MEDIAN_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;utils.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
@@ -126,7 +126,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Output_ = <span class="keywordtype">double</span>, <span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_&gt;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>Output_ median_direct(Value_* ptr, Index_ num, <span class="keywordtype">bool</span> skip_nan) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        skip_nan,</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            num = shift_nans(ptr, num);</div>
@@ -139,7 +139,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Output_ = <span class="keywordtype">double</span>, <span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_&gt;</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>Output_ median_direct(Value_* value, Index_ num_nonzero, Index_ num_all, <span class="keywordtype">bool</span> skip_nan) {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    internal::nanable_ifelse&lt;Value_&gt;(</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        skip_nan,</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keyword">auto</span> new_nonzero = shift_nans(value, num_nonzero);</div>
@@ -222,7 +222,6 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="astructtatami__stats_1_1MedianOptions_html_a3457394803e4049bc3092284465fcbb8"><div class="ttname"><a href="structtatami__stats_1_1MedianOptions.html#a3457394803e4049bc3092284465fcbb8">tatami_stats::MedianOptions::skip_nan</a></div><div class="ttdeci">bool skip_nan</div><div class="ttdef"><b>Definition</b> median.hpp:31</div></div>
 <div class="ttc" id="astructtatami__stats_1_1MedianOptions_html_a68e43fb8b128608d02eefc15e4437cda"><div class="ttname"><a href="structtatami__stats_1_1MedianOptions.html#a68e43fb8b128608d02eefc15e4437cda">tatami_stats::MedianOptions::num_threads</a></div><div class="ttdeci">int num_threads</div><div class="ttdef"><b>Definition</b> median.hpp:37</div></div>
 <div class="ttc" id="atatami_8hpp_html"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/tatami_8hpp.html">tatami.hpp</a></div></div>
-<div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Utilities for computing matrix statistics.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
