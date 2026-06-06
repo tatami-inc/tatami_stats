@@ -12,7 +12,7 @@
 #include "sanisizer/sanisizer.hpp"
 
 /**
- * @file grouped_sums.hpp
+ * @file group_sum.hpp
  *
  * @brief Compute group-wise sums from a `tatami::Matrix`.
  */

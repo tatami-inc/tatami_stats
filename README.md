@@ -26,55 +26,24 @@ std::shared_ptr<tatami::NumericMatrix> mat(
 );
 
 // Compute row-wise medians.
-auto row_medians = tatami_stats::medians::by_row(mat.get());
+auto row_medians = tatami_stats::median(true, *mat, {});
 
-// Column-wise means and variances with NaN skipping and multiple threads.
-tatami_stats::variances::Options vopt;
+// Column-wise variances with NaN skipping and multiple threads.
+tatami_stats::VarianceOptions vopt;
 vopt.skip_nan = true;
 vopt.num_threads = 5;
-auto col_mean_and_var = tatami_stats::variances::by_column(mat.get(), vopt);
+auto vres = tatami_stats::variance(false, *mat, vopt);
+vres.mean; // we get the means as a side-effect.
+vres.variance;
+
+// We can also fill up an existing buffer.
+tatami_stats::SumOptions sopt;
+sopt.num_threads = 2;
+std::vector<double> sums(nrows);
+tatami_stats::sum(true, *mat, sums.data(), sopt);
 ```
 
 Check out the [API documentation](https://tatami-inc.github.io/tatami_stats) for more details.
-
-## Lower-level functionality
-
-The `apply()` function in each statistic's namespace offers more control over the calculation of each statistic.
-For example, instead of creating a new vector, we can fill an existing array with the sums:
-
-```cpp
-std::vector<double> my_output(mat->nrow());
-tatami_stats::sums::Options sopt;
-tatami_stats::sums::apply(/* row = */ true, mat.get(), output.data(), sopt);
-```
-
-Some of the algorithms expose low-level functions for even more fine-grained control.
-For example, we can manage the loop over the matrix rows ourselves, computing the mean and median for each row:
-
-```cpp
-auto ext = mat->dense_row();
-std::vector<double> buffer(ncols);
-std::vector<double> mean_output(nrows), med_output(nrows);
-for (int r = 0; r < nrows; ++r) {
-    auto ptr = ext->fetch(r, buffer.data());
-
-    // Need to count the number of values in the denominator.
-    auto sum = tatami_stats::sums::direct(ptr, ncols, /* skip_nan= */ true);
-    size_t num_notna = 0;
-    for (int c = 0; c < ncols; ++c) {
-        num_notna += !std::isnan(ptr[c]);
-    }
-    mean_output[r] = sum / not_na;
-
-    // Copying values into the buffer as median calculation resorts the values.
-    tatami::copy_n(ptr, ncols, buffer.data());
-    med_output[r] = tatami_stats::medians::direct(ptr, ncols, /* skip_nan= */ true);
-}
-```
-
-These low-level functions allow developers to compute multiple statistics with a single pass through the matrix.
-In contrast, calling `tatami_stats::sums::by_row` and `tatami_stats::medians::by_row` separately would extract data from the matrix twice,
-which may be expensive for file-backed matrices.
 
 ## Building projects 
 
