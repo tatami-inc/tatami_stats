@@ -51,7 +51,7 @@ void sum_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* ou
             auto ext = tatami::consecutive_extractor<true>(mat, row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
 
-            internal::nanable_ifelse<Value_>(
+            nanable_ifelse<Value_>(
                 opt.skip_nan,
                 [&]() -> void {
                     for (Index_ x = 0; x < l; ++x) {
@@ -81,7 +81,7 @@ void sum_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* ou
             auto ext = tatami::consecutive_extractor<false>(mat, row, s, l);
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
 
-            internal::nanable_ifelse<Value_>(
+            nanable_ifelse<Value_>(
                 opt.skip_nan,
                 [&]() -> void {
                     for (Index_ x = 0; x < l; ++x) {
@@ -144,7 +144,7 @@ void sum_running(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* o
 
             for (Index_ x = 0; x < l; ++x) {
                 const auto out = ext->fetch(vbuffer.data(), ibuffer.data());
-                internal::nanable_ifelse<Value_>(
+                nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
                         for (Index_ i = 0; i < out.number; ++i) {
@@ -168,7 +168,7 @@ void sum_running(bool row, const tatami::Matrix<Value_, Index_>& mat, Output_* o
 
             for (Index_ x = 0; x < l; ++x) {
                 const auto ptr = ext->fetch(buffer.data());
-                internal::nanable_ifelse<Value_>(
+                nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
                         for (Index_ i = 0; i < dim; ++i) {

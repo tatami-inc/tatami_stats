@@ -75,7 +75,7 @@ void quantile(
         std::optional<quickstats::SingleQuantileFixedNumber<Output_> > qcalcs_fixed;
         std::optional<quickstats::SingleQuantileVariableNumber<Output_> > qcalcs_var;
         // Index_ is safe to cast to std::size_t as that's part of the tatami contract.
-        internal::nanable_ifelse<Value_>(
+        nanable_ifelse<Value_>(
             opt.skip_nan,
             [&]() -> void {
                 qcalcs_var.emplace(otherdim, prob);
@@ -97,7 +97,7 @@ void quantile(
                 auto range = ext->fetch(vbuffer, NULL);
                 tatami::copy_n(range.value, range.number, vbuffer);
 
-                internal::nanable_ifelse<Value_>(
+                nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
                         const auto new_non_zeros = shift_nans(vbuffer, range.number);
@@ -118,7 +118,7 @@ void quantile(
                 auto raw = ext->fetch(bufptr);
                 tatami::copy_n(raw, otherdim, bufptr);
 
-                internal::nanable_ifelse<Value_>(
+                nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
                         const auto new_total = shift_nans(bufptr, otherdim);

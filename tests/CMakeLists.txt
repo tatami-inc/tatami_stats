@@ -26,7 +26,6 @@ macro(make_test target)
         src/group_median.cpp
         src/group_sum.cpp
         src/group_variance.cpp
-        src/utils.cpp
     )
 
     target_link_libraries(

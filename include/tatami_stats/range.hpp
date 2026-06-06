@@ -59,7 +59,7 @@ constexpr Value_ choose_maximum_placeholder() {
 
 template<typename Value_, typename Index_>
 Value_ min_direct(const Value_* const ptr, const Index_ num, bool skip_nan) {
-    return internal::nanable_ifelse_with_value<Value_>(
+    return nanable_ifelse_with_value<Value_>(
         skip_nan,
         [&]() -> Value_ {
             auto current = choose_minimum_placeholder<Value_>(); 
@@ -83,7 +83,7 @@ Value_ min_direct(const Value_* const ptr, const Index_ num, bool skip_nan) {
 
 template<typename Value_, typename Index_>
 Value_ max_direct(const Value_* ptr, const Index_ num, bool skip_nan) {
-    return internal::nanable_ifelse_with_value<Value_>(
+    return nanable_ifelse_with_value<Value_>(
         skip_nan,
         [&]() -> Value_ {
             auto current = choose_maximum_placeholder<Value_>(); 
@@ -248,7 +248,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                 if (x == 0) {
                     // For the first observed vector in each thread,
                     // we can optimize it a little as we don't need to read existing min/max.
-                    internal::nanable_ifelse<Value_>(
+                    nanable_ifelse<Value_>(
                         opt.skip_nan,
                         [&]() -> void {
                             for (Index_ i = 0; i < out.number; ++i) {
@@ -312,7 +312,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                 if (x == 0) {
                     // For the first observed vector in each thread,
                     // we can optimize it a little as we don't need to read existing min/max.
-                    internal::nanable_ifelse<Value_>(
+                    nanable_ifelse<Value_>(
                         opt.skip_nan,
                         [&]() -> void {
                             for (Index_ i = 0; i < dim; ++i) {

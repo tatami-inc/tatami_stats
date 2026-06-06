@@ -417,7 +417,7 @@ void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, 
  */
 template<typename Value_, typename Index_, typename Output_>
 void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& opt) {
-    internal::nanable_ifelse<Value_>(
+    nanable_ifelse<Value_>(
         opt.skip_nan,
         [&]() -> void {
             if (mat.prefer_rows() == row) {

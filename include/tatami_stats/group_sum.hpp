@@ -62,7 +62,7 @@ void group_sum_direct(
                 auto range = ext->fetch(xbuffer.data(), ibuffer.data());
                 std::fill(tmp.begin(), tmp.end(), static_cast<Output_>(0));
 
-                internal::nanable_ifelse<Value_>(
+                nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
                         for (Index_ j = 0; j < range.number; ++j) {
@@ -95,7 +95,7 @@ void group_sum_direct(
                 auto ptr = ext->fetch(xbuffer.data());
                 std::fill(tmp.begin(), tmp.end(), static_cast<Output_>(0));
 
-                internal::nanable_ifelse<Value_>(
+                nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
                         for (Index_ j = 0; j < otherdim; ++j) {
@@ -178,7 +178,7 @@ void group_sum_running(
                 auto range = ext->fetch(xbuffer.data(), ibuffer.data());
                 const auto sum_ptr = sum_ptrs[group[start + x]];
 
-                internal::nanable_ifelse<Value_>(
+                nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
                         for (Index_ i = 0; i < range.number; ++i) {
@@ -204,7 +204,7 @@ void group_sum_running(
                 auto ptr = ext->fetch(buffer.data());
                 const auto sum_ptr = sum_ptrs[group[start + x]];
 
-                internal::nanable_ifelse<Value_>(
+                nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
                         for (Index_ d = 0; d < dim; ++d) {

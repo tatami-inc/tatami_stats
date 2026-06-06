@@ -42,7 +42,7 @@ struct MedianOptions {
  */
 template<typename Output_ = double, typename Value_, typename Index_>
 Output_ median_direct(Value_* ptr, Index_ num, bool skip_nan) {
-    internal::nanable_ifelse<Value_>(
+    nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
             num = shift_nans(ptr, num);
@@ -55,7 +55,7 @@ Output_ median_direct(Value_* ptr, Index_ num, bool skip_nan) {
 
 template<typename Output_ = double, typename Value_, typename Index_>
 Output_ median_direct(Value_* value, Index_ num_nonzero, Index_ num_all, bool skip_nan) {
-    internal::nanable_ifelse<Value_>(
+    nanable_ifelse<Value_>(
         skip_nan,
         [&]() -> void {
             auto new_nonzero = shift_nans(value, num_nonzero);

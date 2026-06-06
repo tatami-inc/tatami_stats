@@ -674,7 +674,7 @@ void group_variance(
     assert(sanisizer::is_equal(num_groups, output.mean.size()));
     assert(sanisizer::is_equal(num_groups, output.variance.size()));
 
-    internal::nanable_ifelse<Value_>(
+    nanable_ifelse<Value_>(
         opt.skip_nan,
         [&]() -> void {
             if (mat.prefer_rows() == row) {
