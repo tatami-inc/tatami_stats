@@ -103,21 +103,29 @@ $(function(){ initResizable(false); });
 <a href="tatami__stats_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TATAMI_TATAMI_STATS_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TATAMI_TATAMI_STATS_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;counts.hpp&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;grouped_medians.hpp&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;grouped_sums.hpp&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;grouped_variances.hpp&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;medians.hpp&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;quantiles.hpp&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;ranges.hpp&quot;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;sums.hpp&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="count_8hpp.html">count.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="group__median_8hpp.html">group_median.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="group__sum_8hpp.html">group_sum.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="group__variance_8hpp.html">group_variance.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="median_8hpp.html">median.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="quantile_8hpp.html">quantile.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="range_8hpp.html">range.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="sum_8hpp.html">sum.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;utils.hpp&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="variance_8hpp.html">variance.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacetatami__stats.html">tatami_stats</a> {}</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="acount_8hpp_html"><div class="ttname"><a href="count_8hpp.html">count.hpp</a></div><div class="ttdoc">Compute row and column counts from a tatami::Matrix.</div></div>
+<div class="ttc" id="agroup__median_8hpp_html"><div class="ttname"><a href="group__median_8hpp.html">group_median.hpp</a></div><div class="ttdoc">Compute group-wise medians from a tatami::Matrix.</div></div>
+<div class="ttc" id="agroup__sum_8hpp_html"><div class="ttname"><a href="group__sum_8hpp.html">group_sum.hpp</a></div><div class="ttdoc">Compute group-wise sums from a tatami::Matrix.</div></div>
+<div class="ttc" id="agroup__variance_8hpp_html"><div class="ttname"><a href="group__variance_8hpp.html">group_variance.hpp</a></div><div class="ttdoc">Compute group-wise variances from a tatami::Matrix.</div></div>
+<div class="ttc" id="amedian_8hpp_html"><div class="ttname"><a href="median_8hpp.html">median.hpp</a></div><div class="ttdoc">Compute row and column medians from a tatami::Matrix.</div></div>
 <div class="ttc" id="anamespacetatami__stats_html"><div class="ttname"><a href="namespacetatami__stats.html">tatami_stats</a></div><div class="ttdoc">Functions to compute statistics from a tatami::Matrix.</div><div class="ttdef"><b>Definition</b> count.hpp:20</div></div>
+<div class="ttc" id="aquantile_8hpp_html"><div class="ttname"><a href="quantile_8hpp.html">quantile.hpp</a></div><div class="ttdoc">Compute row and column quantiles from a tatami::Matrix.</div></div>
+<div class="ttc" id="arange_8hpp_html"><div class="ttname"><a href="range_8hpp.html">range.hpp</a></div><div class="ttdoc">Compute row and column ranges from a tatami::Matrix.</div></div>
+<div class="ttc" id="asum_8hpp_html"><div class="ttname"><a href="sum_8hpp.html">sum.hpp</a></div><div class="ttdoc">Compute row and column sums from a tatami::Matrix.</div></div>
 <div class="ttc" id="avariance_8hpp_html"><div class="ttname"><a href="variance_8hpp.html">variance.hpp</a></div><div class="ttdoc">Compute row and column variances from a tatami::Matrix.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
