@@ -434,30 +434,39 @@ void group_variance_running_noskip(
             }
 
             for (int u = 0; u < nused; ++u) {
+                const auto cur_count = (*(all_partial_count[u]))[g];
+                if (cur_count == 0) {
+                    continue;
+                }
+
                 const auto& cur_mean = (*(ap_mean[u]))[g];
-                const Output_ mult = static_cast<Output_>((*(all_partial_count[u]))[g]) / static_cast<Output_>(cur_global_count);
+                const Output_ mult = static_cast<Output_>(cur_count) / static_cast<Output_>(cur_global_count);
                 for (Index_ d = 0; d < dim; ++d) {
                     cur_output[d] += cur_mean[d] * mult;
                 }
             }
         }
 
-        // Combining the RSS. We need to use the safe variant of recenter_rss(), just to protect against the
-        // case where a group has no observations within a particular thread. 
+        // Combining the RSS. 
         for (std::size_t g = 0; g < num_groups; ++g) {
             const auto& cur_global = output.mean[g];
             const auto cur_output = output.variance[g];
+
             for (int u = 0; u < nused; ++u) {
                 const auto cur_count = (*(all_partial_count[u]))[g];
+                if (cur_count == 0) { // This check allows us to use the unsafe RSS centering below.
+                    continue;
+                }
+
                 const auto& cur_mean = (*(ap_mean[u]))[g];
                 if (u == 0) {
                     for (Index_ d = 0; d < dim; ++d) {
-                        cur_output[d] = quickstats::recenter_rss(cur_count, cur_output[d], cur_mean[d], cur_global[d]); 
+                        cur_output[d] = quickstats::recenter_rss_unsafe(cur_count, cur_output[d], cur_mean[d], cur_global[d]); 
                     }
                 } else {
                     const auto& cur_rss = (*(ap_rss[u - 1]))[g];
                     for (Index_ d = 0; d < dim; ++d) {
-                        cur_output[d] += quickstats::recenter_rss(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
+                        cur_output[d] += quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
                     }
                 }
             }
@@ -636,8 +645,10 @@ void group_variance_running_skip(
                 const auto& cur_mean = (*(ap_mean[u]))[g];
                 const auto& cur_count = (*(all_partial_count[u]))[g];
                 for (Index_ d = 0; d < dim; ++d) {
-                    const auto mult = static_cast<Output_>(cur_count[d]) / static_cast<Output_>(cur_global_count[d]);
-                    cur_global_mean[d] += cur_mean[d] * mult;
+                    if (cur_count[d] > 0) {
+                        const auto mult = static_cast<Output_>(cur_count[d]) / static_cast<Output_>(cur_global_count[d]);
+                        cur_global_mean[d] += cur_mean[d] * mult;
+                    }
                 }
             }
 

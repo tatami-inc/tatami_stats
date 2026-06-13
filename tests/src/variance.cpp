@@ -75,8 +75,8 @@ TEST(Variance, RowVariancesWithNan) {
         opt.seed = 44982197;
         return opt;
     }());
-    for (size_t r = 0; r < NR; ++r) { // Injecting an NaN at the start.
-        dump[r * NC] = std::numeric_limits<double>::quiet_NaN();
+    for (size_t r = 0; r < NR; ++r) { // Injecting some NaNs at the start.
+        std::fill_n(dump.data() + r * NC, r % 10 + 1, std::numeric_limits<double>::quiet_NaN());
     }
 
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
@@ -86,13 +86,14 @@ TEST(Variance, RowVariancesWithNan) {
 
     std::vector<double> ref(NR), expectedm(NR);
     for (size_t r = 0; r < NR; ++r) {
-        for (size_t c = 1; c < NC; ++c) { // skipping the first element.
+        const std::size_t start = r % 10 + 1;
+        for (size_t c = start; c < NC; ++c) { // skipping the first few elements.
             double x = dump[c + r * NC];
             expectedm[r] += x;
             ref[r] += x * x;
         }
 
-        double denom = NC - 1; // remember we lost an element!
+        double denom = NC - start;
         expectedm[r] /= denom;
         ref[r] /= denom;
         ref[r] -= expectedm[r] * expectedm[r];
@@ -172,8 +173,11 @@ TEST(Variance, ColumnVariancesWithNan) {
         opt.seed = 191353;
         return opt;
     }());
-    for (std::size_t c = 0; c < NC; ++c) { // Injecting an NaN at the start.
-        dump[c] = std::numeric_limits<double>::quiet_NaN();
+    for (std::size_t c = 0; c < NC; ++c) { // Injecting an NaN at the end.
+        const std::size_t limit = c % 15 + 1;
+        for (std::size_t rx = 0; rx < limit; ++rx) { 
+            dump[c + (NR - rx - 1) * NC] = std::numeric_limits<double>::quiet_NaN();
+        }
     }
 
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
@@ -183,13 +187,14 @@ TEST(Variance, ColumnVariancesWithNan) {
 
     std::vector<double> ref(NC), expectedm(NC);
     for (size_t c = 0; c < NC; ++c) {
-        for (size_t r = 1; r < NR; ++r) { // skipping the first row.
+        const std::size_t rend = NR - (c % 15 + 1);
+        for (size_t r = 0; r < rend; ++r) { // skipping the last few rows with NaNs.
             double x = dump[c + r * NC];
             expectedm[c] += x;
             ref[c] += x * x;
         }
 
-        double denom = NR - 1; // remember we lost an element.
+        double denom = rend; 
         expectedm[c] /= denom;
         ref[c] /= denom;
         ref[c] -= expectedm[c] * expectedm[c];
@@ -337,6 +342,36 @@ TEST_P(VarianceEdgeTest, OneObservation) {
     check_ok(tatami_stats::variance(true, *sparse_column, vopt));
 
     vopt.skip_nan = true;
+    check_ok(tatami_stats::variance(true, *dense_row, vopt));
+    check_ok(tatami_stats::variance(true, *dense_column, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_row, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_column, vopt));
+}
+
+TEST_P(VarianceEdgeTest, FewValidObservations) {
+    const int NR = 50, NC = 40;
+    std::vector<double> vec(NR * NC, std::numeric_limits<double>::quiet_NaN());
+    for (int r = 0; r < NR; ++r) {
+        vec[r * NC + r % NC] = r;
+        vec[r * NC + (r + 1) % NC] = r + 2;
+    }
+
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(vec)));
+    auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
+    auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
+    auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
+
+    tatami_stats::VarianceOptions vopt;
+    vopt.num_threads = GetParam();
+    vopt.skip_nan = true;
+
+    auto check_ok = [&](const tatami_stats::VarianceResult<double>& res) -> void {
+        for (int r = 0; r < NR; ++r) {
+            EXPECT_FLOAT_EQ(res.mean[r], r + 1);
+            EXPECT_FLOAT_EQ(res.variance[r], 2);
+        }
+    };
+
     check_ok(tatami_stats::variance(true, *dense_row, vopt));
     check_ok(tatami_stats::variance(true, *dense_column, vopt));
     check_ok(tatami_stats::variance(true, *sparse_row, vopt));

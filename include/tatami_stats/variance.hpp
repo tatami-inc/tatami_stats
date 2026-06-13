@@ -385,8 +385,10 @@ void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, 
             const auto& cur_count = *(all_partial_count[u]);
             const auto& cur_mean = *(ap_mean[u]);
             for (Index_ d = 0; d < dim; ++d) {
-                const auto mult = static_cast<Output_>(cur_count[u]) / static_cast<Output_>(global_count[u]);
-                output.mean[d] += cur_mean[d] * mult;
+                if (cur_count[d] > 0) { // protect against NaN means at a count of 0.
+                    const auto mult = static_cast<Output_>(cur_count[d]) / static_cast<Output_>(global_count[d]);
+                    output.mean[d] += cur_mean[d] * mult;
+                }
             }
         }
 

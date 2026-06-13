@@ -16,13 +16,52 @@ static void compare_result(
     compare_double_vectors_of_vectors(expected_mean, res.mean);
 }
 
-TEST(GroupVariance, ByRow) {
-    size_t NR = 99, NC = 155;
+class GroupVarianceBasicTest : public ::testing::TestWithParam<std::tuple<int, int, bool> > {
+public:
+    static std::vector<int> generate_groups(const bool interleaved, const int num_groups, const std::size_t length) {
+        std::vector<int> groups(length);
 
-    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{
+        // We check different group layouts because the parallelization now splits along the observed vectors.
+        // This means that different threads might get different groups; we need to check that everything is merged correctly.
+        if (interleaved) {
+            for (std::size_t i = 0; i < length; ++i) {
+                groups[i] = i % num_groups;
+            }
+        } else {
+            const auto per_group = length / num_groups;
+            const int remainder = length % num_groups;
+            std::size_t counter = 0;
+            for (int g = 0; g < num_groups; ++g) {
+                const auto group_size = per_group + (g < remainder);
+                std::fill_n(groups.begin() + counter, group_size, g);
+                counter += group_size;
+            }
+        }
+
+        return groups;
+    }
+
+    static std::vector<std::vector<int> > create_subsets(const int num_groups, const std::vector<int>& groups) {
+        std::vector<std::vector<int> > subsets(num_groups);
+        const std::size_t length = groups.size();
+        for (std::size_t i = 0; i < length; ++i) {
+            subsets[groups[i]].push_back(i);
+        }
+        return subsets;
+    }
+};
+
+TEST_P(GroupVarianceBasicTest, Row) {
+    std::size_t NR = 99, NC = 155;
+    auto params = GetParam();
+    const int num_threads = std::get<0>(params);
+    const int ngroup = std::get<1>(params);
+    const bool interleaved = std::get<2>(params);
+
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.2;
-        opt.seed = 1298191;
+        opt.seed = 1298191 + num_threads + ngroup + interleaved;
         return opt;
     }());
 
@@ -31,14 +70,8 @@ TEST(GroupVariance, ByRow) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(dense_row.get(), true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(dense_row.get(), false, {});
 
-    std::vector<int> cgroups(NC);
-    int ngroup = 3; 
-    std::vector<std::vector<int> > subsets(ngroup);
-    for (size_t c = 0; c < NC; ++c) {
-        cgroups[c] = c % ngroup;
-        subsets[cgroups[c]].push_back(c);
-    }
-
+    auto cgroups = generate_groups(interleaved, ngroup, NC);
+    auto subsets = create_subsets(ngroup, cgroups);
     std::vector<std::vector<double> > expected_v(ngroup), expected_m(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
@@ -47,22 +80,9 @@ TEST(GroupVariance, ByRow) {
         expected_v[g] = std::move(res.variance);
     }
 
-    compare_result(tatami_stats::group_variance(true, *dense_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
-
-    // Checking that the parallel code is the same.
     tatami_stats::GroupVarianceOptions vopt;
-    vopt.num_threads = 3;
-    compare_result(tatami_stats::group_variance(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    vopt.num_threads = num_threads;
 
-    // Checking that we get the same result after skipping NaNs.
-    vopt.num_threads = 1;
-    vopt.skip_nan = true;
     compare_result(tatami_stats::group_variance(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
     compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
     compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
@@ -70,25 +90,37 @@ TEST(GroupVariance, ByRow) {
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    compare_result(tatami_stats::group_variance(true, *unsorted_row, cgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *unsorted_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    compare_result(tatami_stats::group_variance(true, *unsorted_column, cgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *unsorted_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+
+    // Checking that we get the same result after skipping NaNs.
+    vopt.skip_nan = true;
+    compare_result(tatami_stats::group_variance(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
 }
 
-TEST(GroupVariance, ByRowWithNan) {
+TEST_P(GroupVarianceBasicTest, RowSkipNan) {
     size_t NR = 99, NC = 155;
+    auto params = GetParam();
+    const int num_threads = std::get<0>(params);
+    const int ngroup = std::get<1>(params);
+    const bool interleaved = std::get<2>(params);
 
     // Sprinkling in some NaNs.
-    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{ 
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{ 
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.2;
         opt.lower = -10;
         opt.upper = -2;
-        opt.seed = 52827;
+        opt.seed = 52827 + num_threads + ngroup + interleaved;
         return opt;
     }());
     for (size_t r = 0; r < NR; ++r) {
-        simulated[r * NC + (r % NC)] = std::numeric_limits<double>::quiet_NaN();
+        // Invalidating a bunch of observations at the start of each row.
+        std::fill_n(simulated.data() + r * NC, r % 20 + 1, std::numeric_limits<double>::quiet_NaN());
     }
 
     auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
@@ -96,14 +128,8 @@ TEST(GroupVariance, ByRowWithNan) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    std::vector<int> cgroups(NC);
-    int ngroup = 4; 
-    std::vector<std::vector<int> > subsets(ngroup);
-    for (size_t c = 0; c < NC; ++c) {
-        cgroups[c] = c % ngroup;
-        subsets[cgroups[c]].push_back(c);
-    }
-
+    auto cgroups = generate_groups(interleaved, ngroup, NC);
+    auto subsets = create_subsets(ngroup, cgroups);
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
@@ -115,26 +141,26 @@ TEST(GroupVariance, ByRowWithNan) {
     }
 
     tatami_stats::GroupVarianceOptions mopt;
+    mopt.num_threads = num_threads;
     mopt.skip_nan = true;
-    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
 
-    mopt.num_threads = 3;
     compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
     compare_result(tatami_stats::group_variance(true, *dense_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
     compare_result(tatami_stats::group_variance(true, *sparse_row, cgroups.data(), ngroup, mopt), expected_m, expected_v);
     compare_result(tatami_stats::group_variance(true, *sparse_column, cgroups.data(), ngroup, mopt), expected_m, expected_v);
 }
 
-TEST(GroupVariance, ByColumn) {
+TEST_P(GroupVarianceBasicTest, Column) {
     size_t NR = 56, NC = 179;
+    auto params = GetParam();
+    const int num_threads = std::get<0>(params);
+    const int ngroup = std::get<1>(params);
+    const bool interleaved = std::get<2>(params);
 
-    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.25;
-        opt.seed = 83828;
+        opt.seed = 83828 + num_threads + ngroup + interleaved;
         return opt;
     }());
 
@@ -143,14 +169,8 @@ TEST(GroupVariance, ByColumn) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    std::vector<int> rgroups(NR);
-    int ngroup = 7; 
-    std::vector<std::vector<int> > subsets(ngroup);
-    for (size_t r = 0; r < NR; ++r) {
-        rgroups[r] = r % ngroup;
-        subsets[rgroups[r]].push_back(r);
-    }
-
+    auto rgroups = generate_groups(interleaved, ngroup, NR);
+    auto subsets = create_subsets(ngroup, rgroups);
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
@@ -159,40 +179,50 @@ TEST(GroupVariance, ByColumn) {
         expected_v[g] = std::move(res.variance);
     }
 
-    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    tatami_stats::GroupVarianceOptions vopt;
+    vopt.num_threads = num_threads;
 
-    // Checking that the parallel code is the same.
-    tatami_stats::GroupVarianceOptions sopt;
-    sopt.num_threads = 3;
-    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, sopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, sopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, sopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, sopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    compare_result(tatami_stats::group_variance(false, *unsorted_row, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *unsorted_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    compare_result(tatami_stats::group_variance(false, *unsorted_column, rgroups.data(), ngroup, {}), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *unsorted_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+
+    // Checking that we get the same result after skipping NaNs.
+    vopt.skip_nan = true;
+    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
 }
 
-TEST(GroupVariance, ByColumnWithNan) {
+TEST_P(GroupVarianceBasicTest, ColumnSkipNan) {
     size_t NR = 99, NC = 155;
+    auto params = GetParam();
+    const int num_threads = std::get<0>(params);
+    const int ngroup = std::get<1>(params);
+    const bool interleaved = std::get<2>(params);
 
     // Sprinkling in some NaNs.
-    auto simulated = tatami_test::simulate_vector<double>(NR * NC, []{ 
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{ 
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.3;
         opt.lower = 1;
         opt.upper = 2;
-        opt.seed = 191188;
+        opt.seed = 191188 + num_threads + ngroup + interleaved;
         return opt;
     }());
     for (size_t c = 0; c < NC; ++c) {
-        simulated[(c % NR) * NC + c] = std::numeric_limits<double>::quiet_NaN();
+        const std::size_t rstart = NR - c % 20 - 1;
+        for (size_t r = rstart; r < NR; ++r) {
+            // Invalidating a bunch of observations at the end of each column.
+            simulated[c + r * NC] = std::numeric_limits<double>::quiet_NaN();
+        }
     }
 
     auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
@@ -200,14 +230,8 @@ TEST(GroupVariance, ByColumnWithNan) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    std::vector<int> rgroups(NR);
-    int ngroup = 6; 
-    std::vector<std::vector<int> > subsets(ngroup);
-    for (size_t r = 0; r < NR; ++r) {
-        rgroups[r] = r % ngroup;
-        subsets[rgroups[r]].push_back(r);
-    }
-
+    auto rgroups = generate_groups(interleaved, ngroup, NR);
+    auto subsets = create_subsets(ngroup, rgroups);
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
@@ -218,19 +242,25 @@ TEST(GroupVariance, ByColumnWithNan) {
         expected_v[g] = std::move(res.variance);
     }
 
-    tatami_stats::GroupVarianceOptions mopt;
-    mopt.skip_nan = true;
-    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    tatami_stats::GroupVarianceOptions vopt;
+    vopt.skip_nan = true;
+    vopt.num_threads = num_threads;
 
-    mopt.num_threads = 3;
-    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, mopt), expected_m, expected_v);
-    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, mopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *dense_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_variance(false, *sparse_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    GroupVariance,
+    GroupVarianceBasicTest,
+    ::testing::Combine(
+        ::testing::Values(1, 3),
+        ::testing::Values(2, 3, 5),
+        ::testing::Values(false, true)
+    )
+);
 
 /*****************************/
 

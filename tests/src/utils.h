@@ -7,7 +7,11 @@ template<class L_, class R_>
 void compare_double_vectors(const L_& left, const R_& right) {
     ASSERT_EQ(left.size(), right.size());
     for (size_t i = 0; i < left.size(); ++i) {
-        EXPECT_FLOAT_EQ(left[i], right[i]);
+        if (std::isnan(left[i])) {
+            EXPECT_EQ(std::isnan(left[i]), std::isnan(right[i]));
+        } else {
+            EXPECT_FLOAT_EQ(left[i], right[i]);
+        }
     }
     return;
 }
