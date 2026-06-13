@@ -147,6 +147,13 @@ void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
+    if (otherdim == 0) {
+        std::fill_n(output.mean, dim, std::numeric_limits<Output_>::quiet_NaN());
+        std::fill_n(output.variance, dim, std::numeric_limits<Output_>::quiet_NaN());
+        return;
+    }
+
+    assert(opt.num_threads > 0);
     const bool do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_mean, all_partial_rss;
     std::optional<std::vector<Index_> > all_partial_count;
@@ -217,6 +224,7 @@ void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat
             }
         }
     }, otherdim, opt.num_threads);
+    assert(nused > 0);
 
     // Don't check nused > 1, as it's possible for do_parallel = true with nused = 1 if not all threads are used.
     // This would cause us to leave output.mean and output.variance empty.
@@ -225,7 +233,7 @@ void variance_running_noskip(bool row, const tatami::Matrix<Value_, Index_>& mat
         const auto& ap_mean = *all_partial_mean;
         const auto& ap_rss = *all_partial_rss;
 
-        // Computing the global mean.
+        // Computing the global mean. All ap_count is positive so we don't have to worry about cur_mean[d] being NaN.
         for (int u = 0; u < nused; ++u) {
             const Output_ mult = static_cast<Output_>(ap_count[u]) / static_cast<Output_>(otherdim);
             const auto& cur_mean = *(ap_mean[u]);
@@ -260,6 +268,12 @@ void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, 
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
+
+    if (otherdim == 0) {
+        std::fill_n(output.mean, dim, std::numeric_limits<Output_>::quiet_NaN());
+        std::fill_n(output.variance, dim, std::numeric_limits<Output_>::quiet_NaN());
+        return;
+    }
 
     assert(opt.num_threads > 0);
     const bool do_parallel = opt.num_threads > 1;
@@ -346,6 +360,7 @@ void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, 
             }
         }
     }, otherdim, opt.num_threads);
+    assert(nused > 0);
 
     // Don't check nused > 1, as it's possible for do_parallel = true with nused = 1 if not all threads are used.
     // This would cause us to leave output.mean and output.variance empty.
@@ -365,13 +380,19 @@ void variance_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, 
             }
         }
 
-        // Computing the global mean.
+        // Computing the global mean from its components.
         for (int u = 0; u < nused; ++u) {
             const auto& cur_count = *(all_partial_count[u]);
             const auto& cur_mean = *(ap_mean[u]);
             for (Index_ d = 0; d < dim; ++d) {
                 const auto mult = static_cast<Output_>(cur_count[u]) / static_cast<Output_>(global_count[u]);
                 output.mean[d] += cur_mean[d] * mult;
+            }
+        }
+
+        for (Index_ d = 0; d < dim; ++ d) {
+            if (global_count[d] == 0) { 
+                output.mean[d] = std::numeric_limits<Output_>::quiet_NaN();
             }
         }
 

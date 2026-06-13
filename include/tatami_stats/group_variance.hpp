@@ -293,6 +293,14 @@ void group_variance_running_noskip(
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
+    if (otherdim == 0) {
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            std::fill_n(output.mean[g], dim, std::numeric_limits<Output_>::quiet_NaN());
+            std::fill_n(output.variance[g], dim, std::numeric_limits<Output_>::quiet_NaN());
+        }
+        return; 
+    }
+
     const bool do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_mean, all_partial_rss;
     if (do_parallel) {
@@ -396,6 +404,7 @@ void group_variance_running_noskip(
             }
         }
     }, otherdim, opt.num_threads);
+    assert(nused > 0);
 
     if (!do_parallel) {
         const auto& cur_count = *(all_partial_count[0]);
@@ -418,9 +427,15 @@ void group_variance_running_noskip(
         // Computing the global mean.
         for (std::size_t g = 0; g < num_groups; ++g) {
             const auto cur_output = output.mean[g];
+            const auto cur_global_count = global_count[g];
+            if (cur_global_count == 0) {
+                std::fill_n(cur_output, dim, std::numeric_limits<Output_>::quiet_NaN());
+                continue;
+            }
+
             for (int u = 0; u < nused; ++u) {
                 const auto& cur_mean = (*(ap_mean[u]))[g];
-                const Output_ mult = static_cast<Output_>((*(all_partial_count[u]))[g]) / static_cast<Output_>(global_count[g]);
+                const Output_ mult = static_cast<Output_>((*(all_partial_count[u]))[g]) / static_cast<Output_>(cur_global_count);
                 for (Index_ d = 0; d < dim; ++d) {
                     cur_output[d] += cur_mean[d] * mult;
                 }
@@ -463,6 +478,14 @@ void group_variance_running_skip(
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
+
+    if (otherdim == 0) {
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            std::fill_n(output.mean[g], dim, std::numeric_limits<Output_>::quiet_NaN());
+            std::fill_n(output.variance[g], dim, std::numeric_limits<Output_>::quiet_NaN());
+        }
+        return; 
+    }
 
     const bool do_parallel = opt.num_threads > 1;
     std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_mean, all_partial_rss;
@@ -580,6 +603,7 @@ void group_variance_running_skip(
             }
         }
     }, otherdim, opt.num_threads);
+    assert(nused > 0);
 
     if (!do_parallel) {
         const auto& cur_count = *(all_partial_count[0]);
@@ -607,12 +631,19 @@ void group_variance_running_skip(
         for (std::size_t g = 0; g < num_groups; ++g) {
             const auto& cur_global_count = global_count[g];
             const auto cur_global_mean = output.mean[g];
+
             for (int u = 0; u < nused; ++u) {
                 const auto& cur_mean = (*(ap_mean[u]))[g];
                 const auto& cur_count = (*(all_partial_count[u]))[g];
                 for (Index_ d = 0; d < dim; ++d) {
                     const auto mult = static_cast<Output_>(cur_count[d]) / static_cast<Output_>(cur_global_count[d]);
                     cur_global_mean[d] += cur_mean[d] * mult;
+                }
+            }
+
+            for (Index_ d = 0; d < dim; ++d) {
+                if (cur_global_count[d] == 0) {
+                    cur_global_mean[d] = std::numeric_limits<Output_>::quiet_NaN();
                 }
             }
         }

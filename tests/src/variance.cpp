@@ -259,44 +259,92 @@ TEST(Variance, NewType) {
     compare_result(tatami_stats::variance(false, *sparse_column, vopt), cexpected.mean, cexpected.variance);
 }
 
-TEST(Variance, NoObservations) {
+/*******************************/
+
+class VarianceEdgeTest : public ::testing::TestWithParam<int> {};
+
+TEST_P(VarianceEdgeTest, NoObservations) {
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(111, 0, std::vector<double>()));
+    auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
+    auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
+    auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
+
     tatami_stats::VarianceOptions vopt;
+    vopt.num_threads = GetParam();
+
+    auto check_ok = [&](const tatami_stats::VarianceResult<double>& res) -> void {
+        EXPECT_EQ(res.variance.size(), 111);
+        EXPECT_TRUE(is_all_nan(res.mean));
+        EXPECT_TRUE(is_all_nan(res.variance));
+    };
+
+    check_ok(tatami_stats::variance(true, *dense_row, vopt));
+    check_ok(tatami_stats::variance(true, *dense_column, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_row, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_column, vopt));
+
     vopt.skip_nan = true;
-
-    auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(111, 0, std::vector<double>()));
-
-    auto cref = tatami_stats::variance(false, *dense, {});
-    EXPECT_EQ(cref.mean.size(), 0);
-    EXPECT_EQ(cref.variance.size(), 0);
-
-    auto cref2 = tatami_stats::variance(false, *dense, vopt);
-    EXPECT_EQ(cref2.mean.size(), 0);
-    EXPECT_EQ(cref2.variance.size(), 0);
-
-    auto rref = tatami_stats::variance(true, *dense, {});
-    EXPECT_EQ(rref.variance.size(), dense->nrow());
-    EXPECT_TRUE(is_all_nan(rref.mean));
-    EXPECT_TRUE(is_all_nan(rref.variance));
-
-    auto rref2 = tatami_stats::variance(true, *dense, vopt);
-    EXPECT_EQ(rref2.variance.size(), dense->nrow());
-    EXPECT_TRUE(is_all_nan(rref2.mean));
-    EXPECT_TRUE(is_all_nan(rref2.variance));
+    check_ok(tatami_stats::variance(true, *dense_row, vopt));
+    check_ok(tatami_stats::variance(true, *dense_column, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_row, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_column, vopt));
 }
 
-TEST(Variance, OneObservations) {
+TEST_P(VarianceEdgeTest, ZeroExtent) {
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(0, 99, std::vector<double>()));
+    auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
+    auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
+    auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
+
     tatami_stats::VarianceOptions vopt;
+    vopt.num_threads = GetParam();
+
+    auto check_ok = [&](const tatami_stats::VarianceResult<double>& res) -> void {
+        EXPECT_EQ(res.mean.size(), 0);
+        EXPECT_EQ(res.variance.size(), 0);
+    };
+
+    check_ok(tatami_stats::variance(true, *dense_row, vopt));
+    check_ok(tatami_stats::variance(true, *dense_column, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_row, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_column, vopt));
+
     vopt.skip_nan = true;
-
-    auto dense = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(10, 1, std::vector<double>(10)));
-
-    auto rref = tatami_stats::variance(true, *dense, {});
-    EXPECT_EQ(rref.mean, std::vector<double>(10));
-    EXPECT_EQ(rref.variance.size(), dense->nrow());
-    EXPECT_TRUE(is_all_nan(rref.variance));
-
-    auto rref2 = tatami_stats::variance(true, *dense, vopt);
-    EXPECT_EQ(rref2.mean, std::vector<double>(10));
-    EXPECT_EQ(rref2.variance.size(), dense->nrow());
-    EXPECT_TRUE(is_all_nan(rref2.variance));
+    check_ok(tatami_stats::variance(true, *dense_row, vopt));
+    check_ok(tatami_stats::variance(true, *dense_column, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_row, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_column, vopt));
 }
+
+TEST_P(VarianceEdgeTest, OneObservation) {
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(10, 1, std::vector<double>(10)));
+    auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
+    auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
+    auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
+
+    tatami_stats::VarianceOptions vopt;
+    vopt.num_threads = GetParam();
+
+    auto check_ok = [&](const tatami_stats::VarianceResult<double>& res) -> void {
+        EXPECT_EQ(res.mean, std::vector<double>(10));
+        EXPECT_EQ(res.variance.size(), 10);
+        EXPECT_TRUE(is_all_nan(res.variance));
+    };
+
+    check_ok(tatami_stats::variance(true, *dense_row, vopt));
+    check_ok(tatami_stats::variance(true, *dense_column, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_row, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_column, vopt));
+
+    vopt.skip_nan = true;
+    check_ok(tatami_stats::variance(true, *dense_row, vopt));
+    check_ok(tatami_stats::variance(true, *dense_column, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_row, vopt));
+    check_ok(tatami_stats::variance(true, *sparse_column, vopt));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Variance,
+    VarianceEdgeTest,
+    ::testing::Values(1, 3)
+);
