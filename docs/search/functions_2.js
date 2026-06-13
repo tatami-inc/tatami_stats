@@ -14,6 +14,5 @@ var searchData=
   ['convert_5fto_5ffragmented_5fsparse_11',['convert_to_fragmented_sparse',['https://tatami-inc.github.io/tatami/namespacetatami.html#acac2470badcf668316367fdea9704035',1,'tatami']]],
   ['copy_5fn_12',['copy_n',['https://tatami-inc.github.io/tatami/namespacetatami.html#aca84df9f6331751c29b0bcc0ca656af7',1,'tatami']]],
   ['count_13',['count',['../namespacetatami__stats.html#a9e8763c74e8b0cfba7f1dedb1c0fbb24',1,'tatami_stats::count(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Output_ *const output, Condition_ condition, const CountOptions &amp;opt)'],['../namespacetatami__stats.html#a6fe75356dd7e0b752d0b67d25e176088',1,'tatami_stats::count(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, Condition_ condition, const CountOptions &amp;opt)']]],
-  ['count_5fcompressed_5fsparse_5fnon_5fzeros_14',['count_compressed_sparse_non_zeros',['https://tatami-inc.github.io/tatami/namespacetatami.html#a305c49810ea7cad498399ad7c9dd0ee0',1,'tatami']]],
-  ['create_5fcontainer_5fof_5findex_5fsize_15',['create_container_of_Index_size',['https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc',1,'tatami']]]
+  ['create_5fcontainer_5fof_5findex_5fsize_14',['create_container_of_Index_size',['https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc',1,'tatami']]]
 ];
