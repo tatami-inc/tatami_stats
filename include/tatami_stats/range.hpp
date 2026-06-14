@@ -212,8 +212,12 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
 
     constexpr auto min_placeholder = choose_minimum_placeholder<Value_>();
     constexpr auto max_placeholder = choose_maximum_placeholder<Value_>();
-    std::fill_n(output.minimum, dim, min_placeholder);
-    std::fill_n(output.maximum, dim, max_placeholder);
+    if (opt.skip_nan || otherdim == 0) {
+        // If we're not skipping NaNs and we have at least one dimension element,
+        // the output arrays will be fully populated when thread 0 processes the first dimension element.
+        std::fill_n(output.minimum, dim, min_placeholder);
+        std::fill_n(output.maximum, dim, max_placeholder);
+    }
 
     const auto nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
         Output_* min_ptr;
@@ -227,8 +231,8 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                 min_ptr = output.minimum;
                 max_ptr = output.maximum;
             } else {
-                cur_min.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim), min_placeholder);
-                cur_max.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim), max_placeholder);
+                cur_min.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
+                cur_max.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
                 min_ptr = cur_min->data();
                 max_ptr = cur_max->data();
             }
@@ -262,6 +266,11 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                             }
                         },
                         [&]() -> void {
+                            // For non-main threads, our thread-local buffer is already zeroed so no need to do this. 
+                            if (!do_parallel || thread == 0) {
+                                std::fill_n(min_ptr, dim, 0);
+                                std::fill_n(max_ptr, dim, 0);
+                            }
                             for (Index_ i = 0; i < out.number; ++i) {
                                 const auto val = out.value[i];
                                 const auto idx = out.index[i];
