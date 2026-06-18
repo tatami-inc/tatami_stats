@@ -94,6 +94,7 @@ $(function(){ initResizable(false); });
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">tatami_stats Namespace Reference</div></div>
@@ -103,6 +104,12 @@ $(function(){ initResizable(false); });
 <p>Functions to compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1skip__nan.html">skip_nan</a></td></tr>
+<tr class="memdesc:namespacetatami__stats_1_1skip__nan"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code> while skipping NaNs. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1CountOptions.html">CountOptions</a></td></tr>
@@ -137,6 +144,15 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1RangeResult.html">RangeResult</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Results of <code><a class="el" href="#a7744693451913c2be630f12ecfb9a201">range()</a></code>.  <a href="structtatami__stats_1_1RangeResult.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1RssBuffers.html">RssBuffers</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Result buffers for <code><a class="el" href="structtatami__stats_1_1RssBuffers.html#af2a60f3167c88418b592bf8522d7e82d">rss()</a></code>.  <a href="structtatami__stats_1_1RssBuffers.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1RssOptions.html">RssOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="#a40b4425d03755d183d4a6b2b536883bb">rss()</a></code>.  <a href="structtatami__stats_1_1RssOptions.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1RssResult.html">RssResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Results of <code><a class="el" href="structtatami__stats_1_1RssResult.html#aac2ae9183ddff11eac58d617c2cf2e5a">rss()</a></code>.  <a href="structtatami__stats_1_1RssResult.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1SumOptions.html">SumOptions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="#ac9c9b11bc8af6e6a1497cc088b17f054">sum()</a></code>.  <a href="structtatami__stats_1_1SumOptions.html#details">More...</a><br /></td></tr>
@@ -195,6 +211,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a6f936a60c798ab2c134383a421e079c3" id="r_a6f936a60c798ab2c134383a421e079c3"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_  = Value_&gt; </td></tr>
 <tr class="memitem:a6f936a60c798ab2c134383a421e079c3"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structtatami__stats_1_1RangeResult.html">RangeResult</a>&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a6f936a60c798ab2c134383a421e079c3">range</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const <a class="el" href="structtatami__stats_1_1RangeOptions.html">RangeOptions</a> &amp;opt)</td></tr>
 <tr class="separator:a6f936a60c798ab2c134383a421e079c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40b4425d03755d183d4a6b2b536883bb" id="r_a40b4425d03755d183d4a6b2b536883bb"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
+<tr class="memitem:a40b4425d03755d183d4a6b2b536883bb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a40b4425d03755d183d4a6b2b536883bb">rss</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, <a class="el" href="structtatami__stats_1_1RssBuffers.html">RssBuffers</a>&lt; Output_ &gt; &amp;output, const <a class="el" href="structtatami__stats_1_1RssOptions.html">RssOptions</a> &amp;opt)</td></tr>
+<tr class="separator:a40b4425d03755d183d4a6b2b536883bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5706fccccc3824bad0018a4922a15a9" id="r_ae5706fccccc3824bad0018a4922a15a9"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; </td></tr>
+<tr class="memitem:ae5706fccccc3824bad0018a4922a15a9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structtatami__stats_1_1RssResult.html">RssResult</a>&lt; Output_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae5706fccccc3824bad0018a4922a15a9">rss</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const <a class="el" href="structtatami__stats_1_1RssOptions.html">RssOptions</a> &amp;opt)</td></tr>
+<tr class="separator:ae5706fccccc3824bad0018a4922a15a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9c9b11bc8af6e6a1497cc088b17f054" id="r_ac9c9b11bc8af6e6a1497cc088b17f054"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </td></tr>
 <tr class="memitem:ac9c9b11bc8af6e6a1497cc088b17f054"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac9c9b11bc8af6e6a1497cc088b17f054">sum</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, Output_ *output, const <a class="el" href="structtatami__stats_1_1SumOptions.html">SumOptions</a> &amp;opt)</td></tr>
 <tr class="separator:ac9c9b11bc8af6e6a1497cc088b17f054"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -994,6 +1016,103 @@ template&lt;typename Value_ , typename Index_ , typename Output_  = Value_&gt; <
 
 </div>
 </div>
+<a id="a40b4425d03755d183d4a6b2b536883bb" name="a40b4425d03755d183d4a6b2b536883bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40b4425d03755d183d4a6b2b536883bb">&#9670;&#160;</a></span>rss() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void tatami_stats::rss </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structtatami__stats_1_1RssBuffers.html">RssBuffers</a>&lt; Output_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>output</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structtatami__stats_1_1RssOptions.html">RssOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute residual sums of squares (RSS) for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. This may use either Welford's method or the standard two-pass method, depending on the dimension in <code>row</code> and the preferred access dimension of <code>p</code>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. This should be capable of storing NaNs.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute the RSS for each row. If false, the RSS is computed for each column instead. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Buffers to output arrays. On output, this will contain the row/column RSSs. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">opt</td><td>Further options. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae5706fccccc3824bad0018a4922a15a9" name="ae5706fccccc3824bad0018a4922a15a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5706fccccc3824bad0018a4922a15a9">&#9670;&#160;</a></span>rss() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_  = double, typename Value_ , typename Index_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structtatami__stats_1_1RssResult.html">RssResult</a>&lt; Output_ &gt; tatami_stats::rss </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structtatami__stats_1_1RssOptions.html">RssOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Overload of <code><a class="el" href="#a40b4425d03755d183d4a6b2b536883bb">rss()</a></code> that allocates memory for the output arrays.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. This should be capable of storing NaNs. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">row</td><td>Whether to compute the RSS for each row. If false, the RSS is computed for each column instead. </td></tr>
+    <tr><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramname">opt</td><td>Further options.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The mean and RSS of each row/column. </dd></dl>
+
+</div>
+</div>
 <a id="ac9c9b11bc8af6e6a1497cc088b17f054" name="ac9c9b11bc8af6e6a1497cc088b17f054"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac9c9b11bc8af6e6a1497cc088b17f054">&#9670;&#160;</a></span>sum() <span class="overload">[1/2]</span></h2>
 
@@ -1121,7 +1240,7 @@ template&lt;typename Value_ , typename Index_ , typename Output_ &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Compute variances for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. This may use either Welford's method or the standard two-pass method, depending on the dimension in <code>row</code> and the preferred access dimension of <code>p</code>.</p>
+<p>Compute sample variances for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. This may use either Welford's method or the standard two-pass method, depending on the dimension in <code>row</code> and the preferred access dimension of <code>p</code>.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Value_</td><td>Numeric type of the input data. </td></tr>

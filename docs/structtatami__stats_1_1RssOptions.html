@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats/tatami_stats.hpp File Reference</title>
+<title>tatami_stats: tatami_stats::RssOptions Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -92,34 +92,50 @@ $(function(){ initResizable(false); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_b747d6c0d081a332d63ccd1024d13c94.html">tatami_stats</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="structtatami__stats_1_1RssOptions.html">RssOptions</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats.hpp File Reference</div></div>
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structtatami__stats_1_1RssOptions-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">tatami_stats::RssOptions Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Umbrella header for the <b><a class="el" href="namespacetatami__stats.html" title="Functions to compute statistics from a tatami::Matrix.">tatami_stats</a></b> library.  
-<a href="#details">More...</a></p>
+<p>Options for <code><a class="el" href="namespacetatami__stats.html#a40b4425d03755d183d4a6b2b536883bb">rss()</a></code>.  
+ <a href="#details">More...</a></p>
 
-<p><a href="tatami__stats_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><code>#include &lt;<a class="el" href="rss_8hpp_source.html">rss.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></td></tr>
-<tr class="memdesc:namespacetatami__stats"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions to compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetatami__stats_1_1skip__nan.html">tatami_stats::skip_nan</a></td></tr>
-<tr class="memdesc:namespacetatami__stats_1_1skip__nan"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute statistics from a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code> while skipping NaNs. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a3750ff432b08d02e4d526f7cd3c4a5c2" id="r_a3750ff432b08d02e4d526f7cd3c4a5c2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3750ff432b08d02e4d526f7cd3c4a5c2">num_threads</a> = 1</td></tr>
+<tr class="separator:a3750ff432b08d02e4d526f7cd3c4a5c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Umbrella header for the <b><a class="el" href="namespacetatami__stats.html" title="Functions to compute statistics from a tatami::Matrix.">tatami_stats</a></b> library. </p>
-</div></div><!-- contents -->
+<div class="textblock"><p>Options for <code><a class="el" href="namespacetatami__stats.html#a40b4425d03755d183d4a6b2b536883bb">rss()</a></code>. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a3750ff432b08d02e4d526f7cd3c4a5c2" name="a3750ff432b08d02e4d526f7cd3c4a5c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3750ff432b08d02e4d526f7cd3c4a5c2">&#9670;&#160;</a></span>num_threads</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tatami_stats::RssOptions::num_threads = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of threads to use for iterating over a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. See <code><a class="elRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize()</a></code> for more details on the parallelization mechanism. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>tatami_stats/<a class="el" href="rss_8hpp_source.html">rss.hpp</a></li>
+</ul>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
