@@ -12,6 +12,8 @@
 #include "utils.hpp"
 #include "variance.hpp"
 
+#include "skip_nan/rss.hpp"
+
 /**
  * @file tatami_stats.hpp
  * @brief Umbrella header for the **tatami_stats** library.
@@ -21,6 +23,14 @@
  * @namespace tatami_stats
  * @brief Functions to compute statistics from a `tatami::Matrix`.
  */
-namespace tatami_stats {}
+namespace tatami_stats {
+
+/**
+ * @namespace tatami_stats::skip_nan
+ * @brief Compute statistics from a `tatami::Matrix` while skipping NaNs.
+ */
+namespace skip_nan {}
+
+}
 
 #endif

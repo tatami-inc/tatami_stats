@@ -18,6 +18,8 @@ macro(make_test target)
     add_executable(
         ${target}
         src/sum.cpp
+        src/rss.cpp
+        src/skip_nan/rss.cpp
         src/variance.cpp
         src/median.cpp
         src/quantile.cpp

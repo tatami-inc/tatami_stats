@@ -16,7 +16,7 @@ static void compare_result(
     compare_double_vectors(expected_mean, res.mean);
 }
 
-TEST(Variance, RowVariances) {
+TEST(Variance, Row) {
     size_t NR = 109, NC = 82;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -31,43 +31,25 @@ TEST(Variance, RowVariances) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     // Doing the difference of squares as a quick-and-dirty reference.
-    std::vector<double> ref(NR), expectedm(NR);
+    std::vector<double> ref(NR), expectedm(NR), refrss(NR);
     for (size_t r = 0; r < NR; ++r) {
         for (size_t c = 0; c < NC; ++c) {
             double x = dump[c + r * NC];
             expectedm[r] += x;
-            ref[r] += x * x;
+            refrss[r] += x * x;
         }
         expectedm[r] /= NC;
-        ref[r] /= NC;
-        ref[r] -= expectedm[r] * expectedm[r];
-        ref[r] *= NC;
-        ref[r] /= NC - 1;
+        refrss[r] -= expectedm[r] * expectedm[r] * NC;
+        ref[r] = refrss[r] / (NC - 1);
     }
 
     compare_result(tatami_stats::variance(true, *dense_row, {}), expectedm, ref);
     compare_result(tatami_stats::variance(true, *dense_column, {}), expectedm, ref);
     compare_result(tatami_stats::variance(true, *sparse_row, {}), expectedm, ref);
     compare_result(tatami_stats::variance(true, *sparse_column, {}), expectedm, ref);
-
-    // Same results from parallel code.
-    tatami_stats::VarianceOptions vopt;
-    vopt.num_threads = 3;
-    compare_result(tatami_stats::variance(true, *dense_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *dense_column, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *sparse_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *sparse_column, vopt), expectedm, ref);
-
-    // Same results if NaN skipping is enabled.
-    vopt.num_threads = 1;
-    vopt.skip_nan = true;
-    compare_result(tatami_stats::variance(true, *dense_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *dense_column, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *sparse_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *sparse_column, vopt), expectedm, ref);
 }
 
-TEST(Variance, RowVariancesWithNan) {
+TEST(Variance, RowWithNan) {
     size_t NR = 52, NC = 83;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -84,20 +66,19 @@ TEST(Variance, RowVariancesWithNan) {
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
     auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
-    std::vector<double> ref(NR), expectedm(NR);
+    std::vector<double> ref(NR), expectedm(NR), refrss(NR);
     for (size_t r = 0; r < NR; ++r) {
         const std::size_t start = r % 10 + 1;
         for (size_t c = start; c < NC; ++c) { // skipping the first few elements.
             double x = dump[c + r * NC];
             expectedm[r] += x;
-            ref[r] += x * x;
+            refrss[r] += x * x;
         }
 
         double denom = NC - start;
         expectedm[r] /= denom;
-        ref[r] /= denom;
-        ref[r] -= expectedm[r] * expectedm[r];
-        ref[r] *= denom / (denom - 1);
+        refrss[r] -= denom * expectedm[r] * expectedm[r];
+        ref[r] = refrss[r] / (denom - 1);
     }
 
     tatami_stats::VarianceOptions vopt;
@@ -106,15 +87,9 @@ TEST(Variance, RowVariancesWithNan) {
     compare_result(tatami_stats::variance(true, *dense_column, vopt), expectedm, ref);
     compare_result(tatami_stats::variance(true, *sparse_row, vopt), expectedm, ref);
     compare_result(tatami_stats::variance(true, *sparse_column, vopt), expectedm, ref);
-
-    vopt.num_threads = 3;
-    compare_result(tatami_stats::variance(true, *dense_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *dense_column, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *sparse_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(true, *sparse_column, vopt), expectedm, ref);
 }
 
-TEST(Variance, ColumnVariances) {
+TEST(Variance, Column) {
     size_t NR = 99, NC = 92;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -129,43 +104,25 @@ TEST(Variance, ColumnVariances) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     // Doing the difference of squares as a quick-and-dirty reference.
-    std::vector<double> ref(NC), expectedm(NC);
+    std::vector<double> ref(NC), expectedm(NC), refrss(NC);
     for (size_t c = 0; c < NC; ++c) {
         for (size_t r = 0; r < NR; ++r) {
             double x = dump[c + r * NC];
             expectedm[c] += x;
-            ref[c] += x * x;
+            refrss[c] += x * x;
         }
         expectedm[c] /= NR;
-        ref[c] /= NR;
-        ref[c] -= expectedm[c] * expectedm[c];
-        ref[c] *= NR;
-        ref[c] /= NR - 1;
+        refrss[c] -= NR * expectedm[c] * expectedm[c];
+        ref[c] = refrss[c] / (NR - 1);
     }
 
     compare_result(tatami_stats::variance(false, *dense_row, {}), expectedm, ref);
     compare_result(tatami_stats::variance(false, *dense_column, {}), expectedm, ref);
     compare_result(tatami_stats::variance(false, *sparse_row, {}), expectedm, ref);
     compare_result(tatami_stats::variance(false, *sparse_column, {}), expectedm, ref);
-
-    // Same results from parallel code.
-    tatami_stats::VarianceOptions vopt;
-    vopt.num_threads = 3;
-    compare_result(tatami_stats::variance(false, *dense_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *dense_column, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *sparse_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *sparse_column, vopt), expectedm, ref);
-
-    // Same results if NaN skipping is enabled.
-    vopt.num_threads = 1;
-    vopt.skip_nan = true;
-    compare_result(tatami_stats::variance(false, *dense_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *dense_column, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *sparse_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *sparse_column, vopt), expectedm, ref);
 }
 
-TEST(Variance, ColumnVariancesWithNan) {
+TEST(Variance, ColumnWithNan) {
     size_t NR = 82, NC = 33;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
         tatami_test::SimulateVectorOptions opt;
@@ -185,20 +142,19 @@ TEST(Variance, ColumnVariancesWithNan) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    std::vector<double> ref(NC), expectedm(NC);
+    std::vector<double> ref(NC), expectedm(NC), refrss(NC);
     for (size_t c = 0; c < NC; ++c) {
         const std::size_t rend = NR - (c % 15 + 1);
         for (size_t r = 0; r < rend; ++r) { // skipping the last few rows with NaNs.
             double x = dump[c + r * NC];
             expectedm[c] += x;
-            ref[c] += x * x;
+            refrss[c] += x * x;
         }
 
         double denom = rend; 
         expectedm[c] /= denom;
-        ref[c] /= denom;
-        ref[c] -= expectedm[c] * expectedm[c];
-        ref[c] *= denom / (denom - 1);
+        refrss[c] -= denom * expectedm[c] * expectedm[c];
+        ref[c] = refrss[c] / (denom - 1);
     }
 
     tatami_stats::VarianceOptions vopt;
@@ -207,14 +163,9 @@ TEST(Variance, ColumnVariancesWithNan) {
     compare_result(tatami_stats::variance(false, *dense_column, vopt), expectedm, ref);
     compare_result(tatami_stats::variance(false, *sparse_row, vopt), expectedm, ref);
     compare_result(tatami_stats::variance(false, *sparse_column, vopt), expectedm, ref);
-
-    // Same results with parallelization.
-    vopt.num_threads = 3;
-    compare_result(tatami_stats::variance(false, *dense_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *dense_column, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *sparse_row, vopt), expectedm, ref);
-    compare_result(tatami_stats::variance(false, *sparse_column, vopt), expectedm, ref);
 }
+
+/*******************************/
 
 TEST(Variance, NewType) {
     size_t NR = 198, NC = 52;
