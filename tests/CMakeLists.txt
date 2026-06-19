@@ -27,6 +27,8 @@ macro(make_test target)
         src/count.cpp
         src/group_median.cpp
         src/group_sum.cpp
+        src/group_rss.cpp
+        src/skip_nan/group_rss.cpp
         src/group_variance.cpp
     )
 
