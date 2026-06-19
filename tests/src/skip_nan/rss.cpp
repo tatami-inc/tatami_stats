@@ -64,7 +64,7 @@ TEST_P(SkipNanRssTest, Row) {
     compare_result(tatami_stats::skip_nan::rss<double, int>(true, *sparse_column, vopt), expectedm, refrss, count);
 }
 
-TEST_P(SkipNanRssTest, ColumnWithNan) {
+TEST_P(SkipNanRssTest, Column) {
     const auto num_threads = GetParam();
 
     size_t NR = 82, NC = 33;

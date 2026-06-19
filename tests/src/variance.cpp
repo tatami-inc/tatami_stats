@@ -31,16 +31,16 @@ TEST(Variance, Row) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     // Doing the difference of squares as a quick-and-dirty reference.
-    std::vector<double> ref(NR), expectedm(NR), refrss(NR);
+    std::vector<double> ref(NR), expectedm(NR);
     for (size_t r = 0; r < NR; ++r) {
         for (size_t c = 0; c < NC; ++c) {
             double x = dump[c + r * NC];
             expectedm[r] += x;
-            refrss[r] += x * x;
+            ref[r] += x * x;
         }
         expectedm[r] /= NC;
-        refrss[r] -= expectedm[r] * expectedm[r] * NC;
-        ref[r] = refrss[r] / (NC - 1);
+        ref[r] -= expectedm[r] * expectedm[r] * NC;
+        ref[r] /= NC - 1;
     }
 
     compare_result(tatami_stats::variance(true, *dense_row, {}), expectedm, ref);
@@ -66,19 +66,19 @@ TEST(Variance, RowWithNan) {
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
     auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
-    std::vector<double> ref(NR), expectedm(NR), refrss(NR);
+    std::vector<double> ref(NR), expectedm(NR); 
     for (size_t r = 0; r < NR; ++r) {
         const std::size_t start = r % 10 + 1;
         for (size_t c = start; c < NC; ++c) { // skipping the first few elements.
             double x = dump[c + r * NC];
             expectedm[r] += x;
-            refrss[r] += x * x;
+            ref[r] += x * x;
         }
 
         double denom = NC - start;
         expectedm[r] /= denom;
-        refrss[r] -= denom * expectedm[r] * expectedm[r];
-        ref[r] = refrss[r] / (denom - 1);
+        ref[r] -= denom * expectedm[r] * expectedm[r];
+        ref[r] /= denom - 1;
     }
 
     tatami_stats::VarianceOptions vopt;
@@ -104,16 +104,16 @@ TEST(Variance, Column) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     // Doing the difference of squares as a quick-and-dirty reference.
-    std::vector<double> ref(NC), expectedm(NC), refrss(NC);
+    std::vector<double> ref(NC), expectedm(NC);
     for (size_t c = 0; c < NC; ++c) {
         for (size_t r = 0; r < NR; ++r) {
             double x = dump[c + r * NC];
             expectedm[c] += x;
-            refrss[c] += x * x;
+            ref[c] += x * x;
         }
         expectedm[c] /= NR;
-        refrss[c] -= NR * expectedm[c] * expectedm[c];
-        ref[c] = refrss[c] / (NR - 1);
+        ref[c] -= NR * expectedm[c] * expectedm[c];
+        ref[c] /= NR - 1;
     }
 
     compare_result(tatami_stats::variance(false, *dense_row, {}), expectedm, ref);
@@ -142,19 +142,19 @@ TEST(Variance, ColumnWithNan) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    std::vector<double> ref(NC), expectedm(NC), refrss(NC);
+    std::vector<double> ref(NC), expectedm(NC);
     for (size_t c = 0; c < NC; ++c) {
         const std::size_t rend = NR - (c % 15 + 1);
         for (size_t r = 0; r < rend; ++r) { // skipping the last few rows with NaNs.
             double x = dump[c + r * NC];
             expectedm[c] += x;
-            refrss[c] += x * x;
+            ref[c] += x * x;
         }
 
         double denom = rend; 
         expectedm[c] /= denom;
-        refrss[c] -= denom * expectedm[c] * expectedm[c];
-        ref[c] = refrss[c] / (denom - 1);
+        ref[c] -= denom * expectedm[c] * expectedm[c];
+        ref[c] /= denom - 1;
     }
 
     tatami_stats::VarianceOptions vopt;
