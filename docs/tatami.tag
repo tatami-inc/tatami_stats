@@ -15,6 +15,25 @@
     <namespace>tatami_stats</namespace>
   </compound>
   <compound kind="file">
+    <name>group_rss.hpp</name>
+    <path>tatami_stats/</path>
+    <filename>group__rss_8hpp.html</filename>
+    <class kind="struct">tatami_stats::GroupRssOptions</class>
+    <class kind="struct">tatami_stats::GroupRssBuffers</class>
+    <class kind="struct">tatami_stats::GroupRssResult</class>
+    <namespace>tatami_stats</namespace>
+  </compound>
+  <compound kind="file">
+    <name>group_rss.hpp</name>
+    <path>tatami_stats/skip_nan/</path>
+    <filename>skip__nan_2group__rss_8hpp.html</filename>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssOptions</class>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssBuffers</class>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssResult</class>
+    <namespace>tatami_stats</namespace>
+    <namespace>tatami_stats::skip_nan</namespace>
+  </compound>
+  <compound kind="file">
     <name>group_sum.hpp</name>
     <path>tatami_stats/</path>
     <filename>group__sum_8hpp.html</filename>
@@ -121,6 +140,136 @@
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1GroupMedianOptions.html</anchorfile>
       <anchor>a9cb9eefbb96e15372c0569e0b66424f2</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::GroupRssBuffers</name>
+    <filename>structtatami__stats_1_1GroupRssBuffers.html</filename>
+    <templarg>typename Output_</templarg>
+    <templarg>typename Count_</templarg>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ * &gt;</type>
+      <name>mean</name>
+      <anchorfile>structtatami__stats_1_1GroupRssBuffers.html</anchorfile>
+      <anchor>af61b0b39755cbb418738469b5937260f</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ * &gt;</type>
+      <name>rss</name>
+      <anchorfile>structtatami__stats_1_1GroupRssBuffers.html</anchorfile>
+      <anchor>a75f287c19d58df9d41b78b76a8708d74</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Count_ *</type>
+      <name>count</name>
+      <anchorfile>structtatami__stats_1_1GroupRssBuffers.html</anchorfile>
+      <anchor>a7b2b10792a9e7c40594ca4125641d137</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::skip_nan::GroupRssBuffers</name>
+    <filename>structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html</filename>
+    <templarg>typename Output_</templarg>
+    <templarg>typename Count_</templarg>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ * &gt;</type>
+      <name>mean</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html</anchorfile>
+      <anchor>a4e0c9aa61cdad1a0abfb192c4c6c6e0a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ * &gt;</type>
+      <name>rss</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html</anchorfile>
+      <anchor>aa12832c80f97bc73cafd155648546732</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; Count_ * &gt;</type>
+      <name>count</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html</anchorfile>
+      <anchor>aebf25a6f448be6282df1f416f0b4863d</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::GroupRssOptions</name>
+    <filename>structtatami__stats_1_1GroupRssOptions.html</filename>
+    <member kind="variable">
+      <type>int</type>
+      <name>num_threads</name>
+      <anchorfile>structtatami__stats_1_1GroupRssOptions.html</anchorfile>
+      <anchor>a831c92b2f120a76b9f505a2d17ae3b90</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::skip_nan::GroupRssOptions</name>
+    <filename>structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html</filename>
+    <member kind="variable">
+      <type>int</type>
+      <name>num_threads</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html</anchorfile>
+      <anchor>abcfc20a16925dcb1532ba0f87368c90c</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::GroupRssResult</name>
+    <filename>structtatami__stats_1_1GroupRssResult.html</filename>
+    <templarg>typename Output_</templarg>
+    <templarg>typename Count_</templarg>
+    <member kind="variable">
+      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
+      <name>mean</name>
+      <anchorfile>structtatami__stats_1_1GroupRssResult.html</anchorfile>
+      <anchor>ae74a924eb9a005fd03651e05bad71e58</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
+      <name>rss</name>
+      <anchorfile>structtatami__stats_1_1GroupRssResult.html</anchorfile>
+      <anchor>ad7ae6611bed73371f931dc890a6809b8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; Count_ &gt;</type>
+      <name>count</name>
+      <anchorfile>structtatami__stats_1_1GroupRssResult.html</anchorfile>
+      <anchor>aa886fff6a5d28ae28e129b44ca4079d6</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::skip_nan::GroupRssResult</name>
+    <filename>structtatami__stats_1_1skip__nan_1_1GroupRssResult.html</filename>
+    <templarg>typename Output_</templarg>
+    <templarg>typename Count_</templarg>
+    <member kind="variable">
+      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
+      <name>mean</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssResult.html</anchorfile>
+      <anchor>af455e506de8da25ff67f66a14facc791</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
+      <name>rss</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssResult.html</anchorfile>
+      <anchor>a67a3423792805b1de01e33cd7a6200b8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; std::vector&lt; Count_ &gt; &gt;</type>
+      <name>count</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssResult.html</anchorfile>
+      <anchor>aca76737a3d38ed37a410ac3e9d5dc585</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -484,6 +633,9 @@
     <namespace>tatami_stats::skip_nan</namespace>
     <class kind="struct">tatami_stats::CountOptions</class>
     <class kind="struct">tatami_stats::GroupMedianOptions</class>
+    <class kind="struct">tatami_stats::GroupRssBuffers</class>
+    <class kind="struct">tatami_stats::GroupRssOptions</class>
+    <class kind="struct">tatami_stats::GroupRssResult</class>
     <class kind="struct">tatami_stats::GroupSumOptions</class>
     <class kind="struct">tatami_stats::GroupVarianceBuffers</class>
     <class kind="struct">tatami_stats::GroupVarianceOptions</class>
@@ -527,6 +679,20 @@
       <anchorfile>namespacetatami__stats.html</anchorfile>
       <anchor>a34a64e23fbbb053cf65ff2c056ff2623</anchor>
       <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupMedianOptions &amp;opt)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>group_rss</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>af8c9572c388ca6f2eb61185adfce452f</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_, Count_ &gt; &amp;output, const GroupRssOptions &amp;opt)</arglist>
+    </member>
+    <member kind="function">
+      <type>GroupRssResult&lt; Output_, Count_ &gt;</type>
+      <name>group_rss</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>a27b5b15d5a4e9dae9bd9fb44d3f6cf9f</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -644,9 +810,26 @@
   <compound kind="namespace">
     <name>tatami_stats::skip_nan</name>
     <filename>namespacetatami__stats_1_1skip__nan.html</filename>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssBuffers</class>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssOptions</class>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssResult</class>
     <class kind="struct">tatami_stats::skip_nan::RssBuffers</class>
     <class kind="struct">tatami_stats::skip_nan::RssOptions</class>
     <class kind="struct">tatami_stats::skip_nan::RssResult</class>
+    <member kind="function">
+      <type>void</type>
+      <name>group_rss</name>
+      <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
+      <anchor>abf8a7950c6756f36da8dc972d1b6151b</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_, Count_ &gt; &amp;output, const GroupRssOptions &amp;opt)</arglist>
+    </member>
+    <member kind="function">
+      <type>GroupRssResult&lt; Output_, Count_ &gt;</type>
+      <name>group_rss</name>
+      <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
+      <anchor>a0d764b0e9f32e04327709144c05adb7e</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions &amp;opt)</arglist>
+    </member>
     <member kind="function">
       <type>void</type>
       <name>rss</name>

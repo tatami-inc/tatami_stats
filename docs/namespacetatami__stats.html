@@ -118,6 +118,15 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupMedianOptions.html">GroupMedianOptions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="#a7f9ead1e0237477c8ff009eea44dcc5b">group_median()</a></code>.  <a href="structtatami__stats_1_1GroupMedianOptions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupRssBuffers.html">GroupRssBuffers</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Result buffers for <code><a class="el" href="#af8c9572c388ca6f2eb61185adfce452f">group_rss()</a></code>.  <a href="structtatami__stats_1_1GroupRssBuffers.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupRssOptions.html">GroupRssOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="#af8c9572c388ca6f2eb61185adfce452f">group_rss()</a></code>.  <a href="structtatami__stats_1_1GroupRssOptions.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupRssResult.html">GroupRssResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Results of <code><a class="el" href="#af8c9572c388ca6f2eb61185adfce452f">group_rss()</a></code>.  <a href="structtatami__stats_1_1GroupRssResult.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for <code><a class="el" href="#a914d2af37165ace4dcbe0a54ee065fd7">group_sum()</a></code>.  <a href="structtatami__stats_1_1GroupSumOptions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,6 +190,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a34a64e23fbbb053cf65ff2c056ff2623" id="r_a34a64e23fbbb053cf65ff2c056ff2623"><td class="memTemplParams" colspan="2">template&lt;typename Output_  = double, typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
 <tr class="memitem:a34a64e23fbbb053cf65ff2c056ff2623"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; Output_ &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a34a64e23fbbb053cf65ff2c056ff2623">group_median</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const <a class="el" href="structtatami__stats_1_1GroupMedianOptions.html">GroupMedianOptions</a> &amp;opt)</td></tr>
 <tr class="separator:a34a64e23fbbb053cf65ff2c056ff2623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8c9572c388ca6f2eb61185adfce452f" id="r_af8c9572c388ca6f2eb61185adfce452f"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ , typename Count_ &gt; </td></tr>
+<tr class="memitem:af8c9572c388ca6f2eb61185adfce452f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af8c9572c388ca6f2eb61185adfce452f">group_rss</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, <a class="el" href="structtatami__stats_1_1GroupRssBuffers.html">GroupRssBuffers</a>&lt; Output_, Count_ &gt; &amp;output, const <a class="el" href="structtatami__stats_1_1GroupRssOptions.html">GroupRssOptions</a> &amp;opt)</td></tr>
+<tr class="separator:af8c9572c388ca6f2eb61185adfce452f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27b5b15d5a4e9dae9bd9fb44d3f6cf9f" id="r_a27b5b15d5a4e9dae9bd9fb44d3f6cf9f"><td class="memTemplParams" colspan="2">template&lt;typename Output_ , typename Count_ , typename Value_ , typename Index_ , typename Group_ &gt; </td></tr>
+<tr class="memitem:a27b5b15d5a4e9dae9bd9fb44d3f6cf9f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structtatami__stats_1_1GroupRssResult.html">GroupRssResult</a>&lt; Output_, Count_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a27b5b15d5a4e9dae9bd9fb44d3f6cf9f">group_rss</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const <a class="el" href="structtatami__stats_1_1GroupRssOptions.html">GroupRssOptions</a> &amp;opt)</td></tr>
+<tr class="separator:a27b5b15d5a4e9dae9bd9fb44d3f6cf9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a914d2af37165ace4dcbe0a54ee065fd7" id="r_a914d2af37165ace4dcbe0a54ee065fd7"><td class="memTemplParams" colspan="2">template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ &gt; </td></tr>
 <tr class="memitem:a914d2af37165ace4dcbe0a54ee065fd7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a914d2af37165ace4dcbe0a54ee065fd7">group_sum</a> (bool row, const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, std::vector&lt; Output_ * &gt; &amp;output, const <a class="el" href="structtatami__stats_1_1GroupSumOptions.html">GroupSumOptions</a> &amp;opt)</td></tr>
 <tr class="separator:a914d2af37165ace4dcbe0a54ee065fd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -464,6 +479,131 @@ template&lt;typename Output_  = double, typename Value_ , typename Index_ , type
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Vector of length equal to the number of groups. Each element is a vector of length equal to the number of rows (if <code>row = true</code>) or columns (otherwise), containing the row/column medians for the corresponding group. </dd></dl>
+
+</div>
+</div>
+<a id="af8c9572c388ca6f2eb61185adfce452f" name="af8c9572c388ca6f2eb61185adfce452f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8c9572c388ca6f2eb61185adfce452f">&#9670;&#160;</a></span>group_rss() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Value_ , typename Index_ , typename Group_ , typename Output_ , typename Count_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void tatami_stats::group_rss </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Group_ *const</td>          <td class="paramname"><span class="paramname"><em>group</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_groups</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structtatami__stats_1_1GroupRssBuffers.html">GroupRssBuffers</a>&lt; Output_, Count_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>output</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structtatami__stats_1_1GroupRssOptions.html">GroupRssOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute per-group residual sums of squares (RSS) for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row/column. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs. </td></tr>
+    <tr><td class="paramname">Count_</td><td>Numeric type of the group sizes, typically integer.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute RSS values for the rows. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns (if <code>row = true</code>) or rows (otherwise). Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., \(N\). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Buffers in which to store the results. On output, each array stores the means and RSS values of the corresponding group. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">opt</td><td>Further options. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a27b5b15d5a4e9dae9bd9fb44d3f6cf9f" name="a27b5b15d5a4e9dae9bd9fb44d3f6cf9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27b5b15d5a4e9dae9bd9fb44d3f6cf9f">&#9670;&#160;</a></span>group_rss() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_ , typename Count_ , typename Value_ , typename Index_ , typename Group_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structtatami__stats_1_1GroupRssResult.html">GroupRssResult</a>&lt; Output_, Count_ &gt; tatami_stats::group_rss </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a>&lt; Value_, Index_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Group_ *const</td>          <td class="paramname"><span class="paramname"><em>group</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_groups</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structtatami__stats_1_1GroupRssOptions.html">GroupRssOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute per-group residual sums of squares (RSS) for each element of a chosen dimension of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output value. This should be capable of storing NaNs. </td></tr>
+    <tr><td class="paramname">Count_</td><td>Numeric type of the group sizes, typically integer. </td></tr>
+    <tr><td class="paramname">Value_</td><td>Numeric type of the matrix value. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the row/column indices. </td></tr>
+    <tr><td class="paramname">Group_</td><td>Integer type of the group assignments for each row/column.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">row</td><td>Whether to compute RSS values for the rows. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">mat</td><td>Instance of a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">group</td><td>Pointer to an array of length equal to the number of columns (if <code>row = true</code>) or rows (otherwise). Each value should be an integer that specifies the group assignment. Values should lie in \([0, N)\) where \(N\) is the number of unique groups. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_groups</td><td>Number of groups, i.e., \(N\). </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">opt</td><td>Further options.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>RSS and mean of each group for each row/column. </dd></dl>
 
 </div>
 </div>
