@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats::GroupRssBuffers&lt; Output_, Count_ &gt; Struct Template Reference</title>
+<title>tatami_stats: tatami_stats::GroupRssBuffers&lt; Output_ &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -100,83 +100,63 @@ $(function(){ initResizable(false); });
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structtatami__stats_1_1GroupRssBuffers-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats::GroupRssBuffers&lt; Output_, Count_ &gt; Struct Template Reference</div></div>
+  <div class="headertitle"><div class="title">tatami_stats::GroupRssBuffers&lt; Output_ &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#af8c9572c388ca6f2eb61185adfce452f">group_rss()</a></code>.  
+<p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#aac760bbfda2cf29b633fa856cce98207">group_rss()</a></code>.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="group__rss_8hpp_source.html">group_rss.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:af61b0b39755cbb418738469b5937260f" id="r_af61b0b39755cbb418738469b5937260f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Output_ * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af61b0b39755cbb418738469b5937260f">mean</a></td></tr>
-<tr class="separator:af61b0b39755cbb418738469b5937260f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75f287c19d58df9d41b78b76a8708d74" id="r_a75f287c19d58df9d41b78b76a8708d74"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Output_ * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75f287c19d58df9d41b78b76a8708d74">rss</a></td></tr>
-<tr class="separator:a75f287c19d58df9d41b78b76a8708d74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b2b10792a9e7c40594ca4125641d137" id="r_a7b2b10792a9e7c40594ca4125641d137"><td class="memItemLeft" align="right" valign="top">Count_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b2b10792a9e7c40594ca4125641d137">count</a></td></tr>
-<tr class="separator:a7b2b10792a9e7c40594ca4125641d137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca995f29907b4d5fa6a8eb52f4dfc9b2" id="r_aca995f29907b4d5fa6a8eb52f4dfc9b2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Output_ * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca995f29907b4d5fa6a8eb52f4dfc9b2">mean</a></td></tr>
+<tr class="separator:aca995f29907b4d5fa6a8eb52f4dfc9b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7674093c2c446b159f24742ea783f523" id="r_a7674093c2c446b159f24742ea783f523"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Output_ * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7674093c2c446b159f24742ea783f523">rss</a></td></tr>
+<tr class="separator:a7674093c2c446b159f24742ea783f523"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_, typename Count_&gt;<br />
-struct tatami_stats::GroupRssBuffers&lt; Output_, Count_ &gt;</div><p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#af8c9572c388ca6f2eb61185adfce452f">group_rss()</a></code>. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_&gt;<br />
+struct tatami_stats::GroupRssBuffers&lt; Output_ &gt;</div><p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#aac760bbfda2cf29b633fa856cce98207">group_rss()</a></code>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. This should be capable of storing NaNs. </td></tr>
-    <tr><td class="paramname">Count_</td><td>Numeric type of the group sizes, typically integer. </td></tr>
   </table>
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="af61b0b39755cbb418738469b5937260f" name="af61b0b39755cbb418738469b5937260f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af61b0b39755cbb418738469b5937260f">&#9670;&#160;</a></span>mean</h2>
+<a id="aca995f29907b4d5fa6a8eb52f4dfc9b2" name="aca995f29907b4d5fa6a8eb52f4dfc9b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca995f29907b4d5fa6a8eb52f4dfc9b2">&#9670;&#160;</a></span>mean</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_ , typename Count_ &gt; </div>
+template&lt;typename Output_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;Output_*&gt; <a class="el" href="structtatami__stats_1_1GroupRssBuffers.html">tatami_stats::GroupRssBuffers</a>&lt; Output_, Count_ &gt;::mean</td>
+          <td class="memname">std::vector&lt;Output_*&gt; <a class="el" href="structtatami__stats_1_1GroupRssBuffers.html">tatami_stats::GroupRssBuffers</a>&lt; Output_ &gt;::mean</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise). After <code><a class="el" href="namespacetatami__stats.html#af8c9572c388ca6f2eb61185adfce452f">group_rss()</a></code>, this is filled with the sample mean of each row/column for the corresponding group. </p>
+<p>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise). After <code><a class="el" href="namespacetatami__stats.html#aac760bbfda2cf29b633fa856cce98207">group_rss()</a></code>, this is filled with the sample mean of each row/column for the corresponding group. </p>
 
 </div>
 </div>
-<a id="a75f287c19d58df9d41b78b76a8708d74" name="a75f287c19d58df9d41b78b76a8708d74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a75f287c19d58df9d41b78b76a8708d74">&#9670;&#160;</a></span>rss</h2>
+<a id="a7674093c2c446b159f24742ea783f523" name="a7674093c2c446b159f24742ea783f523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7674093c2c446b159f24742ea783f523">&#9670;&#160;</a></span>rss</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_ , typename Count_ &gt; </div>
+template&lt;typename Output_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;Output_*&gt; <a class="el" href="structtatami__stats_1_1GroupRssBuffers.html">tatami_stats::GroupRssBuffers</a>&lt; Output_, Count_ &gt;::rss</td>
+          <td class="memname">std::vector&lt;Output_*&gt; <a class="el" href="structtatami__stats_1_1GroupRssBuffers.html">tatami_stats::GroupRssBuffers</a>&lt; Output_ &gt;::rss</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise). After <code><a class="el" href="namespacetatami__stats.html#af8c9572c388ca6f2eb61185adfce452f">group_rss()</a></code>, this is filled with the residual sum of squares of each row/column for the corresponding group. </p>
-
-</div>
-</div>
-<a id="a7b2b10792a9e7c40594ca4125641d137" name="a7b2b10792a9e7c40594ca4125641d137"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b2b10792a9e7c40594ca4125641d137">&#9670;&#160;</a></span>count</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Output_ , typename Count_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">Count_* <a class="el" href="structtatami__stats_1_1GroupRssBuffers.html">tatami_stats::GroupRssBuffers</a>&lt; Output_, Count_ &gt;::count</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Pointer to an array of length equal to the number of groups. After <code><a class="el" href="namespacetatami__stats.html#af8c9572c388ca6f2eb61185adfce452f">group_rss()</a></code>, this is filled with the group sizes. </p>
+<p>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise). After <code><a class="el" href="namespacetatami__stats.html#aac760bbfda2cf29b633fa856cce98207">group_rss()</a></code>, this is filled with the residual sum of squares of each row/column for the corresponding group. </p>
 
 </div>
 </div>
