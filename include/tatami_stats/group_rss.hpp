@@ -39,9 +39,8 @@ struct GroupRssOptions {
  *
  * @tparam Output_ Floating-point type of the output data.
  * This should be capable of storing NaNs.
- * @tparam Count_ Numeric type of the group sizes, typically integer.
  */
-template<typename Output_, typename Count_>
+template<typename Output_>
 struct GroupRssBuffers {
     /**
      * Vector of length equal to the number of groups.
@@ -56,18 +55,12 @@ struct GroupRssBuffers {
      * After `group_rss()`, this is filled with the residual sum of squares of each row/column for the corresponding group.
      */
     std::vector<Output_*> rss;
-
-    /**
-     * Pointer to an array of length equal to the number of groups.
-     * After `group_rss()`, this is filled with the group sizes.
-     */
-    Count_* count;
 };
 
 /**
  * @cond
  */
-template<typename Count_, typename Output_, typename Index_>
+template<typename Output_, typename Count_, typename Index_>
 void group_rss_finish_means(
     const std::size_t num_groups,
     const Count_* const group_size,
@@ -85,22 +78,18 @@ void group_rss_finish_means(
     }
 }
 
-template<typename Value_, typename Index_, typename Group_, typename Output_, typename Count_>
+template<typename Value_, typename Index_, typename Group_, typename Count_, typename Output_>
 void group_rss_direct(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat, 
     const Group_* const group, 
     const std::size_t num_groups, 
-    GroupRssBuffers<Output_, Count_>& output,
+    const Count_* const group_size,
+    GroupRssBuffers<Output_>& output,
     const GroupRssOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
-
-    std::fill_n(output.count, num_groups, 0);
-    for (Index_ i = 0; i < otherdim; ++i) {
-        output.count[group[i]] += 1;
-    }
 
     if (mat.sparse()) {
         tatami::parallelize([&](int, Index_ s, Index_ l) -> void {
@@ -120,7 +109,7 @@ void group_rss_direct(
                     cur_means[g] += range.value[i];
                     ++cur_non_zeros[g];
                 }
-                group_rss_finish_means(num_groups, output.count, cur_means, static_cast<Index_>(s + x), output.mean);
+                group_rss_finish_means(num_groups, group_size, cur_means, static_cast<Index_>(s + x), output.mean);
 
                 // Now computing the RSS.
                 for (Index_ i = 0; i < range.number; ++i) {
@@ -129,8 +118,8 @@ void group_rss_direct(
                     cur_rss[g] += delta * delta;
                 }
                 for (std::size_t g = 0; g < num_groups; ++g) {
-                    if (output.count[g] > 0) { // preserve RSS = 0 if the group is empty, otherwise the NaN mean causes problems.
-                        const Output_ my_rss = cur_rss[g] + cur_means[g] * cur_means[g] * (output.count[g] - cur_non_zeros[g]);
+                    if (group_size[g] > 0) { // preserve RSS = 0 if the group is empty, otherwise the NaN mean causes problems.
+                        const Output_ my_rss = cur_rss[g] + cur_means[g] * cur_means[g] * (group_size[g] - cur_non_zeros[g]);
                         output.rss[g][s + x] = my_rss;
                     } else {
                         output.rss[g][s + x] = 0;
@@ -157,7 +146,7 @@ void group_rss_direct(
                 for (Index_ j = 0; j < otherdim; ++j) {
                     cur_means[group[j]] += ptr[j];
                 }
-                group_rss_finish_means(num_groups, output.count, cur_means, static_cast<Index_>(s + x), output.mean);
+                group_rss_finish_means(num_groups, group_size, cur_means, static_cast<Index_>(s + x), output.mean);
 
                 // Now computing the RSS.
                 for (Index_ j = 0; j < otherdim; ++j) {
@@ -176,13 +165,14 @@ void group_rss_direct(
     }
 }
 
-template<typename Value_, typename Index_, typename Group_, typename Output_, typename Count_>
+template<typename Value_, typename Index_, typename Group_, typename Count_, typename Output_>
 void group_rss_running(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group, 
     const std::size_t num_groups, 
-    GroupRssBuffers<Output_, Count_>& output,
+    const Count_* const group_size,
+    GroupRssBuffers<Output_>& output,
     const GroupRssOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
@@ -190,7 +180,6 @@ void group_rss_running(
     const bool is_sparse = mat.is_sparse();
 
     if (otherdim == 0) {
-        std::fill_n(output.count, num_groups, 0);
         for (std::size_t g = 0; g < num_groups; ++g) {
             std::fill_n(output.mean[g], dim, std::numeric_limits<Output_>::quiet_NaN());
             std::fill_n(output.rss[g], dim, 0);
@@ -218,14 +207,12 @@ void group_rss_running(
         Output_** rss_ptrs;
         std::optional<std::vector<Output_*> > tmp_mean_ptrs, tmp_rss_ptrs;
         std::optional<std::vector<std::vector<Output_> > > cur_mean, cur_rss;
-        Count_* count_ptr;
         std::optional<std::vector<Count_> > cur_count;
 
         if (!do_parallel) {
             // Storing mean and RSS directly in the output vector to cut down two allocations if we're not working in parallel.
             mean_ptrs = output.mean.data();
             rss_ptrs = output.rss.data();
-            count_ptr = output.count;
         } else {
             // Storing the partial RSS directly in the output vectors to save ourselves an allocation if we're in the first thread.
             // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
@@ -236,9 +223,7 @@ void group_rss_running(
                 (*tmp_mean_ptrs)[g] = (*cur_mean)[g].data();
             }
             mean_ptrs = tmp_mean_ptrs->data();
-
             cur_count.emplace(sanisizer::cast<I<decltype(cur_count->size())> >(num_groups));
-            count_ptr = cur_count->data();
 
             if (thread == 0) {
                 rss_ptrs = output.rss.data();
@@ -272,8 +257,13 @@ void group_rss_running(
             }
 
             for (std::size_t g = 0; g < num_groups; ++g) {
-                count_ptr[g] = runners[g].num_obs();
                 runners[g].finish();
+            }
+
+            if (do_parallel) {
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    (*cur_count)[g] = runners[g].num_obs();
+                }
             }
 
         } else {
@@ -292,8 +282,13 @@ void group_rss_running(
             }
 
             for (std::size_t g = 0; g < num_groups; ++g) {
-                count_ptr[g] = runners[g].num_obs();
                 runners[g].finish();
+            }
+
+            if (do_parallel) {
+                for (std::size_t g = 0; g < num_groups; ++g) {
+                    (*cur_count)[g] = runners[g].num_obs();
+                }
             }
         }
 
@@ -310,20 +305,11 @@ void group_rss_running(
     if (do_parallel) {
         const auto& ap_mean = *all_partial_mean;
         const auto& ap_rss = *all_partial_rss;
-        const auto& ap_count = *all_partial_count;
-
-        std::fill_n(output.count, num_groups, 0);
-        for (int u = 0; u < nused; ++u) {
-            const auto& cur_count = *(ap_count[u]);
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                output.count[g] += cur_count[g];
-            }
-        }
 
         // Computing the global mean.
         for (std::size_t g = 0; g < num_groups; ++g) {
             const auto cur_output = output.mean[g];
-            const auto cur_global_count = output.count[g];
+            const auto cur_global_count = group_size[g];
             if (cur_global_count == 0) {
                 std::fill_n(cur_output, dim, std::numeric_limits<Output_>::quiet_NaN());
                 continue;
@@ -379,6 +365,46 @@ void group_rss_running(
  * @tparam Value_ Numeric type of the matrix value.
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Group_ Integer type of the group assignments for each row/column.
+ * @tparam Count_ Numeric type of the group sizes, typically integer.
+ * @tparam Output_ Floating-point type of the output value.
+ * This should be capable of storing NaNs.
+ *
+ * @param row Whether to compute RSS values for the rows.
+ * @param mat Instance of a `tatami::Matrix`.
+ * @param[in] group Pointer to an array of length equal to the number of columns (if `row = true`) or rows (otherwise).
+ * Each value should be an integer that specifies the group assignment.
+ * Values should be non-negative and less than `num_groups`.
+ * @param num_groups Number of groups in `group`.
+ * @param[in] group_size Pointer to an array of length equal to `num_groups`, containing the size of each group.
+ * @param[out] output Buffers in which to store the results.
+ * On output, each array stores the means and RSS values of the corresponding group.
+ * @param opt Further options.
+ */
+template<typename Value_, typename Index_, typename Group_, typename Count_, typename Output_>
+void group_rss(
+    bool row,
+    const tatami::Matrix<Value_, Index_>& mat,
+    const Group_* const group,
+    const std::size_t num_groups,
+    const Count_* const group_size,
+    GroupRssBuffers<Output_>& output,
+    const GroupRssOptions& opt
+) {
+    assert(sanisizer::is_equal(num_groups, output.mean.size()));
+    assert(sanisizer::is_equal(num_groups, output.rss.size()));
+    if (mat.prefer_rows() == row) {
+        group_rss_direct(row, mat, group, num_groups, group_size, output, opt);
+    } else {
+        group_rss_running(row, mat, group, num_groups, group_size, output, opt);
+    }
+}
+
+/**
+ * Overload that computes the group sizes before calling `group_rss()`.
+ *
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Group_ Integer type of the group assignments for each row/column.
  * @tparam Output_ Floating-point type of the output value.
  * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the group sizes, typically integer.
@@ -387,28 +413,27 @@ void group_rss_running(
  * @param mat Instance of a `tatami::Matrix`.
  * @param[in] group Pointer to an array of length equal to the number of columns (if `row = true`) or rows (otherwise).
  * Each value should be an integer that specifies the group assignment.
- * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
- * @param num_groups Number of groups, i.e., \f$N\f$.
+ * Values should be non-negative and less than `num_groups`.
+ * @param num_groups Number of groups in `group`.
  * @param[out] output Buffers in which to store the results.
  * On output, each array stores the means and RSS values of the corresponding group.
  * @param opt Further options.
  */
-template<typename Value_, typename Index_, typename Group_, typename Output_, typename Count_>
+template<typename Value_, typename Index_, typename Group_, typename Output_>
 void group_rss(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
     const std::size_t num_groups,
-    GroupRssBuffers<Output_, Count_>& output,
+    GroupRssBuffers<Output_>& output,
     const GroupRssOptions& opt
 ) {
-    assert(sanisizer::is_equal(num_groups, output.mean.size()));
-    assert(sanisizer::is_equal(num_groups, output.rss.size()));
-    if (mat.prefer_rows() == row) {
-        group_rss_direct(row, mat, group, num_groups, output, opt);
-    } else {
-        group_rss_running(row, mat, group, num_groups, output, opt);
+    auto group_size = sanisizer::create<std::vector<Index_> >(num_groups);
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    for (Index_ o = 0; o < otherdim; ++o) {
+        group_size[group[o]] += 1;
     }
+    group_rss(row, mat, group, num_groups, group_size.data(), output, opt);
 }
 
 /**
@@ -416,9 +441,8 @@ void group_rss(
  *
  * @tparam Output_ Floating-point type of the output data.
  * This should be capable of storing NaNs.
- * @tparam Count_ Numeric type of the group sizes, typically integer.
  */
-template<typename Output_, typename Count_>
+template<typename Output_>
 struct GroupRssResult {
     /**
      * Vector of length equal to the number of groups.
@@ -433,19 +457,13 @@ struct GroupRssResult {
      * containing the residual sum of squares of each row/column.
      */
     std::vector<std::vector<Output_> > rss;
-
-    /**
-     * Vector of length equal to the number of groups, containing the number of observations in each group.
-     */
-    std::vector<Count_> count;
 };
 
 /**
- * Compute per-group residual sums of squares (RSS) for each element of a chosen dimension of a `tatami::Matrix`.
+ * Overload of `group_rss()` that allocates memory for the results.
  *
  * @tparam Output_ Floating-point type of the output value.
  * This should be capable of storing NaNs.
- * @tparam Count_ Numeric type of the group sizes, typically integer.
  * @tparam Value_ Numeric type of the matrix value.
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Group_ Integer type of the group assignments for each row/column.
@@ -460,23 +478,21 @@ struct GroupRssResult {
  *
  * @return RSS and mean of each group for each row/column.
  */
-template<typename Output_, typename Count_, typename Value_, typename Index_, typename Group_> 
-GroupRssResult<Output_, Count_> group_rss(
+template<typename Output_, typename Value_, typename Index_, typename Group_> 
+GroupRssResult<Output_> group_rss(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
     const std::size_t num_groups,
     const GroupRssOptions& opt
 ) {
-    GroupRssResult<Output_, Count_> output;
+    GroupRssResult<Output_> output;
     sanisizer::resize(output.mean, num_groups);
     sanisizer::resize(output.rss, num_groups);
-    sanisizer::resize(output.count, num_groups);
 
-    GroupRssBuffers<Output_, Count_> buffers;
+    GroupRssBuffers<Output_> buffers;
     sanisizer::resize(buffers.mean, num_groups);
     sanisizer::resize(buffers.rss, num_groups);
-    buffers.count = output.count.data();
 
     const auto dim = (row ? mat.nrow() : mat.ncol());
     for (std::size_t g = 0; g < num_groups; ++g) {

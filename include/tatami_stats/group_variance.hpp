@@ -70,6 +70,7 @@ struct GroupVarianceBuffers {
  * @tparam Value_ Numeric type of the matrix value.
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Group_ Integer type of the group assignments for each row/column.
+ * @tparam Count_ Numeric type of the group sizes, typically integer.
  * @tparam Output_ Floating-point type of the output value.
  * This should be capable of storing NaNs.
  *
@@ -79,16 +80,18 @@ struct GroupVarianceBuffers {
  * Each value should be an integer that specifies the group assignment.
  * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
  * @param num_groups Number of groups, i.e., \f$N\f$.
+ * @param[in] group_size Pointer to an array of length equal to `num_groups`, containing the size of each group.
  * @param[out] output Buffers in which to store the results.
  * On output, each array stores the means and variances of the corresponding group.
  * @param opt Further options.
  */
-template<typename Value_, typename Index_, typename Group_, typename Output_>
+template<typename Value_, typename Index_, typename Group_, typename Count_, typename Output_>
 void group_variance(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
     const std::size_t num_groups,
+    const Count_* const group_size,
     GroupVarianceBuffers<Output_>& output,
     const GroupVarianceOptions& opt
 ) {
@@ -118,20 +121,55 @@ void group_variance(
             }
         },
         [&]() -> void {
-            GroupRssBuffers<Output_, Index_> tmp;
+            GroupRssBuffers<Output_> tmp;
             tmp.mean = output.mean;
             tmp.rss = output.variance;
-            auto group_sizes = sanisizer::create<std::vector<Index_> >(num_groups);
-            tmp.count = group_sizes.data();
 
             GroupRssOptions ropt;
             ropt.num_threads = opt.num_threads;
-            group_rss(row, mat, group, num_groups, tmp, ropt);
+            group_rss(row, mat, group, num_groups, group_size, tmp, ropt);
+
             for (std::size_t g = 0; g < num_groups; ++g) {
-                quickstats::rss_to_variance(dim, group_sizes[g], output.variance[g]);
+                quickstats::rss_to_variance(dim, group_size[g], output.variance[g]);
             }
         }
     );
+}
+
+/**
+ * Overload that computes the group sizes before calling `group_variance()`.
+ *
+ * @tparam Value_ Numeric type of the matrix value.
+ * @tparam Index_ Integer type of the row/column indices.
+ * @tparam Group_ Integer type of the group assignments for each row/column.
+ * @tparam Output_ Floating-point type of the output value.
+ * This should be capable of storing NaNs.
+ *
+ * @param row Whether to compute variances for the rows.
+ * @param mat Instance of a `tatami::Matrix`.
+ * @param[in] group Pointer to an array of length equal to the number of columns (if `row = true`) or rows (otherwise).
+ * Each value should be an integer that specifies the group assignment.
+ * Values should lie in \f$[0, N)\f$ where \f$N\f$ is the number of unique groups.
+ * @param num_groups Number of groups, i.e., \f$N\f$.
+ * @param[out] output Buffers in which to store the results.
+ * On output, each array stores the means and variances of the corresponding group.
+ * @param opt Further options.
+ */
+template<typename Value_, typename Index_, typename Group_, typename Output_>
+void group_variance(
+    bool row,
+    const tatami::Matrix<Value_, Index_>& mat,
+    const Group_* const group,
+    const std::size_t num_groups,
+    GroupVarianceBuffers<Output_>& output,
+    const GroupVarianceOptions& opt
+) {
+    auto group_size = sanisizer::create<std::vector<Index_> >(num_groups);
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    for (Index_ o = 0; o < otherdim; ++o) {
+        group_size[group[o]] += 1;
+    }
+    group_variance(row, mat, group, num_groups, group_size.data(), output, opt);
 }
 
 /**

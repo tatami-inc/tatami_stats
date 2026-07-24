@@ -8,14 +8,12 @@
 #include "utils.h"
 
 static void compare_result(
-    const tatami_stats::GroupRssResult<double, int>& res,
+    const tatami_stats::GroupRssResult<double>& res,
     const std::vector<std::vector<double> >& expected_mean,
-    const std::vector<std::vector<double> >& expected_rss,
-    const std::vector<int>& expected_count
+    const std::vector<std::vector<double> >& expected_rss
 ) {
     compare_double_vectors_of_vectors(expected_rss, res.rss);
     compare_double_vectors_of_vectors(expected_mean, res.mean);
-    EXPECT_EQ(res.count, expected_count);
 }
 
 /*****************************/
@@ -77,28 +75,26 @@ TEST_P(GroupRssBasicTest, Row) {
     auto cgroups = generate_groups(interleaved, ngroup, NC);
     auto subsets = create_subsets(ngroup, cgroups);
     std::vector<std::vector<double> > expected_v(ngroup), expected_m(ngroup);
-    std::vector<int> expected_c(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<1>(dense_row, subsets[g]);
         auto res = tatami_stats::rss(true, *sub, {});
         expected_m[g] = std::move(res.mean);
         expected_v[g] = std::move(res.rss);
-        expected_c[g] = subsets[g].size();
     }
 
     tatami_stats::GroupRssOptions vopt;
     vopt.num_threads = num_threads;
 
-    compare_result(tatami_stats::group_rss<double, int>(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
-    compare_result(tatami_stats::group_rss<double, int>(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
-    compare_result(tatami_stats::group_rss<double, int>(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
-    compare_result(tatami_stats::group_rss<double, int>(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
+    compare_result(tatami_stats::group_rss<double>(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_rss<double>(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_rss<double>(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_rss<double>(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    compare_result(tatami_stats::group_rss<double, int>(true, *unsorted_row, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
+    compare_result(tatami_stats::group_rss<double>(true, *unsorted_row, cgroups.data(), ngroup, vopt), expected_m, expected_v);
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    compare_result(tatami_stats::group_rss<double, int>(true, *unsorted_column, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
+    compare_result(tatami_stats::group_rss<double>(true, *unsorted_column, cgroups.data(), ngroup, vopt), expected_m, expected_v);
 }
 
 TEST_P(GroupRssBasicTest, Column) {
@@ -123,28 +119,26 @@ TEST_P(GroupRssBasicTest, Column) {
     auto rgroups = generate_groups(interleaved, ngroup, NR);
     auto subsets = create_subsets(ngroup, rgroups);
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
-    std::vector<int> expected_c(ngroup);
     for (int g = 0; g < ngroup; ++g) {
         auto sub = tatami::make_DelayedSubset<0>(dense_row, subsets[g]);
         auto res = tatami_stats::rss(false, *sub, {});
         expected_m[g] = std::move(res.mean);
         expected_v[g] = std::move(res.rss);
-        expected_c[g] = subsets[g].size();
     }
 
     tatami_stats::GroupRssOptions vopt;
     vopt.num_threads = num_threads;
 
-    compare_result(tatami_stats::group_rss<double, int>(false, *dense_row, rgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
-    compare_result(tatami_stats::group_rss<double, int>(false, *dense_column, rgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
-    compare_result(tatami_stats::group_rss<double, int>(false, *sparse_row, rgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
-    compare_result(tatami_stats::group_rss<double, int>(false, *sparse_column, rgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
+    compare_result(tatami_stats::group_rss<double>(false, *dense_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_rss<double>(false, *dense_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_rss<double>(false, *sparse_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
+    compare_result(tatami_stats::group_rss<double>(false, *sparse_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
 
     // Checking same results from matrices that can yield unsorted indices.
     std::shared_ptr<tatami::NumericMatrix> unsorted_row(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_row));
-    compare_result(tatami_stats::group_rss<double, int>(false, *unsorted_row, rgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
+    compare_result(tatami_stats::group_rss<double>(false, *unsorted_row, rgroups.data(), ngroup, vopt), expected_m, expected_v);
     std::shared_ptr<tatami::NumericMatrix> unsorted_column(new tatami_test::ReversedIndicesWrapper<double, int>(sparse_column));
-    compare_result(tatami_stats::group_rss<double, int>(false, *unsorted_column, rgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
+    compare_result(tatami_stats::group_rss<double>(false, *unsorted_column, rgroups.data(), ngroup, vopt), expected_m, expected_v);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -169,25 +163,23 @@ TEST_P(GroupRssEdgeTest, EmptyExtent) {
 
     int ngroups = 3;
     std::vector<int> grouping { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0 };
-    std::vector<int> expected_counts{ 4, 3, 3 };
 
-    auto check_ok = [&](const tatami_stats::GroupRssResult<double, int>& res) -> void {
+    auto check_ok = [&](const tatami_stats::GroupRssResult<double>& res) -> void {
         EXPECT_EQ(res.mean.size(), ngroups);
         EXPECT_EQ(res.rss.size(), ngroups);
         for (int g = 0; g < ngroups; ++g) {
             EXPECT_TRUE(res.mean[g].empty());
             EXPECT_TRUE(res.rss[g].empty());
         }
-        EXPECT_EQ(res.count, expected_counts);
     };
 
     tatami_stats::GroupRssOptions vopt;
     vopt.num_threads = GetParam();
 
-    check_ok(tatami_stats::group_rss<double, int>(true, *dense_row, grouping.data(), ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(true, *dense_column, grouping.data(), ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(true, *sparse_row, grouping.data(), ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(true, *sparse_column, grouping.data(), ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(true, *dense_row, grouping.data(), ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(true, *dense_column, grouping.data(), ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(true, *sparse_row, grouping.data(), ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(true, *sparse_column, grouping.data(), ngroups, vopt));
 }
 
 TEST_P(GroupRssEdgeTest, NoGroups) {
@@ -196,20 +188,19 @@ TEST_P(GroupRssEdgeTest, NoGroups) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto check_ok = [&](const tatami_stats::GroupRssResult<double, int>& res) -> void {
+    auto check_ok = [&](const tatami_stats::GroupRssResult<double>& res) -> void {
         EXPECT_EQ(res.mean.size(), 0);
         EXPECT_EQ(res.rss.size(), 0);
-        EXPECT_EQ(res.count.size(), 0);
     };
 
     tatami_stats::GroupRssOptions vopt;
     vopt.num_threads = GetParam();
 
     const int* group = NULL; 
-    check_ok(tatami_stats::group_rss<double, int>(false, *dense_row, group, 0, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(false, *dense_column, group, 0, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(false, *sparse_row, group, 0, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(false, *sparse_column, group, 0, vopt));
+    check_ok(tatami_stats::group_rss<double>(false, *dense_row, group, 0, vopt));
+    check_ok(tatami_stats::group_rss<double>(false, *dense_column, group, 0, vopt));
+    check_ok(tatami_stats::group_rss<double>(false, *sparse_row, group, 0, vopt));
+    check_ok(tatami_stats::group_rss<double>(false, *sparse_column, group, 0, vopt));
 }
 
 TEST_P(GroupRssEdgeTest, AllEmptyGroups) {
@@ -219,24 +210,23 @@ TEST_P(GroupRssEdgeTest, AllEmptyGroups) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     int ngroups = 5;
-    auto check_ok = [&](const tatami_stats::GroupRssResult<double, int>& res) -> void {
+    auto check_ok = [&](const tatami_stats::GroupRssResult<double>& res) -> void {
         EXPECT_EQ(res.mean.size(), ngroups);
         EXPECT_EQ(res.rss.size(), ngroups);
         for (int g = 0; g < ngroups; ++g) {
             EXPECT_TRUE(is_all_nan(res.mean[g]));
             EXPECT_EQ(res.rss[g], std::vector<double>(10));
         }
-        EXPECT_EQ(res.count, std::vector<int>(ngroups));
     };
 
     tatami_stats::GroupRssOptions vopt;
     vopt.num_threads = GetParam();
 
     const int* group = NULL; 
-    check_ok(tatami_stats::group_rss<double, int>(false, *dense_row, group, ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(false, *dense_column, group, ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(false, *sparse_row, group, ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(false, *sparse_column, group, ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(false, *dense_row, group, ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(false, *dense_column, group, ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(false, *sparse_row, group, ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(false, *sparse_column, group, ngroups, vopt));
 }
 
 TEST_P(GroupRssEdgeTest, SomeEmptyGroups) {
@@ -248,9 +238,8 @@ TEST_P(GroupRssEdgeTest, SomeEmptyGroups) {
 
     int ngroups = 4;
     std::vector<int> grouping(10, ngroups - 1);
-    std::vector<int> expected_counts { 0, 0, 0, 10 };
 
-    auto check_ok = [&](const tatami_stats::GroupRssResult<double, int>& res) -> void {
+    auto check_ok = [&](const tatami_stats::GroupRssResult<double>& res) -> void {
         EXPECT_EQ(res.mean.size(), ngroups);
         EXPECT_EQ(res.rss.size(), ngroups);
         for (int i = 0; i < ngroups - 1; ++i) {
@@ -259,16 +248,15 @@ TEST_P(GroupRssEdgeTest, SomeEmptyGroups) {
         }
         EXPECT_EQ(res.mean[ngroups - 1], std::vector<double>(nrow));
         EXPECT_EQ(res.rss[ngroups - 1], std::vector<double>(nrow));
-        EXPECT_EQ(res.count, expected_counts);
     };
 
     tatami_stats::GroupRssOptions vopt;
     vopt.num_threads = GetParam();
 
-    check_ok(tatami_stats::group_rss<double, int>(true, *dense_row, grouping.data(), ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(true, *dense_column, grouping.data(), ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(true, *sparse_row, grouping.data(), ngroups, vopt));
-    check_ok(tatami_stats::group_rss<double, int>(true, *sparse_column, grouping.data(), ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(true, *dense_row, grouping.data(), ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(true, *dense_column, grouping.data(), ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(true, *sparse_row, grouping.data(), ngroups, vopt));
+    check_ok(tatami_stats::group_rss<double>(true, *sparse_column, grouping.data(), ngroups, vopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -296,22 +284,18 @@ TEST(GroupRss, NewType) {
 
     int cgroup = 5;
     std::vector<int> cgrouping;
-    std::vector<int> ccounts(cgroup);
     for (size_t c = 0; c < NC; ++c) {
         cgrouping.push_back(c % cgroup);
-        ccounts[cgrouping.back()] += 1;
     }
 
     int rgroup = 7;
     std::vector<int> rgrouping;
-    std::vector<int> rcounts(rgroup);
     for (size_t r = 0; r < NR; ++r) {
         rgrouping.push_back(r % rgroup);
-        rcounts[rgrouping.back()] += 1;
     }
 
-    auto rexpected = tatami_stats::group_rss<double, int>(true, *ref, cgrouping.data(), cgroup, {});
-    auto cexpected = tatami_stats::group_rss<double, int>(false, *ref, rgrouping.data(), rgroup, {});
+    auto rexpected = tatami_stats::group_rss<double>(true, *ref, cgrouping.data(), cgroup, {});
+    auto cexpected = tatami_stats::group_rss<double>(false, *ref, rgrouping.data(), rgroup, {});
 
     std::vector<std::int8_t> ivec(dump.begin(), dump.end());
     auto dense_row = std::make_shared<tatami::DenseRowMatrix<std::int8_t, std::uint8_t> >(NR, NC, std::move(ivec));
@@ -319,13 +303,13 @@ TEST(GroupRss, NewType) {
     auto sparse_row = tatami::convert_to_compressed_sparse(dense_row.get(), true);
     auto sparse_column = tatami::convert_to_compressed_sparse(dense_row.get(), false);
 
-    compare_result(tatami_stats::group_rss<double, int>(true, *dense_row, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.rss, ccounts);
-    compare_result(tatami_stats::group_rss<double, int>(true, *dense_column, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.rss, ccounts);
-    compare_result(tatami_stats::group_rss<double, int>(true, *sparse_row, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.rss, ccounts);
-    compare_result(tatami_stats::group_rss<double, int>(true, *sparse_column, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.rss, ccounts);
+    compare_result(tatami_stats::group_rss<double>(true, *dense_row, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.rss);
+    compare_result(tatami_stats::group_rss<double>(true, *dense_column, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.rss);
+    compare_result(tatami_stats::group_rss<double>(true, *sparse_row, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.rss);
+    compare_result(tatami_stats::group_rss<double>(true, *sparse_column, cgrouping.data(), cgroup, {}), rexpected.mean, rexpected.rss);
 
-    compare_result(tatami_stats::group_rss<double, int>(false, *dense_row, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.rss, rcounts);
-    compare_result(tatami_stats::group_rss<double, int>(false, *dense_column, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.rss, rcounts);
-    compare_result(tatami_stats::group_rss<double, int>(false, *sparse_row, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.rss, rcounts);
-    compare_result(tatami_stats::group_rss<double, int>(false, *sparse_column, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.rss, rcounts);
+    compare_result(tatami_stats::group_rss<double>(false, *dense_row, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.rss);
+    compare_result(tatami_stats::group_rss<double>(false, *dense_column, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.rss);
+    compare_result(tatami_stats::group_rss<double>(false, *sparse_row, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.rss);
+    compare_result(tatami_stats::group_rss<double>(false, *sparse_column, rgrouping.data(), rgroup, {}), cexpected.mean, cexpected.rss);
 }
