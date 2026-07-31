@@ -71,7 +71,7 @@ TEST_P(SkipNanGroupRssBasicTest, Row) {
         return opt;
     }());
     for (size_t r = 0; r < NR; ++r) {
-        // Invalidating a bunch of observations at the start of each row.
+        // Invalidating a bunch of observations close to the start of each row.
         std::fill_n(simulated.data() + r * NC, r % 20 + 1, std::numeric_limits<double>::quiet_NaN());
     }
 
@@ -95,7 +95,7 @@ TEST_P(SkipNanGroupRssBasicTest, Row) {
     tatami_stats::skip_nan::GroupRssOptions vopt;
     vopt.num_threads = num_threads;
 
-    compare_result(tatami_stats::skip_nan::group_rss<double, int>(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
+    compare_result(tatami_stats::skip_nan::group_rss<double, int>(true, *dense_row, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
     compare_result(tatami_stats::skip_nan::group_rss<double, int>(true, *dense_column, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
     compare_result(tatami_stats::skip_nan::group_rss<double, int>(true, *sparse_row, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);
     compare_result(tatami_stats::skip_nan::group_rss<double, int>(true, *sparse_column, cgroups.data(), ngroup, vopt), expected_m, expected_v, expected_c);

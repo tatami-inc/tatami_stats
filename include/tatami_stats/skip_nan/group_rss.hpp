@@ -28,20 +28,27 @@ namespace skip_nan {
 
 /**
  * @brief Options for `skip_nan::group_rss()`.
+ * @tparam Output_ Floating-point type of the output data.
  */
+template<typename Output_ = double>
 struct GroupRssOptions {
     /**
      * Number of threads to use for iterating across a `tatami::Matrix`.
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
+
+    /**
+     * Placeholder value to use for the mean of empty groups.
+     * This is NaN if supported by `Output_`, otherwise it is zero.
+     */
+    Output_ mean_placeholder = quickstats::nan_if_available_else_zero<Output_>();
 };
 
 /**
  * @brief Result buffers for `skip_nan::group_rss()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the non-NaN counts.
  * This is typically an integer type.
  */
@@ -79,7 +86,7 @@ void group_rss_direct(
     const Group_* const group, 
     const std::size_t num_groups, 
     GroupRssBuffers<Output_, Count_>& output,
-    const GroupRssOptions& opt
+    const GroupRssOptions<Output_>& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
@@ -118,7 +125,7 @@ void group_rss_direct(
                     cur_sizes[g] = actual_size;
                     output.count[g][s + x] = actual_size;
                 }
-                group_rss_finish_means(num_groups, cur_sizes.data(), cur_means, static_cast<Index_>(s + x), output.mean);
+                group_rss_finish_means(num_groups, cur_sizes.data(), cur_means, static_cast<Index_>(s + x), output.mean, opt.mean_placeholder);
 
                 // Now computing the RSS.
                 for (Index_ i = 0; i < range.number; ++i) {
@@ -130,7 +137,7 @@ void group_rss_direct(
                     }
                 }
                 for (std::size_t g = 0; g < num_groups; ++g) {
-                    if (cur_sizes[g] > 0) { // preserve RSS = 0 for empty groups, otherwise NaN mean causes problems.
+                    if (cur_sizes[g] > 0) { // preserve RSS = 0 for empty groups, otherwise placeholder mean might cause problems.
                         const Output_ my_rss = cur_rss[g] + cur_means[g] * cur_means[g] * (cur_sizes[g] - cur_non_zeros[g]);
                         output.rss[g][s + x] = my_rss;
                     } else {
@@ -168,7 +175,7 @@ void group_rss_direct(
                 for (std::size_t g = 0; g < num_groups; ++g) {
                     output.count[g][s + x] = cur_sizes[g];
                 }
-                group_rss_finish_means(num_groups, cur_sizes.data(), cur_means, static_cast<Index_>(s + x), output.mean);
+                group_rss_finish_means(num_groups, cur_sizes.data(), cur_means, static_cast<Index_>(s + x), output.mean, opt.mean_placeholder);
 
                 // Now computing the RSS.
                 for (Index_ j = 0; j < otherdim; ++j) {
@@ -198,19 +205,24 @@ void group_rss_running(
     const Group_* const group, 
     const std::size_t num_groups, 
     GroupRssBuffers<Output_, Count_>& output,
-    const GroupRssOptions& opt
+    const GroupRssOptions<Output_>& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    const auto otherdim = (row ? mat.ncol() : mat.nrow());
-    const bool is_sparse = mat.is_sparse();
+    for (std::size_t g = 0; g < num_groups; ++g) {
+        std::fill_n(output.rss[g], dim, 0);
+        std::fill_n(output.count[g], dim, 0);
+    }
 
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
     if (otherdim == 0) {
         for (std::size_t g = 0; g < num_groups; ++g) {
-            std::fill_n(output.mean[g], dim, std::numeric_limits<Output_>::quiet_NaN());
-            std::fill_n(output.rss[g], dim, 0);
-            std::fill_n(output.count[g], dim, 0);
+            std::fill_n(output.mean[g], dim, opt.mean_placeholder);
         }
         return; 
+    } else {
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            std::fill_n(output.mean[g], dim, 0);
+        }
     }
 
     const bool do_parallel = opt.num_threads > 1;
@@ -223,12 +235,7 @@ void group_rss_running(
         all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads));
     }
 
-    for (std::size_t g = 0; g < num_groups; ++g) {
-        std::fill_n(output.mean[g], dim, 0);
-        std::fill_n(output.rss[g], dim, 0);
-        std::fill_n(output.count[g], dim, 0);
-    }
-
+    const bool is_sparse = mat.is_sparse();
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
         Output_** mean_ptrs;
         Output_** rss_ptrs;
@@ -243,6 +250,7 @@ void group_rss_running(
             mean_ptrs = output.mean.data();
             rss_ptrs = output.rss.data();
             count_ptrs = output.count.data();
+
         } else {
             // Storing the partial RSS directly in the output vectors to save ourselves an allocation if we're in the first thread.
             // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
@@ -279,53 +287,60 @@ void group_rss_running(
             auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
-
             auto nonzeros = sanisizer::create<std::vector<std::vector<Count_> > >(num_groups);
-            std::vector<quickstats::RssRunningSparseSkip<Count_, Value_, Output_> > runners;
-            sanisizer::reserve(runners, num_groups);
             for (std::size_t g = 0; g < num_groups; ++g) {
                 tatami::resize_container_to_Index_size(nonzeros[g], dim);
-                runners.emplace_back(dim, mean_ptrs[g], rss_ptrs[g], nonzeros[g].data(), count_ptrs[g]);
             }
 
+            auto cur_group_size = sanisizer::create<std::vector<Count_> >(num_groups);
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), ibuffer.data());
-                runners[group[x + s]].add(
-                    out.number,
-                    out.value,
-                    out.index,
-                    [](const std::size_t, const Value_ val) -> bool {
-                        return std::isnan(val);
+                const auto grp = group[s + x];
+                const auto mptr = mean_ptrs[grp];
+                const auto rptr = rss_ptrs[grp];
+                const auto cptr = count_ptrs[grp];
+                ++cur_group_size[grp];
+                auto& nnz = nonzeros[grp];
+                for (Index_ i = 0; i < out.number; ++i) {
+                    const auto d = out.index[i];
+                    const auto val = out.value[i];
+                    if (!std::isnan(val)) {
+                        quickstats::update_rss(mptr[d], rptr[d], val, ++nnz[d]); // increment is safe as 'nnz + 1 <= l' fits in an Index_.
+                    } else {
+                        ++cptr[d];
                     }
-                );
+                }
             }
 
             for (std::size_t g = 0; g < num_groups; ++g) {
-                runners[g].finish();
+                const auto mptr = mean_ptrs[g];
+                const auto rptr = rss_ptrs[g];
+                const auto cptr = count_ptrs[g];
+                const auto& nnz = nonzeros[g];
+                const auto curtotal = cur_group_size[g];
+                for (Index_ d = 0; d < dim; ++d) {
+                    auto& unskipped_total = cptr[d];
+                    unskipped_total = curtotal - unskipped_total; // could be zero, so the update with zeros needs to be safe.
+                    quickstats::update_rss_with_zeros(mptr[d], rptr[d], static_cast<Count_>(unskipped_total - nnz[d]), unskipped_total);
+                }
             }
 
         } else {
             auto ext = tatami::consecutive_extractor<false>(mat, !row, s, l);
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
 
-            std::vector<quickstats::RssRunningDenseSkip<Count_, Value_, Output_> > runners;
-            sanisizer::reserve(runners, num_groups);
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                runners.emplace_back(dim, mean_ptrs[g], rss_ptrs[g], count_ptrs[g]);
-            }
-
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(buffer.data());
-                runners[group[x + s]].add(
-                    out,
-                    [](const std::size_t, const Value_ val) -> bool {
-                        return std::isnan(val);
+                const auto grp = group[s + x];
+                const auto mptr = mean_ptrs[grp];
+                const auto rptr = rss_ptrs[grp];
+                const auto cptr = count_ptrs[grp];
+                for (Index_ d = 0; d < dim; ++d) {
+                    const auto val = out[d];
+                    if (!std::isnan(val)) {
+                        quickstats::update_rss(mptr[d], rptr[d], val, ++cptr[d]); // increment is safe as 'cptr[d] + 1 <= l' fits in an Index_.
                     }
-                );
-            }
-
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                runners[g].finish();
+                }
             }
         }
 
@@ -369,12 +384,6 @@ void group_rss_running(
                     }
                 }
             }
-
-            for (Index_ d = 0; d < dim; ++d) {
-                if (cur_global_count[d] == 0) {
-                    cur_global_mean[d] = std::numeric_limits<Output_>::quiet_NaN();
-                }
-            }
         }
 
         // Combining the RSS. We need to use the safe variant of recenter_rss(), just to protect against the
@@ -398,6 +407,16 @@ void group_rss_running(
             }
         }
     }
+
+    for (std::size_t g = 0; g < num_groups; ++g) {
+        const auto mptr = output.mean[g];
+        const auto cptr = output.count[g];
+        for (Index_ d = 0; d < dim; ++d) {
+            if (cptr[d] == 0) {
+                mptr[d] = opt.mean_placeholder;
+            }
+        }
+    }
 }
 /**
  * @endcond
@@ -410,7 +429,6 @@ void group_rss_running(
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Group_ Integer type of the group assignments for each row/column.
  * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the non-NaN counts.
  * This is typically an integer type.
  *
@@ -431,7 +449,7 @@ void group_rss(
     const Group_* const group,
     const std::size_t num_groups,
     GroupRssBuffers<Output_, Count_>& output,
-    const GroupRssOptions& opt
+    const GroupRssOptions<Output_>& opt
 ) {
     assert(sanisizer::is_equal(num_groups, output.mean.size()));
     assert(sanisizer::is_equal(num_groups, output.rss.size()));
@@ -447,7 +465,6 @@ void group_rss(
  * @brief Results of `skip_nan::group_rss()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the non-NaN counts.
  * This is typically an integer type.
  */
@@ -479,7 +496,6 @@ struct GroupRssResult {
  * Compute per-group variances for each element of a chosen dimension of a `tatami::Matrix`.
  *
  * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the non-NaN counts.
  * This is typically an integer type.
  * @tparam Value_ Numeric type of the matrix value.
@@ -502,7 +518,7 @@ GroupRssResult<Output_, Count_> group_rss(
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
     const std::size_t num_groups,
-    const GroupRssOptions& opt
+    const GroupRssOptions<Output_>& opt
 ) {
     GroupRssResult<Output_, Count_> output;
     sanisizer::resize(output.mean, num_groups);

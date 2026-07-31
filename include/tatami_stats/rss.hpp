@@ -6,7 +6,6 @@
 #include <vector>
 #include <cmath>
 #include <numeric>
-#include <limits>
 #include <algorithm>
 #include <cstddef>
 #include <optional>
@@ -25,20 +24,27 @@ namespace tatami_stats {
 
 /**
  * @brief Options for `rss()`.
+ * @tparam Output_ Floating-point type of the output data.
  */
+template<typename Output_ = double>
 struct RssOptions {
     /**
      * Number of threads to use for iterating over a `tatami::Matrix`.
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
+
+    /**
+     * Placeholder value to use for the mean when the extent of the relevant dimension is zero.
+     * This is NaN if supported by `Output_`, otherwise it is zero.
+     */
+    Output_ mean_placeholder = quickstats::nan_if_available_else_zero<Output_>();
 };
 
 /**
  * @brief Result buffers for `rss()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  */
 template<typename Output_>
 struct RssBuffers {
@@ -59,9 +65,11 @@ struct RssBuffers {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_>
-void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_>& output, const RssOptions& opt) {
+void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_>& output, const RssOptions<Output_>& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    quickstats::RssOptions<Output_> ropt;
+    ropt.mean_placeholder = opt.mean_placeholder;
 
     if (mat.sparse()) {
         tatami::Options topt;
@@ -73,7 +81,7 @@ void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<
             quickstats::RssWorkspace<Output_> work;
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), NULL);
-                const auto res = quickstats::rss(otherdim, out.number, out.value, work);
+                const auto res = quickstats::rss(otherdim, out.number, out.value, work, ropt);
                 output.mean[x + s] = res.mean;
                 output.rss[x + s] = res.rss;
             }
@@ -86,7 +94,7 @@ void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<
             quickstats::RssWorkspace<Output_> work;
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(buffer.data());
-                const auto res = quickstats::rss(otherdim, out, work);
+                const auto res = quickstats::rss(otherdim, out, work, ropt);
                 output.mean[x + s] = res.mean;
                 output.rss[x + s] = res.rss;
             }
@@ -95,15 +103,16 @@ void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_>& output, const RssOptions& opt) {
+void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_>& output, const RssOptions<Output_>& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
-    const bool is_sparse = mat.is_sparse();
 
+    std::fill_n(output.rss, dim, 0);
     if (otherdim == 0) {
-        std::fill_n(output.mean, dim, std::numeric_limits<Output_>::quiet_NaN());
-        std::fill_n(output.rss, dim, 0);
+        std::fill_n(output.mean, dim, opt.mean_placeholder);
         return;
+    } else {
+        std::fill_n(output.mean, dim, 0);
     }
 
     assert(opt.num_threads > 0);
@@ -117,9 +126,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
         all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads));
     }
 
-    std::fill_n(output.rss, dim, 0);
-    std::fill_n(output.mean, dim, 0);
-
+    const bool is_sparse = mat.is_sparse();
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
         Output_* rss_ptr;
         Output_* mean_ptr;
@@ -150,23 +157,30 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
             auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
 
-            quickstats::RssRunningSparse<Index_, Value_, Output_> runner(dim, mean_ptr, rss_ptr, nonzeros.data());
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), ibuffer.data());
-                runner.add(out.number, out.value, out.index);
+                for (Index_ i = 0; i < out.number; ++i) {
+                    const auto d = out.index[i];
+                    auto& nnz = nonzeros[d];
+                    quickstats::update_rss(mean_ptr[d], rss_ptr[d], out.value[i], ++nnz); // increment is safe as 'nnz + 1 <= l' fits in an Index_;
+                }
             }
-            runner.finish();
+
+            for (Index_ d = 0; d < dim; ++d) {
+                // otherdim > 0 is guaranteed, so we can use the unsafe version.
+                quickstats::update_rss_with_zeros_unsafe(mean_ptr[d], rss_ptr[d], static_cast<Index_>(l - nonzeros[d]), l);
+            }
 
         } else {
             auto ext = tatami::consecutive_extractor<false>(mat, !row, s, l);
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
 
-            quickstats::RssRunningDense<Value_, Output_> runner(dim, mean_ptr, rss_ptr);
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(buffer.data());
-                runner.add(out);
+                for (Index_ d = 0; d < dim; ++d) {
+                    quickstats::update_rss(mean_ptr[d], rss_ptr[d], out[d], x + 1); // increment is safe as ' x + 1 <= l' fits in an index.
+                }
             }
-            runner.finish();
         }
 
         if (do_parallel) {
@@ -225,7 +239,6 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
  * @tparam Value_ Numeric type of the input data.
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  *
  * @param row Whether to compute the RSS for each row.
  * If false, the RSS is computed for each column instead.
@@ -235,7 +248,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
  * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void rss(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_>& output, const RssOptions& opt) {
+void rss(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_>& output, const RssOptions<Output_>& opt) {
     if (mat.prefer_rows() == row) {
         rss_direct(row, mat, output, opt);
     } else {
@@ -247,7 +260,6 @@ void rss(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_
  * @brief Results of `rss()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  */
 template<typename Output_>
 struct RssResult {
@@ -268,7 +280,6 @@ struct RssResult {
  * Overload of `rss()` that allocates memory for the output arrays.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  * @tparam Value_ Numeric type of the input data.
  * @tparam Index_ Integer type of the row/column indices.
  *
@@ -280,7 +291,7 @@ struct RssResult {
  * @return The mean and RSS of each row/column.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-RssResult<Output_> rss(bool row, const tatami::Matrix<Value_, Index_>& mat, const RssOptions& opt) {
+RssResult<Output_> rss(bool row, const tatami::Matrix<Value_, Index_>& mat, const RssOptions<Output_>& opt) {
     RssResult<Output_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
     tatami::resize_container_to_Index_size(output.mean, dim

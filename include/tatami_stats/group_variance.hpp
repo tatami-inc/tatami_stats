@@ -26,7 +26,9 @@ namespace tatami_stats {
 
 /**
  * @brief Options for `group_variance()`.
+ * @tparam Output_ Floating-point type of the output data.
  */
+template<typename Output_ = double>
 struct GroupVarianceOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
@@ -39,13 +41,24 @@ struct GroupVarianceOptions {
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
+
+    /**
+     * Placeholder value to use for the mean when the extent of the relevant dimension is zero.
+     * This is NaN if supported by `Output_`, otherwise zero.
+     */
+    Output_ mean_placeholder = quickstats::nan_if_available_else_zero<Output_>();
+
+    /**
+     * Placeholder value to use for the variance when the extent of the relevant dimension is less than 2.
+     * This is NaN if supported by `Output_`, otherwise zero.
+     */
+    Output_ variance_placeholder = quickstats::nan_if_available_else_zero<Output_>();
 };
 
 /**
  * @brief Result buffers for `group_variance()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  */
 template<typename Output_>
 struct GroupVarianceBuffers {
@@ -72,7 +85,6 @@ struct GroupVarianceBuffers {
  * @tparam Group_ Integer type of the group assignments for each row/column.
  * @tparam Count_ Numeric type of the group sizes, typically integer.
  * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
  *
  * @param row Whether to compute variances for the rows.
  * @param mat Instance of a `tatami::Matrix`.
@@ -93,7 +105,7 @@ void group_variance(
     const std::size_t num_groups,
     const Count_* const group_size,
     GroupVarianceBuffers<Output_>& output,
-    const GroupVarianceOptions& opt
+    const GroupVarianceOptions<Output_>& opt
 ) {
     assert(sanisizer::is_equal(num_groups, output.mean.size()));
     assert(sanisizer::is_equal(num_groups, output.variance.size()));
@@ -101,6 +113,7 @@ void group_variance(
 
     nanable_ifelse<Value_>(
         opt.skip_nan,
+
         [&]() -> void {
             skip_nan::GroupRssBuffers<Output_, Index_> tmp;
             tmp.mean = output.mean;
@@ -117,9 +130,18 @@ void group_variance(
             ropt.num_threads = opt.num_threads;
             skip_nan::group_rss(row, mat, group, num_groups, tmp, ropt);
             for (std::size_t g = 0; g < num_groups; ++g) {
-                quickstats::rss_to_variance(dim, count[g].data(), output.variance[g]);
+                const auto outvar = output.variance[g];
+                const auto curcounts = count[g];
+                for (Index_ d = 0; d < dim; ++d) {
+                    if (curcounts[d] <= 1) {
+                        outvar[d] = opt.variance_placeholder;
+                    } else {
+                        outvar[d] /= curcounts[d] - 1;
+                    }
+                }
             }
         },
+
         [&]() -> void {
             GroupRssBuffers<Output_> tmp;
             tmp.mean = output.mean;
@@ -130,7 +152,15 @@ void group_variance(
             group_rss(row, mat, group, num_groups, group_size, tmp, ropt);
 
             for (std::size_t g = 0; g < num_groups; ++g) {
-                quickstats::rss_to_variance(dim, group_size[g], output.variance[g]);
+                const auto outvar = output.variance[g];
+                const auto gsize = group_size[g];
+                if (gsize <= 1) {
+                    std::fill_n(outvar, dim, opt.variance_placeholder);
+                } else {
+                    for (Index_ d = 0; d < dim; ++d) {
+                        outvar[d] /= gsize - 1;
+                    }
+                }
             }
         }
     );
@@ -143,7 +173,6 @@ void group_variance(
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Group_ Integer type of the group assignments for each row/column.
  * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
  *
  * @param row Whether to compute variances for the rows.
  * @param mat Instance of a `tatami::Matrix`.
@@ -162,7 +191,7 @@ void group_variance(
     const Group_* const group,
     const std::size_t num_groups,
     GroupVarianceBuffers<Output_>& output,
-    const GroupVarianceOptions& opt
+    const GroupVarianceOptions<Output_>& opt
 ) {
     auto group_size = sanisizer::create<std::vector<Index_> >(num_groups);
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
@@ -176,7 +205,6 @@ void group_variance(
  * @brief Results of `group_variance()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  */
 template<typename Output_>
 struct GroupVarianceResult {
@@ -199,7 +227,6 @@ struct GroupVarianceResult {
  * Compute per-group variances for each element of a chosen dimension of a `tatami::Matrix`.
  *
  * @tparam Output_ Floating-point type of the output value.
- * This should be capable of storing NaNs.
  * @tparam Value_ Numeric type of the matrix value.
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Group_ Integer type of the group assignments for each row/column.
@@ -220,7 +247,7 @@ GroupVarianceResult<Output_> group_variance(
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
     const std::size_t num_groups,
-    const GroupVarianceOptions& opt
+    const GroupVarianceOptions<Output_>& opt
 ) {
     GroupVarianceResult<Output_> output;
     sanisizer::resize(output.mean, num_groups);

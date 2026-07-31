@@ -27,7 +27,9 @@ namespace tatami_stats {
 
 /**
  * @brief Options for `variance()`.
+ * @tparam Output_ Floating-point type of the output data.
  */
+template<typename Output_ = double>
 struct VarianceOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
@@ -40,13 +42,24 @@ struct VarianceOptions {
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
+
+    /**
+     * Placeholder value to use for the mean when the extent of the relevant dimension is zero.
+     * This is NaN if supported by `Output_`, otherwise zero.
+     */
+    Output_ mean_placeholder = quickstats::nan_if_available_else_zero<Output_>();
+
+    /**
+     * Placeholder value to use for the variance when the extent of the relevant dimension is less than 2.
+     * This is NaN if supported by `Output_`, otherwise zero.
+     */
+    Output_ variance_placeholder = quickstats::nan_if_available_else_zero<Output_>();
 };
 
 /**
  * @brief Result buffers for `variance()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  */
 template<typename Output_>
 struct VarianceBuffers {
@@ -71,7 +84,6 @@ struct VarianceBuffers {
  * @tparam Value_ Numeric type of the input data.
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  *
  * @param row Whether to compute the variance for each row.
  * If false, the variance is computed for each column instead.
@@ -81,30 +93,51 @@ struct VarianceBuffers {
  * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions& opt) {
+void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffers<Output_>& output, const VarianceOptions<Output_>& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+
     nanable_ifelse<Value_>(
         opt.skip_nan,
+
         [&]() -> void {
             skip_nan::RssBuffers<Output_, Index_> tmp;
             tmp.mean = output.mean;
             tmp.rss = output.variance;
             auto count = tatami::create_container_of_Index_size<std::vector<Index_> >(row ? mat.nrow() : mat.ncol());
             tmp.count = count.data();
+
             skip_nan::RssOptions ropt;
             ropt.num_threads = opt.num_threads;
+            ropt.mean_placeholder = opt.mean_placeholder;
             skip_nan::rss(row, mat, tmp, ropt);
-            quickstats::rss_to_variance(dim, count.data(), output.variance);
+
+            for (Index_ i = 0; i < dim; ++i) {
+                if (count[i] <= 1) {
+                    output.variance[i] = opt.variance_placeholder;
+                } else {
+                    output.variance[i] /= count[i] - 1;
+                }
+            }
         },
+
         [&]() -> void {
             RssBuffers<Output_> tmp;
             tmp.mean = output.mean;
             tmp.rss = output.variance;
+
             RssOptions ropt;
             ropt.num_threads = opt.num_threads;
+            ropt.mean_placeholder = opt.mean_placeholder;
             rss(row, mat, tmp, ropt);
-            const auto otherdim = (row ? mat.ncol() : mat.nrow());
-            quickstats::rss_to_variance(dim, otherdim, output.variance);
+
+            if (otherdim <= 1) {
+                std::fill_n(output.variance, dim, opt.variance_placeholder);
+            } else {
+                for (Index_ i = 0; i < dim; ++i) {
+                    output.variance[i] /= otherdim - 1;
+                }
+            }
         }
     );
 }
@@ -113,7 +146,6 @@ void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffe
  * @brief Results of `variance()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  */
 template<typename Output_>
 struct VarianceResult {
@@ -134,7 +166,6 @@ struct VarianceResult {
  * Overload of `variance()` that allocates memory for the output arrays.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  * @tparam Value_ Numeric type of the input data.
  * @tparam Index_ Integer type of the row/column indices.
  *
@@ -146,7 +177,7 @@ struct VarianceResult {
  * @return The mean and variance of each row/column.
  */
 template<typename Output_ = double, typename Value_, typename Index_>
-VarianceResult<Output_> variance(bool row, const tatami::Matrix<Value_, Index_>& mat, const VarianceOptions& opt) {
+VarianceResult<Output_> variance(bool row, const tatami::Matrix<Value_, Index_>& mat, const VarianceOptions<Output_>& opt) {
     VarianceResult<Output_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
     tatami::resize_container_to_Index_size(output.mean, dim

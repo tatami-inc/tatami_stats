@@ -27,20 +27,27 @@ namespace skip_nan {
 
 /**
  * @brief Options for `skip_nan::rss()`.
+ * @tparam Output_ Floating-point type of the output data.
  */
+template<typename Output_ = double>
 struct RssOptions {
     /**
      * Number of threads to use for iterating over a `tatami::Matrix`.
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
+
+    /**
+     * Placeholder value to use for the mean when the extent of the relevant dimension is zero.
+     * This is NaN if supported by `Output_`, otherwise it is zero.
+     */
+    Output_ mean_placeholder = quickstats::nan_if_available_else_zero<Output_>();
 };
 
 /**
  * @brief Result buffers for `skip_nan::rss()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the non-NaN counts.
  * This is typically an integer type.
  */
@@ -69,9 +76,11 @@ struct RssBuffers {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_, typename Count_>
-void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_, Count_>& output, const RssOptions& opt) {
+void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_, Count_>& output, const RssOptions<Output_>& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    quickstats::RssOptions<Output_> ropt;
+    ropt.mean_placeholder = opt.mean_placeholder;
 
     if (mat.sparse()) {
         tatami::Options topt;
@@ -86,7 +95,7 @@ void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<
                 tatami::copy_n(out.value, out.number, vbuffer.data());
                 const auto new_number = shift_nans(vbuffer.data(), out.number);
                 const Index_ new_total = otherdim - (out.number - new_number);
-                const auto res = quickstats::rss(new_total, new_number, vbuffer.data(), work);
+                const auto res = quickstats::rss(new_total, new_number, vbuffer.data(), work, ropt);
                 output.mean[x + s] = res.mean;
                 output.rss[x + s] = res.rss;
                 output.count[x + s] = new_total;
@@ -102,7 +111,7 @@ void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<
                 auto out = ext->fetch(buffer.data());
                 tatami::copy_n(out, otherdim, buffer.data());
                 const auto new_total = shift_nans(buffer.data(), otherdim);
-                const auto res = quickstats::rss(new_total, buffer.data(), work);
+                const auto res = quickstats::rss(new_total, buffer.data(), work, ropt);
                 output.mean[x + s] = res.mean;
                 output.rss[x + s] = res.rss;
                 output.count[x + s] = new_total;
@@ -112,16 +121,18 @@ void rss_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<
 }
 
 template<typename Value_, typename Index_, typename Output_, typename Count_>
-void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_, Count_>& output, const RssOptions& opt) {
+void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_, Count_>& output, const RssOptions<Output_>& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
 
+    std::fill_n(output.rss, dim, 0);
+    std::fill_n(output.count, dim, 0);
     if (otherdim == 0) {
-        std::fill_n(output.mean, dim, std::numeric_limits<Output_>::quiet_NaN());
-        std::fill_n(output.rss, dim, 0);
-        std::fill_n(output.count, dim, 0);
+        std::fill_n(output.mean, dim, opt.mean_placeholder);
         return;
+    } else {
+        std::fill_n(output.mean, dim, 0);
     }
 
     assert(opt.num_threads > 0);
@@ -134,10 +145,6 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
         all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
         all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
     }
-
-    std::fill_n(output.rss, dim, 0);
-    std::fill_n(output.mean, dim, 0);
-    std::fill_n(output.count, dim, 0);
 
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
         Output_* rss_ptr;
@@ -174,35 +181,39 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
             auto nonzeros = tatami::create_container_of_Index_size<std::vector<Count_> >(dim);
 
-            quickstats::RssRunningSparseSkip<Count_, Value_, Output_> runner(dim, mean_ptr, rss_ptr, nonzeros.data(), count_ptr);
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), ibuffer.data());
-                runner.add(
-                    out.number,
-                    out.value,
-                    out.index,
-                    [](std::size_t, const Value_ val) -> bool {
-                        return std::isnan(val);
+                for (Index_ i = 0; i < out.number; ++i) {
+                    const auto d = out.index[i];
+                    const auto val = out.value[i];
+                    if (!std::isnan(val)) {
+                        auto& nnz = nonzeros[d];
+                        quickstats::update_rss(mean_ptr[d], rss_ptr[d], val, ++nnz); // increment is safe as 'nnz + 1 <= l' fits in an Index_;
+                    } else {
+                        ++count_ptr[d];
                     }
-                );
+                }
             }
-            runner.finish();
+
+            for (Index_ d = 0; d < dim; ++d) {
+                auto& unskipped_total = count_ptr[d];
+                unskipped_total = l - unskipped_total; // could be zero, so the update with zeros needs to be safe.
+                quickstats::update_rss_with_zeros(mean_ptr[d], rss_ptr[d], static_cast<Count_>(unskipped_total - nonzeros[d]), unskipped_total);
+            }
 
         } else {
             auto ext = tatami::consecutive_extractor<false>(mat, !row, s, l);
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
 
-            quickstats::RssRunningDenseSkip<Count_, Value_, Output_> runner(dim, mean_ptr, rss_ptr, count_ptr);
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(buffer.data());
-                runner.add(
-                    out,
-                    [](std::size_t, const Value_ val) -> bool {
-                        return std::isnan(val);
+                for (Index_ d = 0; d < dim; ++d) {
+                    const auto val = out[d];
+                    if (!std::isnan(val)) {
+                        quickstats::update_rss(mean_ptr[d], rss_ptr[d], val, ++count_ptr[d]); // increment is safe as 'count_ptr[d] + 1 <= l' fits in an index.
                     }
-                );
+                }
             }
-            runner.finish();
         }
 
         // Moving results to the main containers.
@@ -243,12 +254,6 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
             }
         }
 
-        for (Index_ d = 0; d < dim; ++ d) {
-            if (output.count[d] == 0) { 
-                output.mean[d] = std::numeric_limits<Output_>::quiet_NaN();
-            }
-        }
-
         // Combining the RSS. This time, we need to use the safe version as we don't know whether all elements were skipped in a thread.
         for (int u = 0; u < nused; ++u) {
             const auto& cur_count = *(ap_count[u]);
@@ -265,6 +270,12 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
             }
         }
     }
+
+    for (Index_ d = 0; d < dim; ++ d) {
+        if (output.count[d] == 0) { 
+            output.mean[d] = opt.mean_placeholder;
+        }
+    }
 }
 /**
  * @endcond
@@ -278,7 +289,6 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
  * @tparam Value_ Numeric type of the input data.
  * @tparam Index_ Integer type of the row/column indices.
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the non-NaN counts.
  * This is typically an integer type.
  *
@@ -290,7 +300,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
  * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_, typename Count_>
-void rss(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_, Count_>& output, const RssOptions& opt) {
+void rss(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_, Count_>& output, const RssOptions<Output_>& opt) {
     if (mat.prefer_rows() == row) {
         rss_direct(row, mat, output, opt);
     } else {
@@ -302,7 +312,6 @@ void rss(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_
  * @brief Results of `skip_nan::rss()`.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the non-NaN counts.
  * This is typically an integer type.
  */
@@ -331,7 +340,6 @@ struct RssResult {
  * Overload of `skip_nan::rss()` that allocates memory for the output arrays.
  *
  * @tparam Output_ Floating-point type of the output data.
- * This should be capable of storing NaNs.
  * @tparam Count_ Numeric type of the non-NaN counts.
  * This is typically an integer type.
  * @tparam Value_ Numeric type of the input data.
@@ -345,7 +353,7 @@ struct RssResult {
  * @return The mean and RSS of each row/column.
  */
 template<typename Output_ = double, typename Count_, typename Value_, typename Index_>
-RssResult<Output_, Count_> rss(bool row, const tatami::Matrix<Value_, Index_>& mat, const RssOptions& opt) {
+RssResult<Output_, Count_> rss(bool row, const tatami::Matrix<Value_, Index_>& mat, const RssOptions<Output_>& opt) {
     RssResult<Output_, Count_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
 

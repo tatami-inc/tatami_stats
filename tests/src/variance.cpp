@@ -273,7 +273,7 @@ TEST_P(VarianceEdgeTest, ZeroExtent) {
 }
 
 TEST_P(VarianceEdgeTest, OneObservation) {
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(10, 1, std::vector<double>(10)));
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(10, 1, std::vector<double>(10, 99)));
     auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
@@ -282,7 +282,7 @@ TEST_P(VarianceEdgeTest, OneObservation) {
     vopt.num_threads = GetParam();
 
     auto check_ok = [&](const tatami_stats::VarianceResult<double>& res) -> void {
-        EXPECT_EQ(res.mean, std::vector<double>(10));
+        EXPECT_EQ(res.mean, std::vector<double>(10, 99));
         EXPECT_EQ(res.variance.size(), 10);
         EXPECT_TRUE(is_all_nan(res.variance));
     };
