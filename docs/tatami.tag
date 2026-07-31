@@ -15,25 +15,6 @@
     <namespace>tatami_stats</namespace>
   </compound>
   <compound kind="file">
-    <name>group_rss.hpp</name>
-    <path>tatami_stats/</path>
-    <filename>group__rss_8hpp.html</filename>
-    <class kind="struct">tatami_stats::GroupRssOptions</class>
-    <class kind="struct">tatami_stats::GroupRssBuffers</class>
-    <class kind="struct">tatami_stats::GroupRssResult</class>
-    <namespace>tatami_stats</namespace>
-  </compound>
-  <compound kind="file">
-    <name>group_rss.hpp</name>
-    <path>tatami_stats/skip_nan/</path>
-    <filename>skip__nan_2group__rss_8hpp.html</filename>
-    <class kind="struct">tatami_stats::skip_nan::GroupRssOptions</class>
-    <class kind="struct">tatami_stats::skip_nan::GroupRssBuffers</class>
-    <class kind="struct">tatami_stats::skip_nan::GroupRssResult</class>
-    <namespace>tatami_stats</namespace>
-    <namespace>tatami_stats::skip_nan</namespace>
-  </compound>
-  <compound kind="file">
     <name>group_sum.hpp</name>
     <path>tatami_stats/</path>
     <filename>group__sum_8hpp.html</filename>
@@ -71,6 +52,25 @@
     <class kind="struct">tatami_stats::RangeBuffers</class>
     <class kind="struct">tatami_stats::RangeResult</class>
     <namespace>tatami_stats</namespace>
+  </compound>
+  <compound kind="file">
+    <name>group_rss.hpp</name>
+    <path>tatami_stats/</path>
+    <filename>group__rss_8hpp.html</filename>
+    <class kind="struct">tatami_stats::GroupRssOptions</class>
+    <class kind="struct">tatami_stats::GroupRssBuffers</class>
+    <class kind="struct">tatami_stats::GroupRssResult</class>
+    <namespace>tatami_stats</namespace>
+  </compound>
+  <compound kind="file">
+    <name>group_rss.hpp</name>
+    <path>tatami_stats/skip_nan/</path>
+    <filename>skip__nan_2group__rss_8hpp.html</filename>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssOptions</class>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssBuffers</class>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssResult</class>
+    <namespace>tatami_stats</namespace>
+    <namespace>tatami_stats::skip_nan</namespace>
   </compound>
   <compound kind="file">
     <name>rss.hpp</name>
@@ -192,22 +192,38 @@
   <compound kind="struct">
     <name>tatami_stats::GroupRssOptions</name>
     <filename>structtatami__stats_1_1GroupRssOptions.html</filename>
+    <templarg>typename Output_</templarg>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1GroupRssOptions.html</anchorfile>
-      <anchor>a831c92b2f120a76b9f505a2d17ae3b90</anchor>
+      <anchor>a671ee369328474596088b19f78448305</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>mean_placeholder</name>
+      <anchorfile>structtatami__stats_1_1GroupRssOptions.html</anchorfile>
+      <anchor>aae2f01d453791ee66c04d4ba02ab4b55</anchor>
       <arglist></arglist>
     </member>
   </compound>
   <compound kind="struct">
     <name>tatami_stats::skip_nan::GroupRssOptions</name>
     <filename>structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html</filename>
+    <templarg>typename Output_</templarg>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html</anchorfile>
-      <anchor>abcfc20a16925dcb1532ba0f87368c90c</anchor>
+      <anchor>a28991cdba54b0c46ebcc4ffb67878ff8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>mean_placeholder</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html</anchorfile>
+      <anchor>a33b4dccecbb33b2f69811326bf3e85ef</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -297,18 +313,33 @@
   <compound kind="struct">
     <name>tatami_stats::GroupVarianceOptions</name>
     <filename>structtatami__stats_1_1GroupVarianceOptions.html</filename>
+    <templarg>typename Output_</templarg>
     <member kind="variable">
       <type>bool</type>
       <name>skip_nan</name>
       <anchorfile>structtatami__stats_1_1GroupVarianceOptions.html</anchorfile>
-      <anchor>a4c88585c22dad4d741e472cdbec6c233</anchor>
+      <anchor>a61140bf2d2ab36241f74ea9ea4336e1c</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1GroupVarianceOptions.html</anchorfile>
-      <anchor>af8aae82a226fc7be7903fe040f6d6f0c</anchor>
+      <anchor>aab1763aab66ae671b5c27dddfae76278</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>mean_placeholder</name>
+      <anchorfile>structtatami__stats_1_1GroupVarianceOptions.html</anchorfile>
+      <anchor>a1e933fc1303b385b5ca6c7b117134ab3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>variance_placeholder</name>
+      <anchorfile>structtatami__stats_1_1GroupVarianceOptions.html</anchorfile>
+      <anchor>a0769436ba2f86ab2d87302206cf48279</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -472,22 +503,38 @@
   <compound kind="struct">
     <name>tatami_stats::RssOptions</name>
     <filename>structtatami__stats_1_1RssOptions.html</filename>
+    <templarg>typename Output_</templarg>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1RssOptions.html</anchorfile>
-      <anchor>a3750ff432b08d02e4d526f7cd3c4a5c2</anchor>
+      <anchor>ac480bdc8742de7a40c1fa345fccb6305</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>mean_placeholder</name>
+      <anchorfile>structtatami__stats_1_1RssOptions.html</anchorfile>
+      <anchor>a433797716eaed5aaedc3dd705a842be6</anchor>
       <arglist></arglist>
     </member>
   </compound>
   <compound kind="struct">
     <name>tatami_stats::skip_nan::RssOptions</name>
     <filename>structtatami__stats_1_1skip__nan_1_1RssOptions.html</filename>
+    <templarg>typename Output_</templarg>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1skip__nan_1_1RssOptions.html</anchorfile>
-      <anchor>ae6759535f61e3dec5f1f2695b0bcb08c</anchor>
+      <anchor>ab8e3edbf775ae735fd2aa02af62d789a</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>mean_placeholder</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RssOptions.html</anchorfile>
+      <anchor>a6703f3efc3b1eb243ca0cf1d58655ca4</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -577,18 +624,33 @@
   <compound kind="struct">
     <name>tatami_stats::VarianceOptions</name>
     <filename>structtatami__stats_1_1VarianceOptions.html</filename>
+    <templarg>typename Output_</templarg>
     <member kind="variable">
       <type>bool</type>
       <name>skip_nan</name>
       <anchorfile>structtatami__stats_1_1VarianceOptions.html</anchorfile>
-      <anchor>a7720cc1ed95e03d7945183d6978926ea</anchor>
+      <anchor>ae1cbb642e8284f2e2e4bc78e70b1dcb7</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1VarianceOptions.html</anchorfile>
-      <anchor>abde48b60fc88c3373638dddc323d7f97</anchor>
+      <anchor>aa9ba39a51163c8b2843ec2d2aaf85282</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>mean_placeholder</name>
+      <anchorfile>structtatami__stats_1_1VarianceOptions.html</anchorfile>
+      <anchor>aaaf17bb5dfbf7f3a4c6a4f707d7afbee</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>variance_placeholder</name>
+      <anchorfile>structtatami__stats_1_1VarianceOptions.html</anchorfile>
+      <anchor>a8fa8330100dff4c5441409ac0b9f7926</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -668,22 +730,22 @@
       <type>void</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>aac760bbfda2cf29b633fa856cce98207</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const Count_ *const group_size, GroupRssBuffers&lt; Output_ &gt; &amp;output, const GroupRssOptions &amp;opt)</arglist>
+      <anchor>a2e4d42da372e937273f77cd2d60f3940</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const Count_ *const group_size, GroupRssBuffers&lt; Output_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>afd9a836e3e46a7e576c17e0f95780559</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_ &gt; &amp;output, const GroupRssOptions &amp;opt)</arglist>
+      <anchor>abb385340865f5cf7583b0f6095c4e68b</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>GroupRssResult&lt; Output_ &gt;</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>ae32b7301a77946414b01d90030334fb8</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions &amp;opt)</arglist>
+      <anchor>a497be61329fd13492fdd0e5d6f2479b1</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -703,22 +765,22 @@
       <type>void</type>
       <name>group_variance</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a010839b61b54066e70e1d78277afc388</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const Count_ *const group_size, GroupVarianceBuffers&lt; Output_ &gt; &amp;output, const GroupVarianceOptions &amp;opt)</arglist>
+      <anchor>a407ba058750615bd33292afccc38e94e</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const Count_ *const group_size, GroupVarianceBuffers&lt; Output_ &gt; &amp;output, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>group_variance</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>ac7476ce5e6db67ed8d137d14077d6a10</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupVarianceBuffers&lt; Output_ &gt; &amp;output, const GroupVarianceOptions &amp;opt)</arglist>
+      <anchor>a51a5db1a1eb13f26ddbf98657170f993</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupVarianceBuffers&lt; Output_ &gt; &amp;output, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>GroupVarianceResult&lt; Output_ &gt;</type>
       <name>group_variance</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>ab537972be4ae242bbeb1ee6707e5a794</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupVarianceOptions &amp;opt)</arglist>
+      <anchor>a15f35a5d06273df23b939ffc7af35133</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -766,15 +828,15 @@
       <type>void</type>
       <name>rss</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a40b4425d03755d183d4a6b2b536883bb</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RssBuffers&lt; Output_ &gt; &amp;output, const RssOptions &amp;opt)</arglist>
+      <anchor>a6ab3c75a448d15a3ee85f7053f6f8a4e</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RssBuffers&lt; Output_ &gt; &amp;output, const RssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>RssResult&lt; Output_ &gt;</type>
       <name>rss</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>ae5706fccccc3824bad0018a4922a15a9</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const RssOptions &amp;opt)</arglist>
+      <anchor>a54835eb1dba6acdbd7bae5c41a5b4f03</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const RssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -794,15 +856,15 @@
       <type>void</type>
       <name>variance</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>af5b0ad69b65dafbeb145903572b421df</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, VarianceBuffers&lt; Output_ &gt; &amp;output, const VarianceOptions &amp;opt)</arglist>
+      <anchor>a061f6267cade1a18559a8a2678eeb04a</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, VarianceBuffers&lt; Output_ &gt; &amp;output, const VarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>VarianceResult&lt; Output_ &gt;</type>
       <name>variance</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>af737713efbcb6ce5ed8b1dca03b71a4b</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const VarianceOptions &amp;opt)</arglist>
+      <anchor>ad1438c0b40ee694f9e5429b1019d14f3</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const VarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
   </compound>
   <compound kind="namespace">
@@ -818,29 +880,29 @@
       <type>void</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
-      <anchor>abf8a7950c6756f36da8dc972d1b6151b</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_, Count_ &gt; &amp;output, const GroupRssOptions &amp;opt)</arglist>
+      <anchor>a12106828e9083d4c4087f88bf6590c9d</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_, Count_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>GroupRssResult&lt; Output_, Count_ &gt;</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
-      <anchor>a0d764b0e9f32e04327709144c05adb7e</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions &amp;opt)</arglist>
+      <anchor>a09b461cff77987ff0a6ca2f7a4c58700</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>rss</name>
       <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
-      <anchor>ab1b7cb3fc5a62ac0a185d4414cc119c0</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RssBuffers&lt; Output_, Count_ &gt; &amp;output, const RssOptions &amp;opt)</arglist>
+      <anchor>adbac7331007ff90f1f64e446a6993f48</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RssBuffers&lt; Output_, Count_ &gt; &amp;output, const RssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>RssResult&lt; Output_, Count_ &gt;</type>
       <name>rss</name>
       <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
-      <anchor>aa443acc0f1a6469007d20cac8f09b159</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const RssOptions &amp;opt)</arglist>
+      <anchor>aa3a1fff68b2238e8d7d6f58cf5abb7cf</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const RssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
   </compound>
   <compound kind="page">

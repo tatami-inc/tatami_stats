@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats::GroupVarianceOptions Struct Reference</title>
+<title>tatami_stats: tatami_stats::GroupVarianceOptions&lt; Output_ &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -100,33 +100,46 @@ $(function(){ initResizable(false); });
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structtatami__stats_1_1GroupVarianceOptions-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats::GroupVarianceOptions Struct Reference</div></div>
+  <div class="headertitle"><div class="title">tatami_stats::GroupVarianceOptions&lt; Output_ &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Options for <code><a class="el" href="namespacetatami__stats.html#a010839b61b54066e70e1d78277afc388">group_variance()</a></code>.  
+<p>Options for <code><a class="el" href="namespacetatami__stats.html#a407ba058750615bd33292afccc38e94e">group_variance()</a></code>.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="group__variance_8hpp_source.html">group_variance.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a4c88585c22dad4d741e472cdbec6c233" id="r_a4c88585c22dad4d741e472cdbec6c233"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c88585c22dad4d741e472cdbec6c233">skip_nan</a> = false</td></tr>
-<tr class="separator:a4c88585c22dad4d741e472cdbec6c233"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8aae82a226fc7be7903fe040f6d6f0c" id="r_af8aae82a226fc7be7903fe040f6d6f0c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8aae82a226fc7be7903fe040f6d6f0c">num_threads</a> = 1</td></tr>
-<tr class="separator:af8aae82a226fc7be7903fe040f6d6f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61140bf2d2ab36241f74ea9ea4336e1c" id="r_a61140bf2d2ab36241f74ea9ea4336e1c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61140bf2d2ab36241f74ea9ea4336e1c">skip_nan</a> = false</td></tr>
+<tr class="separator:a61140bf2d2ab36241f74ea9ea4336e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab1763aab66ae671b5c27dddfae76278" id="r_aab1763aab66ae671b5c27dddfae76278"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab1763aab66ae671b5c27dddfae76278">num_threads</a> = 1</td></tr>
+<tr class="separator:aab1763aab66ae671b5c27dddfae76278"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e933fc1303b385b5ca6c7b117134ab3" id="r_a1e933fc1303b385b5ca6c7b117134ab3"><td class="memItemLeft" align="right" valign="top">Output_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1e933fc1303b385b5ca6c7b117134ab3">mean_placeholder</a> = quickstats::nan_if_available_else_zero&lt;Output_&gt;()</td></tr>
+<tr class="separator:a1e933fc1303b385b5ca6c7b117134ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0769436ba2f86ab2d87302206cf48279" id="r_a0769436ba2f86ab2d87302206cf48279"><td class="memItemLeft" align="right" valign="top">Output_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0769436ba2f86ab2d87302206cf48279">variance_placeholder</a> = quickstats::nan_if_available_else_zero&lt;Output_&gt;()</td></tr>
+<tr class="separator:a0769436ba2f86ab2d87302206cf48279"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Options for <code><a class="el" href="namespacetatami__stats.html#a010839b61b54066e70e1d78277afc388">group_variance()</a></code>. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_ = double&gt;<br />
+struct tatami_stats::GroupVarianceOptions&lt; Output_ &gt;</div><p>Options for <code><a class="el" href="namespacetatami__stats.html#a407ba058750615bd33292afccc38e94e">group_variance()</a></code>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. </td></tr>
+  </table>
+  </dd>
+</dl>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a4c88585c22dad4d741e472cdbec6c233" name="a4c88585c22dad4d741e472cdbec6c233"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c88585c22dad4d741e472cdbec6c233">&#9670;&#160;</a></span>skip_nan</h2>
+<a id="a61140bf2d2ab36241f74ea9ea4336e1c" name="a61140bf2d2ab36241f74ea9ea4336e1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61140bf2d2ab36241f74ea9ea4336e1c">&#9670;&#160;</a></span>skip_nan</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_  = double&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">bool tatami_stats::GroupVarianceOptions::skip_nan = false</td>
+          <td class="memname">bool <a class="el" href="structtatami__stats_1_1GroupVarianceOptions.html">tatami_stats::GroupVarianceOptions</a>&lt; Output_ &gt;::skip_nan = false</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -134,18 +147,54 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="af8aae82a226fc7be7903fe040f6d6f0c" name="af8aae82a226fc7be7903fe040f6d6f0c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8aae82a226fc7be7903fe040f6d6f0c">&#9670;&#160;</a></span>num_threads</h2>
+<a id="aab1763aab66ae671b5c27dddfae76278" name="aab1763aab66ae671b5c27dddfae76278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab1763aab66ae671b5c27dddfae76278">&#9670;&#160;</a></span>num_threads</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_  = double&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">int tatami_stats::GroupVarianceOptions::num_threads = 1</td>
+          <td class="memname">int <a class="el" href="structtatami__stats_1_1GroupVarianceOptions.html">tatami_stats::GroupVarianceOptions</a>&lt; Output_ &gt;::num_threads = 1</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Number of threads to use when computing variances across a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. See <code><a class="elRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize()</a></code> for more details on the parallelization mechanism. </p>
+
+</div>
+</div>
+<a id="a1e933fc1303b385b5ca6c7b117134ab3" name="a1e933fc1303b385b5ca6c7b117134ab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e933fc1303b385b5ca6c7b117134ab3">&#9670;&#160;</a></span>mean_placeholder</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_  = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">Output_ <a class="el" href="structtatami__stats_1_1GroupVarianceOptions.html">tatami_stats::GroupVarianceOptions</a>&lt; Output_ &gt;::mean_placeholder = quickstats::nan_if_available_else_zero&lt;Output_&gt;()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Placeholder value to use for the mean when the extent of the relevant dimension is zero. This is NaN if supported by <code>Output_</code>, otherwise zero. </p>
+
+</div>
+</div>
+<a id="a0769436ba2f86ab2d87302206cf48279" name="a0769436ba2f86ab2d87302206cf48279"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0769436ba2f86ab2d87302206cf48279">&#9670;&#160;</a></span>variance_placeholder</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_  = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">Output_ <a class="el" href="structtatami__stats_1_1GroupVarianceOptions.html">tatami_stats::GroupVarianceOptions</a>&lt; Output_ &gt;::variance_placeholder = quickstats::nan_if_available_else_zero&lt;Output_&gt;()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Placeholder value to use for the variance when the extent of the relevant dimension is less than 2. This is NaN if supported by <code>Output_</code>, otherwise zero. </p>
 
 </div>
 </div>

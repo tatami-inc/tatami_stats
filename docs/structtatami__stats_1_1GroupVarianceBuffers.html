@@ -104,7 +104,7 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 
-<p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#a010839b61b54066e70e1d78277afc388">group_variance()</a></code>.  
+<p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#a407ba058750615bd33292afccc38e94e">group_variance()</a></code>.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="group__variance_8hpp_source.html">group_variance.hpp</a>&gt;</code></p>
@@ -118,10 +118,10 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_&gt;<br />
-struct tatami_stats::GroupVarianceBuffers&lt; Output_ &gt;</div><p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#a010839b61b54066e70e1d78277afc388">group_variance()</a></code>. </p>
+struct tatami_stats::GroupVarianceBuffers&lt; Output_ &gt;</div><p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#a407ba058750615bd33292afccc38e94e">group_variance()</a></code>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. This should be capable of storing NaNs. </td></tr>
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. </td></tr>
   </table>
   </dd>
 </dl>
@@ -139,7 +139,7 @@ template&lt;typename Output_ &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise). After <code><a class="el" href="namespacetatami__stats.html#a010839b61b54066e70e1d78277afc388">group_variance()</a></code>, this is filled with the sample mean of each row/column for the corresponding group. </p>
+<p>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise). After <code><a class="el" href="namespacetatami__stats.html#a407ba058750615bd33292afccc38e94e">group_variance()</a></code>, this is filled with the sample mean of each row/column for the corresponding group. </p>
 
 </div>
 </div>
@@ -156,7 +156,7 @@ template&lt;typename Output_ &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise). After <code><a class="el" href="namespacetatami__stats.html#a010839b61b54066e70e1d78277afc388">group_variance()</a></code>, this is filled with the sample variance of each row/column for the corresponding group. </p>
+<p>Vector of length equal to the number of groups. Each element is a pointer to an array of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise). After <code><a class="el" href="namespacetatami__stats.html#a407ba058750615bd33292afccc38e94e">group_variance()</a></code>, this is filled with the sample variance of each row/column for the corresponding group. </p>
 
 </div>
 </div>

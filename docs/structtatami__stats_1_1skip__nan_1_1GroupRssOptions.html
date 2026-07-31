@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats::skip_nan::GroupRssOptions Struct Reference</title>
+<title>tatami_stats: tatami_stats::skip_nan::GroupRssOptions&lt; Output_ &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -100,35 +100,63 @@ $(function(){ initResizable(false); });
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structtatami__stats_1_1skip__nan_1_1GroupRssOptions-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats::skip_nan::GroupRssOptions Struct Reference</div></div>
+  <div class="headertitle"><div class="title">tatami_stats::skip_nan::GroupRssOptions&lt; Output_ &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Options for <code><a class="el" href="namespacetatami__stats_1_1skip__nan.html#abf8a7950c6756f36da8dc972d1b6151b">skip_nan::group_rss()</a></code>.  
+<p>Options for <code><a class="el" href="namespacetatami__stats_1_1skip__nan.html#a12106828e9083d4c4087f88bf6590c9d">skip_nan::group_rss()</a></code>.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="skip__nan_2group__rss_8hpp_source.html">group_rss.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:abcfc20a16925dcb1532ba0f87368c90c" id="r_abcfc20a16925dcb1532ba0f87368c90c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abcfc20a16925dcb1532ba0f87368c90c">num_threads</a> = 1</td></tr>
-<tr class="separator:abcfc20a16925dcb1532ba0f87368c90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28991cdba54b0c46ebcc4ffb67878ff8" id="r_a28991cdba54b0c46ebcc4ffb67878ff8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28991cdba54b0c46ebcc4ffb67878ff8">num_threads</a> = 1</td></tr>
+<tr class="separator:a28991cdba54b0c46ebcc4ffb67878ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33b4dccecbb33b2f69811326bf3e85ef" id="r_a33b4dccecbb33b2f69811326bf3e85ef"><td class="memItemLeft" align="right" valign="top">Output_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a33b4dccecbb33b2f69811326bf3e85ef">mean_placeholder</a> = quickstats::nan_if_available_else_zero&lt;Output_&gt;()</td></tr>
+<tr class="separator:a33b4dccecbb33b2f69811326bf3e85ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Options for <code><a class="el" href="namespacetatami__stats_1_1skip__nan.html#abf8a7950c6756f36da8dc972d1b6151b">skip_nan::group_rss()</a></code>. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_ = double&gt;<br />
+struct tatami_stats::skip_nan::GroupRssOptions&lt; Output_ &gt;</div><p>Options for <code><a class="el" href="namespacetatami__stats_1_1skip__nan.html#a12106828e9083d4c4087f88bf6590c9d">skip_nan::group_rss()</a></code>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. </td></tr>
+  </table>
+  </dd>
+</dl>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="abcfc20a16925dcb1532ba0f87368c90c" name="abcfc20a16925dcb1532ba0f87368c90c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abcfc20a16925dcb1532ba0f87368c90c">&#9670;&#160;</a></span>num_threads</h2>
+<a id="a28991cdba54b0c46ebcc4ffb67878ff8" name="a28991cdba54b0c46ebcc4ffb67878ff8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28991cdba54b0c46ebcc4ffb67878ff8">&#9670;&#160;</a></span>num_threads</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_  = double&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">int tatami_stats::skip_nan::GroupRssOptions::num_threads = 1</td>
+          <td class="memname">int <a class="el" href="structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html">tatami_stats::skip_nan::GroupRssOptions</a>&lt; Output_ &gt;::num_threads = 1</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Number of threads to use for iterating across a <code><a class="elRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix</a></code>. See <code><a class="elRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize()</a></code> for more details on the parallelization mechanism. </p>
+
+</div>
+</div>
+<a id="a33b4dccecbb33b2f69811326bf3e85ef" name="a33b4dccecbb33b2f69811326bf3e85ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33b4dccecbb33b2f69811326bf3e85ef">&#9670;&#160;</a></span>mean_placeholder</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_  = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">Output_ <a class="el" href="structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html">tatami_stats::skip_nan::GroupRssOptions</a>&lt; Output_ &gt;::mean_placeholder = quickstats::nan_if_available_else_zero&lt;Output_&gt;()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Placeholder value to use for the mean of empty groups. This is NaN if supported by <code>Output_</code>, otherwise it is zero. </p>
 
 </div>
 </div>
