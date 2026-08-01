@@ -201,6 +201,17 @@ void group_rss_running_nonempty(
         assert(group_size[g] > 0);
     }
 
+    // We overwrite any existing value in the array in the do_parallel=true situation.
+    // So, the initial value doesn't need to be zero.
+    if (!do_parallel) {
+        for (std::size_t g = 0; g < num_groups; ++g) {
+            std::fill_n(output.mean[g], dim, 0);
+        }
+    }
+    for (std::size_t g = 0; g < num_groups; ++g) {
+        std::fill_n(output.rss[g], dim, 0);
+    }
+
     const bool is_sparse = mat.is_sparse();
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
         Output_** mean_ptrs;
@@ -304,10 +315,11 @@ void group_rss_running_nonempty(
         const auto& ap_mean = *all_partial_mean;
         const auto& ap_rss = *all_partial_rss;
 
-        // Computing the global mean.
         for (std::size_t g = 0; g < num_groups; ++g) {
             const auto cur_output = output.mean[g];
             const auto cur_global_count = group_size[g];
+            assert(cur_global_count > 0);
+            bool initialized = false;
 
             for (int u = 0; u < nused; ++u) {
                 const auto cur_count = (*((*all_partial_count)[u]))[g];
@@ -317,16 +329,26 @@ void group_rss_running_nonempty(
 
                 const auto& cur_mean = (*(ap_mean[u]))[g];
                 const Output_ mult = static_cast<Output_>(cur_count) / static_cast<Output_>(cur_global_count);
-                for (Index_ d = 0; d < dim; ++d) {
-                    cur_output[d] += cur_mean[d] * mult;
+                if (!initialized) { // Don't use u == 0, as the first non-empty 'g' might not occur in the first thread.
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] = cur_mean[d] * mult;
+                    }
+                    initialized = true;
+                } else {
+                    for (Index_ d = 0; d < dim; ++d) {
+                        cur_output[d] += cur_mean[d] * mult;
+                    }
                 }
             }
+
+            assert(initialized);
         }
 
         // Combining the RSS. 
         for (std::size_t g = 0; g < num_groups; ++g) {
             const auto& cur_global = output.mean[g];
             const auto cur_output = output.rss[g];
+            bool initialized = false;
 
             for (int u = 0; u < nused; ++u) {
                 const auto cur_count = (*((*all_partial_count)[u]))[g];
@@ -335,17 +357,27 @@ void group_rss_running_nonempty(
                 }
 
                 const auto& cur_mean = (*(ap_mean[u]))[g];
-                if (u == 0) {
+                if (u == 0) { // Special case to avoid trying to access u - 1.
                     for (Index_ d = 0; d < dim; ++d) {
                         cur_output[d] = quickstats::recenter_rss_unsafe(cur_count, cur_output[d], cur_mean[d], cur_global[d]); 
                     }
+                    initialized = true;
                 } else {
                     const auto& cur_rss = (*(ap_rss[u - 1]))[g];
-                    for (Index_ d = 0; d < dim; ++d) {
-                        cur_output[d] += quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
+                    if (!initialized) { // Don't use u == 0, as the first non-empty 'g' might not occur in the first thread.
+                        for (Index_ d = 0; d < dim; ++d) {
+                            cur_output[d] = quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
+                        }
+                        initialized = true;
+                    } else {
+                        for (Index_ d = 0; d < dim; ++d) {
+                            cur_output[d] += quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
+                        }
                     }
                 }
             }
+
+            assert(initialized);
         }
     }
 }
@@ -361,14 +393,11 @@ void group_rss_running(
     const GroupRssOptions<Output_>& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    for (std::size_t g = 0; g < num_groups; ++g) {
-        std::fill_n(output.rss[g], dim, 0);
-    }
-
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     if (otherdim == 0) {
         for (std::size_t g = 0; g < num_groups; ++g) {
             std::fill_n(output.mean[g], dim, opt.mean_placeholder);
+            std::fill_n(output.rss[g], dim, 0);
         }
         return; 
     }
@@ -376,7 +405,6 @@ void group_rss_running(
     std::size_t num_empty = 0;
     for (std::size_t g = 0; g < num_groups; ++g) {
         num_empty += (group_size[g] == 0);
-        std::fill_n(output.mean[g], dim, (group_size[g] ? 0 : opt.mean_placeholder));
     }
 
     // We strip out all empty groups so that we can skip some allocations in each thread. 
@@ -403,6 +431,9 @@ void group_rss_running(
                 new_group_size_store->push_back(group_size[g]);
                 new_output_store->mean.push_back(output.mean[g]);
                 new_output_store->rss.push_back(output.rss[g]);
+            } else {
+                std::fill_n(output.mean[g], dim, opt.mean_placeholder);
+                std::fill_n(output.rss[g], dim, 0);
             }
         }
 

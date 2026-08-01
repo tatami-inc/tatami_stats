@@ -106,13 +106,10 @@ template<typename Value_, typename Index_, typename Output_>
 void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers<Output_>& output, const RssOptions<Output_>& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
-
-    std::fill_n(output.rss, dim, 0);
     if (otherdim == 0) {
         std::fill_n(output.mean, dim, opt.mean_placeholder);
+        std::fill_n(output.rss, dim, 0);
         return;
-    } else {
-        std::fill_n(output.mean, dim, 0);
     }
 
     assert(opt.num_threads > 0);
@@ -125,6 +122,13 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
         all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
         all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads));
     }
+
+    // We overwrite any existing mean value in the array in the do_parallel=true situation.
+    // So, the initial value doesn't need to be zero.
+    if (!do_parallel) {
+        std::fill_n(output.mean, dim, 0);
+    }
+    std::fill_n(output.rss, dim, 0);
 
     const bool is_sparse = mat.is_sparse();
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
@@ -204,8 +208,14 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
         for (int u = 0; u < nused; ++u) {
             const Output_ mult = static_cast<Output_>(ap_count[u]) / static_cast<Output_>(otherdim);
             const auto& cur_mean = *(ap_mean[u]);
-            for (Index_ d = 0; d < dim; ++d) {
-                output.mean[d] += cur_mean[d] * mult;
+            if (u == 0) {
+                for (Index_ d = 0; d < dim; ++d) {
+                    output.mean[d] = cur_mean[d] * mult;
+                }
+            } else {
+                for (Index_ d = 0; d < dim; ++d) {
+                    output.mean[d] += cur_mean[d] * mult;
+                }
             }
         }
 
