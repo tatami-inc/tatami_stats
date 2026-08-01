@@ -288,25 +288,41 @@ TEST(GroupVariance, AllEmptyGroups) {
 }
 
 TEST(GroupVariance, SomeEmptyGroups) {
-    int nrow = 20;
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(nrow, 10, std::vector<double>(nrow * 10)));
+    int NR = 200, NC = 50;
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.2;
+        opt.seed = 112312; 
+        return opt;
+    }());
+
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
     auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    int ngroups = 4;
-    std::vector<int> grouping(10, ngroups - 1);
+    std::vector<int> grouping(NC, 2);
+    int interval = NC / 3;
+    std::fill_n(grouping.begin() + interval, interval, 1);
+    std::fill(grouping.begin() + 2 * interval, grouping.end(), 0);
+    auto ref = tatami_stats::group_variance(true, *dense_row, grouping.data(), 3, {});
+
+    const int ngroups = 7;
+    for (auto& g : grouping) {
+        g = 2 * g + 1;
+    }
 
     auto check_ok = [&](const tatami_stats::GroupVarianceResult<double>& res) -> void {
         EXPECT_EQ(res.mean.size(), ngroups);
         EXPECT_EQ(res.variance.size(), ngroups);
-        for (int i = 0; i < ngroups - 1; ++i) {
-            EXPECT_TRUE(is_all_nan(res.mean[i]));
-            EXPECT_TRUE(is_all_nan(res.variance[i]));
-        }
-        for (int j = 0; j < nrow; ++j) {
-            EXPECT_EQ(res.mean[ngroups - 1][j], 0);
-            EXPECT_EQ(res.variance[ngroups - 1][j], 0);
+        for (int i = 0; i < ngroups; ++i) {
+            if (i % 2 == 0) {
+                EXPECT_TRUE(is_all_nan(res.mean[i]));
+                EXPECT_TRUE(is_all_nan(res.variance[i]));
+            } else {
+                compare_double_vectors(ref.mean[(i - 1) / 2], res.mean[i]);
+                compare_double_vectors(ref.variance[(i - 1) / 2], res.variance[i]);
+            }
         }
     };
 

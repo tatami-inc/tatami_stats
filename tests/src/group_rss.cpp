@@ -230,28 +230,46 @@ TEST_P(GroupRssEdgeTest, AllEmptyGroups) {
 }
 
 TEST_P(GroupRssEdgeTest, SomeEmptyGroups) {
-    int nrow = 20;
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(nrow, 10, std::vector<double>(nrow * 10)));
+    tatami_stats::GroupRssOptions vopt;
+    vopt.num_threads = GetParam();
+
+    int NR = 200, NC = 50;
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.2;
+        opt.seed = 112312; 
+        return opt;
+    }());
+
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
     auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    int ngroups = 4;
-    std::vector<int> grouping(10, ngroups - 1);
+    std::vector<int> grouping(NC, 2);
+    int interval = NC / 3;
+    std::fill_n(grouping.begin() + interval, interval, 1);
+    std::fill(grouping.begin() + 2 * interval, grouping.end(), 0);
+    auto ref = tatami_stats::group_rss<double>(true, *dense_row, grouping.data(), 3, vopt);
+
+    const int ngroups = 7;
+    for (auto& g : grouping) {
+        g = 2 * g + 1;
+    }
 
     auto check_ok = [&](const tatami_stats::GroupRssResult<double>& res) -> void {
         EXPECT_EQ(res.mean.size(), ngroups);
         EXPECT_EQ(res.rss.size(), ngroups);
-        for (int i = 0; i < ngroups - 1; ++i) {
-            EXPECT_TRUE(is_all_nan(res.mean[i]));
-            EXPECT_EQ(res.rss[i], std::vector<double>(nrow));
+        for (int i = 0; i < ngroups; ++i) {
+            if (i % 2 == 0) {
+                EXPECT_TRUE(is_all_nan(res.mean[i]));
+                EXPECT_EQ(res.rss[i], std::vector<double>(NR));
+            } else {
+                compare_double_vectors(ref.mean[(i - 1) / 2], res.mean[i]);
+                compare_double_vectors(ref.rss[(i - 1) / 2], res.rss[i]);
+            }
         }
-        EXPECT_EQ(res.mean[ngroups - 1], std::vector<double>(nrow));
-        EXPECT_EQ(res.rss[ngroups - 1], std::vector<double>(nrow));
     };
-
-    tatami_stats::GroupRssOptions vopt;
-    vopt.num_threads = GetParam();
 
     check_ok(tatami_stats::group_rss<double>(true, *dense_row, grouping.data(), ngroups, vopt));
     check_ok(tatami_stats::group_rss<double>(true, *dense_column, grouping.data(), ngroups, vopt));

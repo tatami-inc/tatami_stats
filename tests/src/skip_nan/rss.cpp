@@ -26,14 +26,21 @@ TEST_P(SkipNanRssTest, Row) {
     const auto num_threads = GetParam();
 
     size_t NR = 52, NC = 83;
-    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.1;
-        opt.seed = 44982197;
+        opt.seed = 44982197 + num_threads;
         return opt;
     }());
-    for (size_t r = 0; r < NR; ++r) { // Injecting zero to 9 NaNs at the start.
-        std::fill_n(dump.data() + r * NC, r % 10, std::numeric_limits<double>::quiet_NaN());
+
+    std::mt19937_64 rng(num_threads + 1212938);
+    std::uniform_real_distribution runif;
+    for (size_t r = 0; r < NR; ++r) {
+        for (size_t c = 0; c < NC; ++c) {
+            if (runif(rng)) {
+                dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+            }
+        }
     }
 
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
@@ -43,17 +50,15 @@ TEST_P(SkipNanRssTest, Row) {
 
     std::vector<double> expectedm(NR), refrss(NR);
     std::vector<int> count(NR);
+    std::vector<double> current(NC);
+    quickstats::RssWorkspace<double> wrk;
     for (size_t r = 0; r < NR; ++r) {
-        const std::size_t start = r % 10;
-        for (size_t c = start; c < NC; ++c) { // skipping the first few elements.
-            double x = dump[c + r * NC];
-            expectedm[r] += x;
-            refrss[r] += x * x;
-        }
-        const auto num = NC - start;
-        expectedm[r] /= num;
-        refrss[r] -= num * expectedm[r] * expectedm[r];
-        count[r] = num;
+        std::copy_n(dump.data() + NC * r, NC, current.data());
+        const auto unskip_size = quickstats::skip_values(current.size(), current.data(), [](const std::size_t, const double val) -> bool { return std::isnan(val); });
+        const auto unskip_res = quickstats::rss(unskip_size, current.data(), wrk, quickstats::RssOptions());
+        expectedm[r] = unskip_res.mean;
+        refrss[r] = unskip_res.rss;
+        count[r] = unskip_size;
     }
 
     tatami_stats::skip_nan::RssOptions vopt;
@@ -68,16 +73,20 @@ TEST_P(SkipNanRssTest, Column) {
     const auto num_threads = GetParam();
 
     size_t NR = 82, NC = 33;
-    auto dump = tatami_test::simulate_vector<double>(NR * NC, []{
+    auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.1;
-        opt.seed = 191353;
+        opt.seed = 191353 + num_threads;
         return opt;
     }());
-    for (std::size_t c = 0; c < NC; ++c) { // Injecting zero to 15 NaNs at the end.
-        const std::size_t limit = c % 15;
-        for (std::size_t rx = 0; rx < limit; ++rx) { 
-            dump[c + (NR - rx - 1) * NC] = std::numeric_limits<double>::quiet_NaN();
+
+    std::mt19937_64 rng(num_threads + 123298);
+    std::uniform_real_distribution runif;
+    for (size_t c = 0; c < NC; ++c) {
+        for (size_t r = 0; r < NR; ++r) {
+            if (runif(rng)) {
+                dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+            }
         }
     }
 
@@ -87,18 +96,18 @@ TEST_P(SkipNanRssTest, Column) {
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
     std::vector<double> expectedm(NC), refrss(NC);
-    std::vector<int> count(NC, 0);
+    std::vector<int> count(NC);
+    std::vector<double> current(NR);
+    quickstats::RssWorkspace<double> wrk;
     for (size_t c = 0; c < NC; ++c) {
-        const std::size_t rend = NR - (c % 15);
-        for (size_t r = 0; r < rend; ++r) { // skipping the last few rows with NaNs.
-            double x = dump[c + r * NC];
-            expectedm[c] += x;
-            refrss[c] += x * x;
+        for (size_t r = 0; r < NR; ++r) {
+            current[r] = dump[c + r * NC];
         }
-        const auto num = rend; 
-        expectedm[c] /= num;
-        refrss[c] -= num * expectedm[c] * expectedm[c];
-        count[c] = num;
+        const auto unskip_size = quickstats::skip_values(current.size(), current.data(), [](const std::size_t, const double val) -> bool { return std::isnan(val); });
+        const auto unskip_res = quickstats::rss(unskip_size, current.data(), wrk, quickstats::RssOptions());
+        expectedm[c] = unskip_res.mean;
+        refrss[c] = unskip_res.rss;
+        count[c] = unskip_size;
     }
 
     tatami_stats::skip_nan::RssOptions vopt;

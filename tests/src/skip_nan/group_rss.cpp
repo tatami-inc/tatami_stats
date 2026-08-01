@@ -19,7 +19,7 @@ static void compare_result(
     EXPECT_EQ(res.count, expected_count);
 }
 
-class SkipNanGroupRssBasicTest : public ::testing::TestWithParam<std::tuple<int, int, bool> > {
+class SkipNanGroupRssBasicTest : public ::testing::TestWithParam<std::tuple<int, int, bool, bool> > {
 public:
     static std::vector<int> generate_groups(const bool interleaved, const int num_groups, const std::size_t length) {
         std::vector<int> groups(length);
@@ -60,6 +60,7 @@ TEST_P(SkipNanGroupRssBasicTest, Row) {
     const int num_threads = std::get<0>(params);
     const int ngroup = std::get<1>(params);
     const bool interleaved = std::get<2>(params);
+    const bool random_nan = std::get<3>(params);
 
     // Sprinkling in some NaNs.
     auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{ 
@@ -67,12 +68,31 @@ TEST_P(SkipNanGroupRssBasicTest, Row) {
         opt.density = 0.2;
         opt.lower = -10;
         opt.upper = -2;
-        opt.seed = 52827 + num_threads + ngroup + interleaved;
+        opt.seed = 52827 + num_threads + ngroup + interleaved + 5 * random_nan;
         return opt;
     }());
-    for (size_t r = 0; r < NR; ++r) {
-        // Invalidating a bunch of observations close to the start of each row.
-        std::fill_n(simulated.data() + r * NC, r % 20 + 1, std::numeric_limits<double>::quiet_NaN());
+
+    auto cgroups = generate_groups(interleaved, ngroup, NC);
+    auto subsets = create_subsets(ngroup, cgroups);
+
+    std::mt19937_64 rng(num_threads + 2 * ngroup + 4 * interleaved + 8 * random_nan);
+    if (random_nan) {
+        std::uniform_real_distribution runif;
+        for (size_t r = 0; r < NR; ++r) {
+            for (size_t c = 0; c < NC; ++c) {
+                if (runif(rng)) {
+                    simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+                }
+            }
+        }
+    } else {
+        std::uniform_int_distribution runif(0, ngroup - 1);
+        for (size_t r = 0; r < NR; ++r) {
+            auto chosen = runif(rng);
+            for (auto c : subsets[chosen]) {
+                simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+            }
+        }
     }
 
     auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
@@ -80,8 +100,6 @@ TEST_P(SkipNanGroupRssBasicTest, Row) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto cgroups = generate_groups(interleaved, ngroup, NC);
-    auto subsets = create_subsets(ngroup, cgroups);
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
     std::vector<std::vector<int> > expected_c(ngroup);
     for (int g = 0; g < ngroup; ++g) {
@@ -113,6 +131,7 @@ TEST_P(SkipNanGroupRssBasicTest, Column) {
     const int num_threads = std::get<0>(params);
     const int ngroup = std::get<1>(params);
     const bool interleaved = std::get<2>(params);
+    const bool random_nan = std::get<3>(params);
 
     // Sprinkling in some NaNs.
     auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{ 
@@ -123,11 +142,27 @@ TEST_P(SkipNanGroupRssBasicTest, Column) {
         opt.seed = 191188 + num_threads + ngroup + interleaved;
         return opt;
     }());
-    for (size_t c = 0; c < NC; ++c) {
-        const std::size_t rstart = NR - c % 20 - 1;
-        for (size_t r = rstart; r < NR; ++r) {
-            // Invalidating a bunch of observations at the end of each column.
-            simulated[c + r * NC] = std::numeric_limits<double>::quiet_NaN();
+
+    auto rgroups = generate_groups(interleaved, ngroup, NR);
+    auto subsets = create_subsets(ngroup, rgroups);
+
+    std::mt19937_64 rng(num_threads + 2 * ngroup + 4 * interleaved + 8 * random_nan);
+    if (random_nan) {
+        std::uniform_real_distribution runif;
+        for (size_t c = 0; c < NC; ++c) {
+            for (size_t r = 0; r < NR; ++r) {
+                if (runif(rng)) {
+                    simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+                }
+            }
+        }
+    } else {
+        std::uniform_int_distribution runif(0, ngroup - 1);
+        for (size_t c = 0; c < NC; ++c) {
+            auto chosen = runif(rng);
+            for (auto r : subsets[chosen]) {
+                simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+            }
         }
     }
 
@@ -136,8 +171,6 @@ TEST_P(SkipNanGroupRssBasicTest, Column) {
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    auto rgroups = generate_groups(interleaved, ngroup, NR);
-    auto subsets = create_subsets(ngroup, rgroups);
     std::vector<std::vector<double> > expected_m(ngroup), expected_v(ngroup);
     std::vector<std::vector<int> > expected_c(ngroup);
     for (int g = 0; g < ngroup; ++g) {
@@ -169,7 +202,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(1, 3),
         ::testing::Values(2, 3, 5),
-        ::testing::Values(false, true)
+        ::testing::Values(false, true), // interleaved
+        ::testing::Values(false, true) // random NaNs or per-group NaNs
     )
 );
 
@@ -257,30 +291,48 @@ TEST_P(SkipNanGroupRssEdgeTest, AllEmptyGroups) {
 }
 
 TEST_P(SkipNanGroupRssEdgeTest, SomeEmptyGroups) {
-    int nrow = 20;
-    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(nrow, 10, std::vector<double>(nrow * 10)));
+    tatami_stats::skip_nan::GroupRssOptions vopt;
+    vopt.num_threads = GetParam();
+
+    int NR = 200, NC = 50;
+    auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{
+        tatami_test::SimulateVectorOptions opt;
+        opt.density = 0.2;
+        opt.seed = 112312; 
+        return opt;
+    }());
+
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(simulated)));
     auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
     auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
     auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
 
-    int ngroups = 4;
-    std::vector<int> grouping(10, ngroups - 1);
+    std::vector<int> grouping(NC, 2);
+    int interval = NC / 3;
+    std::fill_n(grouping.begin() + interval, interval, 1);
+    std::fill(grouping.begin() + 2 * interval, grouping.end(), 0);
+    auto ref = tatami_stats::skip_nan::group_rss<double, int>(true, *dense_row, grouping.data(), 3, vopt);
+
+    const int ngroups = 7;
+    for (auto& g : grouping) {
+        g = 2 * g + 1;
+    }
 
     auto check_ok = [&](const tatami_stats::skip_nan::GroupRssResult<double, int>& res) -> void {
         EXPECT_EQ(res.mean.size(), ngroups);
         EXPECT_EQ(res.rss.size(), ngroups);
-        for (int i = 0; i < ngroups - 1; ++i) {
-            EXPECT_TRUE(is_all_nan(res.mean[i]));
-            EXPECT_EQ(res.rss[i], std::vector<double>(nrow));
-            EXPECT_EQ(res.count[i], std::vector<int>(nrow));
+        for (int i = 0; i < ngroups; ++i) {
+            if (i % 2 == 0) {
+                EXPECT_TRUE(is_all_nan(res.mean[i]));
+                EXPECT_EQ(res.rss[i], std::vector<double>(NR));
+                EXPECT_EQ(res.count[i], std::vector<int>(NR));
+            } else {
+                compare_double_vectors(ref.mean[(i - 1) / 2], res.mean[i]);
+                compare_double_vectors(ref.rss[(i - 1) / 2], res.rss[i]);
+                EXPECT_EQ(ref.count[(i - 1) / 2], res.count[i]);
+            }
         }
-        EXPECT_EQ(res.mean[ngroups - 1], std::vector<double>(nrow));
-        EXPECT_EQ(res.rss[ngroups - 1], std::vector<double>(nrow));
-        EXPECT_EQ(res.count[ngroups - 1], std::vector<int>(nrow, 10));
     };
-
-    tatami_stats::skip_nan::GroupRssOptions vopt;
-    vopt.num_threads = GetParam();
 
     check_ok(tatami_stats::skip_nan::group_rss<double, int>(true, *dense_row, grouping.data(), ngroups, vopt));
     check_ok(tatami_stats::skip_nan::group_rss<double, int>(true, *dense_column, grouping.data(), ngroups, vopt));
