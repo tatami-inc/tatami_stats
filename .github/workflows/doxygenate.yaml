@@ -17,6 +17,9 @@ jobs:
     - name: Get the tatami tagfile
       run: curl -L https://tatami-inc.github.io/tatami/tatami.tag > docs/tatami.tag 
 
+    - name: Get the quickstats tagfile
+      run: curl -L https://ltla.github.io/quickstats/quickstats.tag > docs/quickstats.tag 
+
     - name: Doxygen Action
       uses: mattnotmitt/doxygen-action@v1
       with:
