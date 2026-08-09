@@ -186,7 +186,7 @@ void group_rss_running_nonempty(
     const GroupRssOptions<Output_>& opt
 ) {
     const bool do_parallel = opt.num_threads > 1;
-    std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_mean, all_partial_rss;
+    std::optional<std::vector<std::optional<std::vector<Output_*> > > > all_partial_mean, all_partial_rss;
     std::optional<std::vector<std::optional<std::vector<Count_> > > > all_partial_count;
     if (do_parallel) {
         // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
@@ -194,6 +194,7 @@ void group_rss_running_nonempty(
         all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
         all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads));
     }
+    LiberateArraysScope lib_all_mean(all_partial_mean), lib_all_rss(all_partial_rss); // RAII freeing of every thread's allocated memory.
 
     // All groups are assumed to be non-empty at this point,
     // which allows us to skip some allocations.
@@ -214,11 +215,11 @@ void group_rss_running_nonempty(
 
     const bool is_sparse = mat.is_sparse();
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
+        std::optional<std::vector<Output_*> > cur_mean, cur_rss;
+        LiberateArraysScope libmean(cur_mean), librss(cur_rss); // RAII freeing of this thread's allocated memory. 
+
         Output_** mean_ptrs;
         Output_** rss_ptrs;
-        std::optional<std::vector<Output_*> > tmp_mean_ptrs, tmp_rss_ptrs;
-        std::optional<std::vector<std::vector<Output_> > > cur_mean, cur_rss;
-
         if (!do_parallel) {
             // Storing mean and RSS directly in the output vector to cut down two allocations if we're not working in parallel.
             mean_ptrs = output.mean.data();
@@ -226,26 +227,26 @@ void group_rss_running_nonempty(
 
         } else {
             // Storing the partial RSS directly in the output vectors to save ourselves an allocation if we're in the first thread.
-            // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
-            cur_mean.emplace(sanisizer::cast<I<decltype(cur_mean->size())> >(num_groups));
-            tmp_mean_ptrs.emplace(sanisizer::cast<I<decltype(tmp_mean_ptrs->size())> >(num_groups));
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                tatami::resize_container_to_Index_size((*cur_mean)[g], dim);
-                (*tmp_mean_ptrs)[g] = (*cur_mean)[g].data();
-            }
-            mean_ptrs = tmp_mean_ptrs->data();
-
             if (thread == 0) {
                 rss_ptrs = output.rss.data();
             } else {
                 cur_rss.emplace(sanisizer::cast<I<decltype(cur_rss->size())> >(num_groups));
-                tmp_rss_ptrs.emplace(sanisizer::cast<I<decltype(tmp_rss_ptrs->size())> >(num_groups));
                 for (std::size_t g = 0; g < num_groups; ++g) {
-                    tatami::resize_container_to_Index_size((*cur_rss)[g], dim);
-                    (*tmp_rss_ptrs)[g] = (*cur_rss)[g].data();
+                    auto ptr = new Output_ [dim]; // dim can be cast to size_t, based on the tatami contract.
+                    (*cur_rss)[g] = ptr;
+                    std::fill_n(ptr, dim, 0);
                 }
-                rss_ptrs = tmp_rss_ptrs->data();
+                rss_ptrs = cur_rss->data();
             }
+
+            // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
+            cur_mean.emplace(sanisizer::cast<I<decltype(cur_mean->size())> >(num_groups));
+            for (std::size_t g = 0; g < num_groups; ++g) {
+                auto ptr = new Output_ [dim]; // dim can be cast to size_t, based on the tatami contract.
+                (*cur_mean)[g] = ptr;
+                std::fill_n(ptr, dim, 0);
+            }
+            mean_ptrs = cur_mean->data();
         }
 
         auto cur_count = sanisizer::create<std::vector<Count_> >(num_groups); 
@@ -304,8 +305,10 @@ void group_rss_running_nonempty(
         if (do_parallel) {
             (*all_partial_count)[thread] = std::move(cur_count);
             (*all_partial_mean)[thread] = std::move(cur_mean);
+            cur_mean.reset(); // clear pointers so they don't get prematurely freed by libmean's destructor.
             if (thread > 0) {
                 (*all_partial_rss)[thread - 1] = std::move(cur_rss);
+                cur_rss.reset(); // clear pointers so they don't get prematurely freed by librss's destructor.
             }
         }
     }, otherdim, opt.num_threads);

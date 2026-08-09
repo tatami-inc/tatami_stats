@@ -134,34 +134,35 @@ void group_sum_running(
     const bool is_sparse = mat.is_sparse();
 
     const auto do_parallel = opt.num_threads > 1;
-    std::optional<std::vector<std::optional<std::vector<std::vector<Output_> > > > > all_partial_sums;
+    std::optional<std::vector<std::optional<std::vector<Output_*> > > > all_partial_sums;
     if (do_parallel) {
         all_partial_sums.emplace(sanisizer::cast<I<decltype(all_partial_sums->size())> >(opt.num_threads - 1));
     }
+    LiberateArraysScope lib_all_sum(all_partial_sums); // RAII freeing of all threads' memory.
 
     for (std::size_t g = 0; g < num_groups; ++g) {
         std::fill_n(output[g], dim, 0);
     }
 
     const auto nused = tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
-        // If we can, directly dump it to the output pointers, otherwise put it into a temporary.
-        // This will eventually be moved to all_partial_sums but we use a local variable to try to mitigate false sharing.
+        // If we can, directly dump the sum to the output pointers, otherwise put it into a temporary.
+        std::optional<std::vector<Output_*> > cur_sums;
+        LiberateArraysScope libsum(cur_sums); // RAII freeing of this thread's memory.
+
         Output_** sum_ptrs;
-        std::optional<std::vector<std::vector<Output_> > > cur_sums;
-        std::optional<std::vector<Output_*> > cur_ptrs;
         if (!do_parallel) {
             sum_ptrs = output.data();
         } else {
             if (thread == 0) {
                 sum_ptrs = output.data();
             } else {
-                cur_sums.emplace(tatami::cast_Index_to_container_size<std::vector<std::vector<Output_> > >(num_groups));
-                cur_ptrs.emplace(tatami::cast_Index_to_container_size<std::vector<Output_*> >(num_groups));
+                cur_sums.emplace(sanisizer::cast<I<decltype(cur_sums->size())> >(num_groups));
                 for (std::size_t g = 0; g < num_groups; ++g) {
-                    tatami::resize_container_to_Index_size((*cur_sums)[g], dim);
-                    (*cur_ptrs)[g] = (*cur_sums)[g].data();
+                    auto ptr = new Output_ [dim]; // cast to size_t is safe due to the tatami contract.
+                    (*cur_sums)[g] = ptr;
+                    std::fill_n(ptr, dim, 0);
                 }
-                sum_ptrs = cur_ptrs->data();
+                sum_ptrs = cur_sums->data();
             }
         }
 
@@ -226,6 +227,7 @@ void group_sum_running(
         if (do_parallel) {
             if (thread > 0) {
                 (*all_partial_sums)[thread - 1] = std::move(cur_sums);
+                cur_sums.reset(); // clear pointers so they don't get prematurely freed by libsum's destructor.
             }
         }
     }, otherdim, opt.num_threads);

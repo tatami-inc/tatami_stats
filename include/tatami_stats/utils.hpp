@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <type_traits>
+#include <optional>
 
 #include "sanisizer/sanisizer.hpp"
 #include "tatami/tatami.hpp"
@@ -46,6 +47,39 @@ auto nanable_ifelse_with_value(bool skip_nan, If_ iffun, Else_ elsefun) {
     }
     return elsefun();
 }
+
+template<typename Container_>
+class LiberateArraysScope {
+public:
+    LiberateArraysScope(Container_& x) : my_x(x) {}
+
+    ~LiberateArraysScope() {
+        liberate(my_x);
+    }
+private:
+    Container_& my_x;
+
+    template<typename Inner_>
+    static void liberate(std::optional<Inner_>& x) {
+        if (x.has_value()) {
+            liberate(*x);
+        }
+    }
+
+    template<typename Inner_>
+    static void liberate(std::vector<Inner_>& x) {
+        for (auto& y : x) {
+            liberate(y);
+        }
+    }
+
+    template<typename Inner_>
+    static void liberate(const Inner_* x) {
+        if (x) {
+            delete [] x;
+        }
+    }
+};
 
 }
 
