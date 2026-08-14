@@ -14,6 +14,7 @@
 #include "tatami/tatami.hpp"
 #include "sanisizer/sanisizer.hpp"
 #include "quickstats/quickstats.hpp"
+#include "auveh/auveh.hpp"
 
 /**
  * @file group_rss.hpp
@@ -267,6 +268,7 @@ void group_rss_running_nonempty(
                 const auto mptr = mean_ptrs[grp];
                 const auto rptr = rss_ptrs[grp];
                 auto& nnz = nonzeros[grp];
+                AUVEH_NODEP
                 for (Index_ i = 0; i < out.number; ++i) {
                     const auto d = out.index[i];
                     quickstats::update_rss(mptr[d], rptr[d], out.value[i], ++nnz[d]); // increment is safe as 'nnz + 1 <= l' fits in an Index_.
@@ -279,6 +281,7 @@ void group_rss_running_nonempty(
                     const auto mptr = mean_ptrs[g];
                     const auto rptr = rss_ptrs[g];
                     const auto& nnz = nonzeros[g];
+                    AUVEH_NODEP
                     for (Index_ d = 0; d < dim; ++d) {
                         // unsafe call is possible as we check for curtotal > 0.
                         quickstats::update_rss_with_zeros_unsafe(mptr[d], rptr[d], static_cast<Count_>(curtotal - nnz[d]), curtotal);
@@ -296,6 +299,7 @@ void group_rss_running_nonempty(
                 ++cur_count[grp]; // increment is safe as 'cur_count[grp] + 1 <= l' fits in an Index_.
                 const auto mptr = mean_ptrs[grp];
                 const auto rptr = rss_ptrs[grp];
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     quickstats::update_rss(mptr[d], rptr[d], out[d], cur_count[grp]);
                 }
@@ -333,11 +337,13 @@ void group_rss_running_nonempty(
                 const auto& cur_mean = (*(ap_mean[u]))[g];
                 const Output_ mult = static_cast<Output_>(cur_count) / static_cast<Output_>(cur_global_count);
                 if (!initialized) { // Don't use u == 0, as the first non-empty 'g' might not occur in the first thread.
+                    AUVEH_NODEP
                     for (Index_ d = 0; d < dim; ++d) {
                         cur_output[d] = cur_mean[d] * mult;
                     }
                     initialized = true;
                 } else {
+                    AUVEH_NODEP
                     for (Index_ d = 0; d < dim; ++d) {
                         cur_output[d] += cur_mean[d] * mult;
                     }
@@ -361,6 +367,7 @@ void group_rss_running_nonempty(
 
                 const auto& cur_mean = (*(ap_mean[u]))[g];
                 if (u == 0) { // Special case to avoid trying to access u - 1.
+                    AUVEH_NODEP
                     for (Index_ d = 0; d < dim; ++d) {
                         cur_output[d] = quickstats::recenter_rss_unsafe(cur_count, cur_output[d], cur_mean[d], cur_global[d]); 
                     }
@@ -368,11 +375,13 @@ void group_rss_running_nonempty(
                 } else {
                     const auto& cur_rss = (*(ap_rss[u - 1]))[g];
                     if (!initialized) { // Don't use u == 0, as the first non-empty 'g' might not occur in the first thread.
+                        AUVEH_NODEP
                         for (Index_ d = 0; d < dim; ++d) {
                             cur_output[d] = quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
                         }
                         initialized = true;
                     } else {
+                        AUVEH_NODEP
                         for (Index_ d = 0; d < dim; ++d) {
                             cur_output[d] += quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], cur_global[d]); 
                         }
@@ -441,6 +450,7 @@ void group_rss_running(
         }
 
         new_group_store.emplace(tatami::cast_Index_to_container_size<std::vector<Group_> >(otherdim));
+        AUVEH_NODEP
         for (Index_ i = 0; i < otherdim; ++i) {
             (*new_group_store)[i] = mapping[group[i]];
         }

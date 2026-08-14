@@ -163,6 +163,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
 
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), ibuffer.data());
+                AUVEH_NODEP
                 for (Index_ i = 0; i < out.number; ++i) {
                     const auto d = out.index[i];
                     auto& nnz = nonzeros[d];
@@ -170,6 +171,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
                 }
             }
 
+            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 // otherdim > 0 is guaranteed, so we can use the unsafe version.
                 quickstats::update_rss_with_zeros_unsafe(mean_ptr[d], rss_ptr[d], static_cast<Index_>(l - nonzeros[d]), l);
@@ -181,8 +183,9 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
 
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(buffer.data());
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
-                    quickstats::update_rss(mean_ptr[d], rss_ptr[d], out[d], x + 1); // increment is safe as ' x + 1 <= l' fits in an index.
+                    quickstats::update_rss(mean_ptr[d], rss_ptr[d], out[d], x + 1); // increment is safe as ' x + 1 <= l' fits in an Index_.
                 }
             }
         }
@@ -209,10 +212,12 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
             const Output_ mult = static_cast<Output_>(ap_count[u]) / static_cast<Output_>(otherdim);
             const auto& cur_mean = *(ap_mean[u]);
             if (u == 0) {
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     output.mean[d] = cur_mean[d] * mult;
                 }
             } else {
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     output.mean[d] += cur_mean[d] * mult;
                 }
@@ -225,11 +230,13 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
             const auto cur_count = ap_count[u];
             const auto& cur_mean = *(ap_mean[u]);
             if (u == 0) {
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     output.rss[d] = quickstats::recenter_rss_unsafe(cur_count, output.rss[d], cur_mean[d], output.mean[d]); 
                 }
             } else {
                 const auto& cur_rss = *(ap_rss[u - 1]);
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     output.rss[d] += quickstats::recenter_rss_unsafe(cur_count, cur_rss[d], cur_mean[d], output.mean[d]); 
                 }

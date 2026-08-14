@@ -183,6 +183,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
 
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), ibuffer.data());
+                AUVEH_NODEP
                 for (Index_ i = 0; i < out.number; ++i) {
                     const auto d = out.index[i];
                     const auto val = out.value[i];
@@ -195,6 +196,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
                 }
             }
 
+            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 auto& unskipped_total = count_ptr[d];
                 unskipped_total = l - unskipped_total; // could be zero, so the update with zeros needs to be safe.
@@ -207,6 +209,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
 
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(buffer.data());
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     const auto val = out[d];
                     if (!std::isnan(val)) {
@@ -237,6 +240,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
         // Computing the global total.
         for (int u = 0; u < nused; ++u) {
             const auto& cur_count = *(ap_count[u]);
+            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 output.count[d] += cur_count[d];
             }
@@ -246,6 +250,7 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
         for (int u = 0; u < nused; ++u) {
             const auto& cur_count = *(ap_count[u]);
             const auto& cur_mean = *(ap_mean[u]);
+            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 if (cur_count[d] > 0) { // protect against NaN means at a count of 0.
                     const auto mult = static_cast<Output_>(cur_count[d]) / static_cast<Output_>(output.count[d]);
@@ -259,11 +264,13 @@ void rss_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RssBuffers
             const auto& cur_count = *(ap_count[u]);
             const auto& cur_mean = *(ap_mean[u]);
             if (u == 0) {
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     output.rss[d] = quickstats::recenter_rss(cur_count[d], output.rss[d], cur_mean[d], output.mean[d]); 
                 }
             } else {
                 const auto& cur_rss = *(ap_rss[u - 1]);
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     output.rss[d] += quickstats::recenter_rss(cur_count[d], cur_rss[d], cur_mean[d], output.mean[d]); 
                 }

@@ -299,11 +299,14 @@ void group_rss_running(
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), ibuffer.data());
                 const auto grp = group[s + x];
+                ++cur_group_size[grp];
+
                 const auto mptr = mean_ptrs[grp];
                 const auto rptr = rss_ptrs[grp];
                 const auto cptr = count_ptrs[grp];
-                ++cur_group_size[grp];
                 auto& nnz = nonzeros[grp];
+
+                AUVEH_NODEP
                 for (Index_ i = 0; i < out.number; ++i) {
                     const auto d = out.index[i];
                     const auto val = out.value[i];
@@ -321,6 +324,8 @@ void group_rss_running(
                 const auto cptr = count_ptrs[g];
                 const auto& nnz = nonzeros[g];
                 const auto curtotal = cur_group_size[g];
+
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     auto& unskipped_total = cptr[d];
                     unskipped_total = curtotal - unskipped_total; // could be zero, so the update with zeros needs to be safe.
@@ -338,6 +343,8 @@ void group_rss_running(
                 const auto mptr = mean_ptrs[grp];
                 const auto rptr = rss_ptrs[grp];
                 const auto cptr = count_ptrs[grp];
+
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     const auto val = out[d];
                     if (!std::isnan(val)) {
@@ -369,6 +376,7 @@ void group_rss_running(
             const auto cur_global_count = output.count[g];
             for (int u = 0; u < nused; ++u) {
                 const auto& cur_count = (*(ap_count[u]))[g];
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     cur_global_count[d] += cur_count[d];
                 }
@@ -383,6 +391,7 @@ void group_rss_running(
             for (int u = 0; u < nused; ++u) {
                 const auto& cur_mean = (*(ap_mean[u]))[g];
                 const auto& cur_count = (*(ap_count[u]))[g];
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     if (cur_count[d] > 0) {
                         const auto mult = static_cast<Output_>(cur_count[d]) / static_cast<Output_>(cur_global_count[d]);
@@ -401,11 +410,13 @@ void group_rss_running(
                 const auto& cur_mean = (*(ap_mean[u]))[g];
                 const auto& cur_count = (*(ap_count[u]))[g];
                 if (u == 0) {
+                    AUVEH_NODEP
                     for (Index_ d = 0; d < dim; ++d) {
                         cur_output[d] = quickstats::recenter_rss(cur_count[d], cur_output[d], cur_mean[d], cur_global_mean[d]); 
                     }
                 } else {
                     const auto& cur_rss = (*(ap_rss[u - 1]))[g];
+                    AUVEH_NODEP
                     for (Index_ d = 0; d < dim; ++d) {
                         cur_output[d] += quickstats::recenter_rss(cur_count[d], cur_rss[d], cur_mean[d], cur_global_mean[d]); 
                     }

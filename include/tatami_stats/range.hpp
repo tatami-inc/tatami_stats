@@ -255,6 +255,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                     nanable_ifelse<Value_>(
                         opt.skip_nan,
                         [&]() -> void {
+                            AUVEH_NODEP
                             for (Index_ i = 0; i < out.number; ++i) {
                                 const auto val = out.value[i];
                                 if (!std::isnan(val)) {
@@ -271,6 +272,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                                 std::fill_n(min_ptr, dim, 0);
                                 std::fill_n(max_ptr, dim, 0);
                             }
+                            AUVEH_NODEP
                             for (Index_ i = 0; i < out.number; ++i) {
                                 const auto val = out.value[i];
                                 const auto idx = out.index[i];
@@ -282,6 +284,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                     );
 
                 } else {
+                    AUVEH_NODEP
                     for (Index_ i = 0; i < out.number; ++i) {
                         const auto val = out.value[i];
                         const auto idx = out.index[i];
@@ -298,6 +301,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                 }
             }
 
+            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 if (l > nonzeros[d]) {
                     auto& min_current = min_ptr[d];
@@ -324,6 +328,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                     nanable_ifelse<Value_>(
                         opt.skip_nan,
                         [&]() -> void {
+                            AUVEH_NODEP
                             for (Index_ i = 0; i < dim; ++i) {
                                 const auto val = ptr[i];
                                 if (!std::isnan(val)) {
@@ -339,6 +344,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                     );
 
                 } else {
+                    AUVEH_NODEP
                     for (Index_ i = 0; i < dim; ++i) {
                         const auto val = ptr[i];
                         auto& min_current = min_ptr[i];
@@ -366,6 +372,7 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
         for (int u = 1; u < nused; ++u) {
             const auto& cur_min = *((*all_partial_min)[u - 1]);
             const auto& cur_max = *((*all_partial_max)[u - 1]);
+            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 if (output.minimum[d] > cur_min[d]) {
                     output.minimum[d] = cur_min[d];

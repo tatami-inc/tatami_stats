@@ -8,6 +8,7 @@
 
 #include "tatami/tatami.hpp"
 #include "sanisizer/sanisizer.hpp"
+#include "auveh/auveh.hpp"
 
 #include "utils.hpp"
 
@@ -121,6 +122,7 @@ void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
 
             for (Index_ x = 0; x < len; ++x) {
                 auto range = ext->fetch(xbuffer.data(), ibuffer.data());
+                AUVEH_NODEP
                 for (Index_ j = 0; j < range.number; ++j) {
                     auto idx = range.index[j];
                     out_ptr[idx] += condition(range.value[j]);
@@ -129,6 +131,7 @@ void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
             }
 
             if (count_zero) {
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     out_ptr[d] += len - nonzeros[d];
                 }
@@ -140,6 +143,7 @@ void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
 
             for (Index_ x = 0; x < len; ++x) {
                 auto ptr = ext->fetch(xbuffer.data());
+                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     out_ptr[d] += condition(ptr[d]);
                 }
@@ -155,6 +159,7 @@ void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
         // Skip the first thread as we already put its counts in 'output'.
         for (int u = 1; u < num_used; ++u) {
             const auto& curout = *((*all_partial_count)[u - 1]);
+            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 output[d] += curout[d];
             }
@@ -181,7 +186,7 @@ void count_running(const bool row, const tatami::Matrix<Value_, Index_>& mat, Ou
  * On output, this will contain the row/column counts.
  * @param condition Function to indicate whether a value should be counted. 
  * This function is responsible for handling any NaNs that might be present in `p`.
- * This function should be thread-safe.
+ * This function should be thread-safe, with no dependencies between calls.
  * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_, class Condition_>
