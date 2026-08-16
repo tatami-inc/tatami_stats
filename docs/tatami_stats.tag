@@ -420,18 +420,33 @@
   <compound kind="struct">
     <name>tatami_stats::RangeOptions</name>
     <filename>structtatami__stats_1_1RangeOptions.html</filename>
+    <templarg>typename Output_</templarg>
     <member kind="variable">
       <type>bool</type>
       <name>skip_nan</name>
       <anchorfile>structtatami__stats_1_1RangeOptions.html</anchorfile>
-      <anchor>a11805ebc4488735cf4418c50163dbb85</anchor>
+      <anchor>ab22812c114ae521b15d45c8a25e12862</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
       <anchorfile>structtatami__stats_1_1RangeOptions.html</anchorfile>
-      <anchor>ae11a188daf7965a81abb5706205f25a3</anchor>
+      <anchor>a934e5f241f49ed5b7a202e67c5c18bd8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>minimum_placeholder</name>
+      <anchorfile>structtatami__stats_1_1RangeOptions.html</anchorfile>
+      <anchor>a08f93456dffc9b1c156ed2933063b7dc</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>maximum_placeholder</name>
+      <anchorfile>structtatami__stats_1_1RangeOptions.html</anchorfile>
+      <anchor>a33ce6f3f09cf2f977026b5450d9e4a66</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -811,18 +826,32 @@
       <arglist>(const bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const double prob, const QuantileOptions &amp;opt)</arglist>
     </member>
     <member kind="function">
+      <type>constexpr Output_</type>
+      <name>default_minimum_placeholder</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>a30d1104a5430ca4252952df8194acd08</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>constexpr Output_</type>
+      <name>default_maximum_placeholder</name>
+      <anchorfile>namespacetatami__stats.html</anchorfile>
+      <anchor>a19fd208d4af82947e062c4958cc05ed4</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
       <type>void</type>
       <name>range</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a7744693451913c2be630f12ecfb9a201</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RangeBuffers&lt; Output_ &gt; &amp;output, const RangeOptions &amp;opt)</arglist>
+      <anchor>a45b25bcbc2633a1936db754d80b5ed75</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RangeBuffers&lt; Output_ &gt; &amp;output, const RangeOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>RangeResult&lt; Output_ &gt;</type>
       <name>range</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a6f936a60c798ab2c134383a421e079c3</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const RangeOptions &amp;opt)</arglist>
+      <anchor>a4feb1f6ef13e788db3234792758346dd</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const RangeOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
