@@ -380,7 +380,7 @@ TEST(Range, NewType) {
     compare_result(tatami_stats::range(false, *sparse_column, {}), cexpected_min, cexpected_max);
 
     // Trying with skipping.
-    tatami_stats::RangeOptions ropt;
+    tatami_stats::RangeOptions<std::int8_t> ropt;
     ropt.skip_nan = true;
 
     compare_result(tatami_stats::range(true, *dense_row, ropt), rexpected_min, rexpected_max);

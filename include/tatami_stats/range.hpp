@@ -18,8 +18,40 @@
 namespace tatami_stats {
 
 /**
- * @brief Options for `range()`.
+ * @tparam Output_ Numeric type of the output of `range()`.
+ * @return Default placeholder value for the minimum in the output of `range()`.
+ * This is positive infinity if supported by `Output_`, otherwise it is the largest finite value.
  */
+template<typename Output_>
+constexpr Output_ default_minimum_placeholder() {
+    // Placeholder value 'x' is such that 'x >= y' is always true for any non-NaN 'y'.
+    if constexpr(std::numeric_limits<Output_>::has_infinity) {
+        return std::numeric_limits<Output_>::infinity();
+    } else {
+        return std::numeric_limits<Output_>::max();
+    }
+}
+
+/**
+ * @tparam Output_ Numeric type of the output of `range()`.
+ * @return Default placeholder value for the maximum in the output of `range()`.
+ * This is negative infinity if supported by `Output_`, otherwise it is the smallest finite value.
+ */
+template<typename Output_>
+constexpr Output_ default_maximum_placeholder() {
+    // Placeholder value 'x' is such that 'x <= y' is always true for any non-NaN 'y'.
+    if constexpr(std::numeric_limits<Output_>::has_infinity) {
+        return -std::numeric_limits<Output_>::infinity();
+    } else {
+        return std::numeric_limits<Output_>::lowest();
+    }
+}
+
+/**
+ * @brief Options for `range()`.
+ * @tparam Output_ Numeric type of the output data.
+ */
+template<typename Output_ = double>
 struct RangeOptions {
     /**
      * Whether to check for NaNs in the input, and skip them.
@@ -32,40 +64,49 @@ struct RangeOptions {
      * See `tatami::parallelize()` for more details on the parallelization mechanism.
      */
     int num_threads = 1;
+
+    /**
+     * Placeholder for the minimum value in `RangeBuffers::minimum` or `RangeResults::minimum`,
+     * when there are zero columns (if `row == true`) or rows (otherwise).
+     */
+    Output_ minimum_placeholder = default_minimum_placeholder<Output_>();
+
+    /**
+     * Placeholder for the maximum value in `RangeBuffers::maximum` or `RangeResults::maximum`,
+     * when there are zero columns (if `row == true`) or rows (otherwise).
+     */
+    Output_ maximum_placeholder = default_maximum_placeholder<Output_>();
 };
 
 /**
  * @cond
  */
-template<typename Value_>
-constexpr Value_ choose_minimum_placeholder() {
-    // Placeholder value 'x' is such that 'x >= y' is always true for any non-NaN 'y'.
-    if constexpr(std::numeric_limits<Value_>::has_infinity) {
-        return std::numeric_limits<Value_>::infinity();
-    } else {
-        return std::numeric_limits<Value_>::max();
-    }
-}
-
-template<typename Value_>
-constexpr Value_ choose_maximum_placeholder() {
-    // Placeholder value 'x' is such that 'x <= y' is always true for any non-NaN 'y'.
-    if constexpr(std::numeric_limits<Value_>::has_infinity) {
-        return -std::numeric_limits<Value_>::infinity();
-    } else {
-        return std::numeric_limits<Value_>::lowest();
-    }
-}
-
-template<typename Value_, typename Index_>
-Value_ min_direct(const Value_* const ptr, const Index_ num, bool skip_nan) {
+template<typename Value_, typename Index_, typename Output_>
+Output_ min_direct(const Value_* const ptr, const Index_ num, const RangeOptions<Output_>& opt) {
     return nanable_ifelse_with_value<Value_>(
-        skip_nan,
+        opt.skip_nan,
         [&]() -> Value_ {
-            auto current = choose_minimum_placeholder<Value_>(); 
-            for (Index_ i = 0; i < num; ++i) {
+            // First loop to get to the first non-NA value.
+            Value_ current = 0;
+            Index_ i = 0;
+            bool found = false;
+            for (; i < num; ++i) {
                 auto val = ptr[i];
-                if (val < current) { // no need to explicitly handle NaNs, as any comparison with NaNs is always false.
+                if (!std::isnan(val)) {
+                    current = val;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return opt.minimum_placeholder;
+            }
+
+            // Second loop to actually get the minimum.
+            // No need to explicitly handle NaNs, as any comparison with NaNs is always false.
+            for (; i < num; ++i) {
+                auto val = ptr[i];
+                if (val < current) {
                     current = val;
                 }
             }
@@ -75,21 +116,38 @@ Value_ min_direct(const Value_* const ptr, const Index_ num, bool skip_nan) {
             if (num) {
                 return *std::min_element(ptr, ptr + num);
             } else {
-                return choose_minimum_placeholder<Value_>();
+                return opt.minimum_placeholder;
             }
         }
     );
 }
 
-template<typename Value_, typename Index_>
-Value_ max_direct(const Value_* ptr, const Index_ num, bool skip_nan) {
+template<typename Value_, typename Index_, typename Output_>
+Output_ max_direct(const Value_* ptr, const Index_ num, const RangeOptions<Output_>& opt) {
     return nanable_ifelse_with_value<Value_>(
-        skip_nan,
+        opt.skip_nan,
         [&]() -> Value_ {
-            auto current = choose_maximum_placeholder<Value_>(); 
-            for (Index_ i = 0; i < num; ++i) {
+            // First loop to get to the first non-NA value.
+            Value_ current = 0;
+            Index_ i = 0;
+            bool found = false;
+            for (; i < num; ++i) {
                 auto val = ptr[i];
-                if (val > current) { // again, no need to explicitly handle NaNs, as any comparison with NaNs is always false.
+                if (!std::isnan(val)) {
+                    current = val;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return opt.maximum_placeholder;
+            }
+
+            // Second loop to actually get the maximum.
+            // No need to explicitly handle NaNs, as any comparison with NaNs is always false.
+            for (; i < num; ++i) {
+                auto val = ptr[i];
+                if (val > current) {
                     current = val;
                 }
             }
@@ -99,16 +157,16 @@ Value_ max_direct(const Value_* ptr, const Index_ num, bool skip_nan) {
             if (num) {
                 return *std::max_element(ptr, ptr + num);
             } else {
-                return choose_maximum_placeholder<Value_>();
+                return opt.maximum_placeholder;
             }
         }
     );
 }
 
-template<typename Value_, typename Index_>
-Value_ min_direct(const Value_* value, const Index_ num_nonzero, const Index_ num_all, bool skip_nan) {
+template<typename Value_, typename Index_, typename Output_>
+Output_ min_direct(const Value_* value, const Index_ num_nonzero, const Index_ num_all, const RangeOptions<Output_>& opt) {
     if (num_nonzero) {
-        auto candidate = min_direct(value, num_nonzero, skip_nan);
+        auto candidate = min_direct(value, num_nonzero, opt);
         if (num_nonzero < num_all) {
             if (candidate > 0) {
                 candidate = 0;
@@ -118,14 +176,14 @@ Value_ min_direct(const Value_* value, const Index_ num_nonzero, const Index_ nu
     } else if (num_all) {
         return 0;
     } else {
-        return choose_minimum_placeholder<Value_>();
+        return opt.minimum_placeholder;
     }
 }
 
-template<typename Value_, typename Index_>
-Value_ max_direct(const Value_* value, const Index_ num_nonzero, const Index_ num_all, bool skip_nan) {
+template<typename Value_, typename Index_, typename Output_>
+Output_ max_direct(const Value_* value, const Index_ num_nonzero, const Index_ num_all, const RangeOptions<Output_>& opt) {
     if (num_nonzero) {
-        auto candidate = max_direct(value, num_nonzero, skip_nan);
+        auto candidate = max_direct(value, num_nonzero, opt);
         if (num_nonzero < num_all) {
             if (candidate < 0) {
                 candidate = 0;
@@ -135,7 +193,7 @@ Value_ max_direct(const Value_* value, const Index_ num_nonzero, const Index_ nu
     } else if (num_all) {
         return 0;
     } else {
-        return choose_maximum_placeholder<Value_>();
+        return opt.maximum_placeholder;
     }
 }
 /**
@@ -167,7 +225,7 @@ struct RangeBuffers {
  * @cond
  */
 template<typename Value_, typename Index_, typename Output_>
-void range_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& opt) {
+void range_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions<Output_>& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
 
@@ -179,8 +237,8 @@ void range_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuff
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), NULL);
-                output.minimum[x + s] = min_direct(out.value, out.number, otherdim, opt.skip_nan);
-                output.maximum[x + s] = max_direct(out.value, out.number, otherdim, opt.skip_nan);
+                output.minimum[x + s] = min_direct(out.value, out.number, otherdim, opt);
+                output.maximum[x + s] = max_direct(out.value, out.number, otherdim, opt);
             }
         }, dim, opt.num_threads);
 
@@ -190,15 +248,15 @@ void range_direct(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuff
             auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(otherdim);
             for (Index_ x = 0; x < l; ++x) {
                 auto ptr = ext->fetch(buffer.data());
-                output.minimum[x + s] = min_direct(ptr, otherdim, opt.skip_nan);
-                output.maximum[x + s] = max_direct(ptr, otherdim, opt.skip_nan);
+                output.minimum[x + s] = min_direct(ptr, otherdim, opt);
+                output.maximum[x + s] = max_direct(ptr, otherdim, opt);
             }
         }, dim, opt.num_threads);
     }
 }
 
 template<typename Value_, typename Index_, typename Output_>
-void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& opt) {
+void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions<Output_>& opt) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     const bool is_sparse = mat.is_sparse();
@@ -210,13 +268,12 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
         all_partial_max.emplace(sanisizer::cast<I<decltype(all_partial_max->size())> >(opt.num_threads - 1));
     }
 
-    constexpr auto min_placeholder = choose_minimum_placeholder<Value_>();
-    constexpr auto max_placeholder = choose_maximum_placeholder<Value_>();
-    if (opt.skip_nan || otherdim == 0) {
-        // If we're not skipping NaNs and we have at least one dimension element,
-        // the output arrays will be fully populated when thread 0 processes the first dimension element.
-        std::fill_n(output.minimum, dim, min_placeholder);
-        std::fill_n(output.maximum, dim, max_placeholder);
+    // If we're not skipping NaNs and we have at least one dimension element,
+    // the output arrays will be fully populated when thread 0 processes the first dimension element.
+    if (otherdim == 0) {
+        std::fill_n(output.minimum, dim, opt.minimum_placeholder);
+        std::fill_n(output.maximum, dim, opt.maximum_placeholder);
+        return;
     }
 
     const auto nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
@@ -244,58 +301,39 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
             auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, topt);
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
-            auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+
+            // We pretend to start at one structural non-zero for every dimension element. 
+            // This is because the first iteration effectively populates 'min_ptr/max_ptr' as a dense vector.
+            // So even a structural zero is already considered here, being treated as a structural non-zero with a value of zero.
+            auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim, 1);
 
             for (Index_ x = 0; x < l; ++x) {
                 auto out = ext->fetch(vbuffer.data(), ibuffer.data());
 
+                // For the first observed vector in each thread, we can optimize it a little as we don't need to read existing min/max.
                 if (x == 0) {
-                    // For the first observed vector in each thread,
-                    // we can optimize it a little as we don't need to read existing min/max.
-                    nanable_ifelse<Value_>(
-                        opt.skip_nan,
-                        [&]() -> void {
-                            AUVEH_NODEP
-                            for (Index_ i = 0; i < out.number; ++i) {
-                                const auto val = out.value[i];
-                                if (!std::isnan(val)) {
-                                    const auto idx = out.index[i];
-                                    min_ptr[idx] = val;
-                                    max_ptr[idx] = val;
-                                    ++nonzeros[idx];
-                                }
-                            }
-                        },
-                        [&]() -> void {
-                            // For non-main threads, our thread-local buffer is already zeroed so no need to do this. 
-                            if (!do_parallel || thread == 0) {
-                                std::fill_n(min_ptr, dim, 0);
-                                std::fill_n(max_ptr, dim, 0);
-                            }
-                            AUVEH_NODEP
-                            for (Index_ i = 0; i < out.number; ++i) {
-                                const auto val = out.value[i];
-                                const auto idx = out.index[i];
-                                min_ptr[idx] = val;
-                                max_ptr[idx] = val;
-                                ++nonzeros[idx];
-                            }
-                        }
-                    );
-
+                    // We treat the first extracted row/column as a dense vector, expanding it with all of the zeros.
+                    // For non-main threads, our thread-local buffer is already zeroed so no need to explicitly do this. 
+                    if (!do_parallel || thread == 0) {
+                        std::fill_n(min_ptr, dim, 0);
+                        std::fill_n(max_ptr, dim, 0);
+                    }
+                    AUVEH_NODEP
+                    for (Index_ i = 0; i < out.number; ++i) {
+                        const auto val = out.value[i];
+                        const auto idx = out.index[i];
+                        min_ptr[idx] = val;
+                        max_ptr[idx] = val;
+                    }
                 } else {
                     AUVEH_NODEP
                     for (Index_ i = 0; i < out.number; ++i) {
                         const auto val = out.value[i];
                         const auto idx = out.index[i];
                         auto& min_current = min_ptr[idx];
-                        if (val < min_current) { // this should implicitly skip val=NaNs, as any NaN comparison will be false.
-                            min_current = val;
-                        }
+                        min_current = std::min(min_current, val); // using min/max as this is more easily vectorizable by the compiler.
                         auto& max_current = max_ptr[idx];
-                        if (val > max_current) { // this should implicitly skip val=NaNs, as any NaN comparison will be false.
-                            max_current = val;
-                        }
+                        max_current = std::max(max_current, val);
                         ++nonzeros[idx];
                     }
                 }
@@ -305,13 +343,9 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
             for (Index_ d = 0; d < dim; ++d) {
                 if (l > nonzeros[d]) {
                     auto& min_current = min_ptr[d];
-                    if (min_current > 0) {
-                        min_current = 0;
-                    }
+                    min_current = std::min(min_current, static_cast<Output_>(0));
                     auto& max_current = max_ptr[d];
-                    if (max_current < 0) {
-                        max_current = 0;
-                    }
+                    max_current = std::max(max_current, static_cast<Output_>(0));
                 }
             }
 
@@ -322,39 +356,18 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
             for (Index_ x = 0; x < l; ++x) {
                 auto ptr = ext->fetch(buffer.data());
 
+                // For the first observed vector in each thread, we can optimize it a little as we don't need to read existing min/max.
                 if (x == 0) {
-                    // For the first observed vector in each thread,
-                    // we can optimize it a little as we don't need to read existing min/max.
-                    nanable_ifelse<Value_>(
-                        opt.skip_nan,
-                        [&]() -> void {
-                            AUVEH_NODEP
-                            for (Index_ i = 0; i < dim; ++i) {
-                                const auto val = ptr[i];
-                                if (!std::isnan(val)) {
-                                    min_ptr[i] = val;
-                                    max_ptr[i] = val;
-                                }
-                            }
-                        },
-                        [&]() -> void {
-                            std::copy_n(ptr, dim, min_ptr);
-                            std::copy_n(ptr, dim, max_ptr);
-                        }
-                    );
-
+                    std::copy_n(ptr, dim, min_ptr);
+                    std::copy_n(ptr, dim, max_ptr);
                 } else {
                     AUVEH_NODEP
                     for (Index_ i = 0; i < dim; ++i) {
                         const auto val = ptr[i];
                         auto& min_current = min_ptr[i];
-                        if (val < min_current) { // this should implicitly skip val=NaNs, as any NaN comparison will be false.
-                            min_current = val;
-                        }
+                        min_current = std::min(min_current, val); // min/max is more easily vectorizable.
                         auto& max_current = max_ptr[i];
-                        if (val > max_current) { // this should implicitly skip val=NaNs, as any NaN comparison will be false.
-                            max_current = val;
-                        }
+                        max_current = std::max(max_current, val);
                     }
                 }
             }
@@ -374,12 +387,194 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
             const auto& cur_max = *((*all_partial_max)[u - 1]);
             AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
-                if (output.minimum[d] > cur_min[d]) {
-                    output.minimum[d] = cur_min[d];
+                // All threads would have processed at least one element,
+                // so we don't have to worry about dirty input buffers.
+                output.minimum[d] = std::min(output.minimum[d], cur_min[d]);
+                output.maximum[d] = std::max(output.maximum[d], cur_max[d]);
+            }
+        }
+    }
+}
+
+template<typename Value_, typename Index_, typename Output_>
+void range_running_skip(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions<Output_>& opt) {
+    const auto dim = (row ? mat.nrow() : mat.ncol());
+    const auto otherdim = (row ? mat.ncol() : mat.nrow());
+    const bool is_sparse = mat.is_sparse();
+
+    const bool do_parallel = opt.num_threads > 1; 
+    std::optional<std::vector<std::optional<std::vector<Output_> > > > all_partial_min, all_partial_max;
+    std::optional<std::vector<std::optional<std::vector<Index_> > > > all_partial_valid;
+    if (do_parallel) {
+        all_partial_min.emplace(sanisizer::cast<I<decltype(all_partial_min->size())> >(opt.num_threads - 1));
+        all_partial_max.emplace(sanisizer::cast<I<decltype(all_partial_max->size())> >(opt.num_threads - 1));
+        all_partial_valid.emplace(sanisizer::cast<I<decltype(all_partial_valid->size())> >(opt.num_threads));
+    }
+
+    // If we're not skipping NaNs and we have at least one dimension element,
+    // the output arrays will be fully populated when thread 0 processes the first dimension element.
+    if (otherdim == 0) {
+        std::fill_n(output.minimum, dim, opt.minimum_placeholder);
+        std::fill_n(output.maximum, dim, opt.maximum_placeholder);
+        return;
+    }
+
+    const auto nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
+        Output_* min_ptr;
+        Output_* max_ptr;
+        std::optional<std::vector<Output_> > cur_min, cur_max;
+        if (!do_parallel) {
+            min_ptr = output.minimum;
+            max_ptr = output.maximum;
+        } else {
+            if (thread == 0) {
+                min_ptr = output.minimum;
+                max_ptr = output.maximum;
+            } else {
+                cur_min.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
+                cur_max.emplace(tatami::cast_Index_to_container_size<std::vector<Output_> >(dim));
+                min_ptr = cur_min->data();
+                max_ptr = cur_max->data();
+            }
+        }
+        auto valids = tatami::create_container_of_Index_size<std::vector<Index_> >(dim, l);
+
+        if (is_sparse) {
+            tatami::Options topt;
+            topt.sparse_ordered_index = false;
+            auto ext = tatami::consecutive_extractor<true>(mat, !row, s, l, topt);
+            auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+            auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+            auto nonzeros = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto out = ext->fetch(vbuffer.data(), ibuffer.data());
+
+                // For the first observed vector in each thread, we can optimize it a little as we don't need to read existing min/max.
+                if (x == 0) {
+                    // We treat the first extracted row/column as a dense vector, expanding it with all of the zeros.
+                    // For non-main threads, our thread-local buffer is already zeroed so no need to explicitly do this. 
+                    if (!do_parallel || thread == 0) {
+                        std::fill_n(min_ptr, dim, 0);
+                        std::fill_n(max_ptr, dim, 0);
+                    }
+                    AUVEH_NODEP
+                    for (Index_ i = 0; i < out.number; ++i) {
+                        const auto val = out.value[i];
+                        const auto idx = out.index[i];
+                        if (!std::isnan(val)) {
+                            min_ptr[idx] = val;
+                            max_ptr[idx] = val;
+                            ++nonzeros[idx];
+                        } else {
+                            min_ptr[idx] = opt.minimum_placeholder;
+                            max_ptr[idx] = opt.maximum_placeholder;
+                            --valids[idx];
+                        }
+                    }
+                } else {
+                    AUVEH_NODEP
+                    for (Index_ i = 0; i < out.number; ++i) {
+                        const auto val = out.value[i];
+                        const auto idx = out.index[i];
+                        if (!std::isnan(val)) {
+                            auto& min_current = min_ptr[idx];
+                            auto& max_current = max_ptr[idx];
+                            if (nonzeros[idx] == 0) {
+                                min_current = val;
+                                max_current = val;
+                            } else {
+                                min_current = std::min(min_current, val);
+                                max_current = std::max(max_current, val);
+                            }
+                            ++nonzeros[idx];
+                        } else {
+                            --valids[idx];
+                        }
+                    }
                 }
-                if (output.maximum[d] < cur_max[d]) {
+            }
+
+            AUVEH_NODEP
+            for (Index_ d = 0; d < dim; ++d) {
+                if (valids[d] > nonzeros[d]) {
+                    auto& min_current = min_ptr[d];
+                    min_current = std::min(min_current, static_cast<Output_>(0));
+                    auto& max_current = max_ptr[d];
+                    max_current = std::max(max_current, static_cast<Output_>(0));
+                }
+            }
+
+        } else {
+            auto ext = tatami::consecutive_extractor<false>(mat, !row, s, l);
+            auto buffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
+
+            for (Index_ x = 0; x < l; ++x) {
+                auto ptr = ext->fetch(buffer.data());
+
+                if (x == 0) {
+                    // For the first observed vector in each thread,
+                    // we can optimize it a little as we don't need to read existing min/max.
+                    AUVEH_NODEP
+                    for (Index_ i = 0; i < dim; ++i) {
+                        const auto val = ptr[i];
+                        if (!std::isnan(val)) {
+                            min_ptr[i] = val;
+                            max_ptr[i] = val;
+                        } else {
+                            --valids[i];
+                        }
+                    }
+                } else {
+                    AUVEH_NODEP
+                    for (Index_ i = 0; i < dim; ++i) {
+                        const auto val = ptr[i];
+                        if (!std::isnan(val)) {
+                            auto& min_current = min_ptr[i];
+                            auto& max_current = max_ptr[i];
+                            if (l - valids[i] == x) {
+                                min_current = val;
+                                max_current = val;
+                            } else {
+                                min_current = std::min(min_current, val);
+                                max_current = std::max(max_current, val);
+                            }
+                        } else {
+                            --valids[i];
+                        }
+                    }
+                }
+            }
+        }
+
+        if (do_parallel) {
+            if (thread > 0) {
+                (*all_partial_min)[thread - 1] = std::move(cur_min);
+                (*all_partial_max)[thread - 1] = std::move(cur_max);
+            }
+            (*all_partial_valid)[thread] = std::move(valids);
+        }
+    }, otherdim, opt.num_threads);
+
+    if (do_parallel) {
+        auto& ref_valid = *((*all_partial_valid)[0]);
+        for (int u = 1; u < nused; ++u) {
+            const auto& cur_min = *((*all_partial_min)[u - 1]);
+            const auto& cur_max = *((*all_partial_max)[u - 1]);
+            const auto& cur_valid = *((*all_partial_valid)[u]);
+            AUVEH_NODEP
+            for (Index_ d = 0; d < dim; ++d) {
+                if (!cur_valid[d]) {
+                    continue;
+                }
+                if (ref_valid[d]) {
+                    output.minimum[d] = std::min(cur_min[d], output.minimum[d]);
+                    output.maximum[d] = std::max(cur_max[d], output.maximum[d]);
+                } else {
+                    output.minimum[d] = cur_min[d];
                     output.maximum[d] = cur_max[d];
                 }
+                ref_valid[d] += cur_valid[d]; // might need an accurate sum later.
             }
         }
     }
@@ -404,9 +599,11 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
  * @param opt Further options.
  */
 template<typename Value_, typename Index_, typename Output_>
-void range(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions& opt) {
+void range(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuffers<Output_>& output, const RangeOptions<Output_>& opt) {
     if (mat.prefer_rows() == row) {
         range_direct(row, mat, output, opt);
+    } else if (opt.skip_nan) {
+        range_running_skip(row, mat, output, opt);
     } else {
         range_running(row, mat, output, opt);
     }
@@ -449,7 +646,7 @@ struct RangeResult {
  * @return Minimum and maximum for each row/column.
  */
 template<typename Value_, typename Index_, typename Output_ = Value_>
-RangeResult<Output_> range(bool row, const tatami::Matrix<Value_, Index_>& mat, const RangeOptions& opt) {
+RangeResult<Output_> range(bool row, const tatami::Matrix<Value_, Index_>& mat, const RangeOptions<Output_>& opt) {
     RangeResult<Output_> output;
     const auto dim = (row ? mat.nrow() : mat.ncol());
     tatami::resize_container_to_Index_size(output.minimum, dim
