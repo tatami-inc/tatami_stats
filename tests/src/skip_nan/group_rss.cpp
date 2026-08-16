@@ -19,7 +19,11 @@ static void compare_result(
     EXPECT_EQ(res.count, expected_count);
 }
 
-class SkipNanGroupRssBasicTest : public ::testing::TestWithParam<std::tuple<int, int, bool, bool> > {
+/*****************************/
+
+enum SkipNanGroupRssSimulation { RANDOM, BLOCK, GROUP };
+
+class SkipNanGroupRssBasicTest : public ::testing::TestWithParam<std::tuple<int, bool, SkipNanGroupRssSimulation, int> > {
 public:
     static std::vector<int> generate_groups(const bool interleaved, const int num_groups, const std::size_t length) {
         std::vector<int> groups(length);
@@ -57,10 +61,10 @@ public:
 TEST_P(SkipNanGroupRssBasicTest, Row) {
     size_t NR = 99, NC = 155;
     auto params = GetParam();
-    const int num_threads = std::get<0>(params);
-    const int ngroup = std::get<1>(params);
-    const bool interleaved = std::get<2>(params);
-    const bool random_nan = std::get<3>(params);
+    const int ngroup = std::get<0>(params);
+    const bool interleaved = std::get<1>(params);
+    const auto nan_simulation = std::get<2>(params);
+    const int num_threads = std::get<3>(params);
 
     // Sprinkling in some NaNs.
     auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{ 
@@ -68,28 +72,35 @@ TEST_P(SkipNanGroupRssBasicTest, Row) {
         opt.density = 0.2;
         opt.lower = -10;
         opt.upper = -2;
-        opt.seed = 52827 + num_threads + ngroup + interleaved + 5 * random_nan;
+        opt.seed = 52827 + num_threads + ngroup + interleaved + 5 * (int)nan_simulation;
         return opt;
     }());
 
     auto cgroups = generate_groups(interleaved, ngroup, NC);
     auto subsets = create_subsets(ngroup, cgroups);
 
-    std::mt19937_64 rng(num_threads + 2 * ngroup + 4 * interleaved + 8 * random_nan);
-    if (random_nan) {
+    std::mt19937_64 rng(num_threads + 2 * ngroup + 4 * interleaved + 8 * (int)nan_simulation);
+    if (nan_simulation == RANDOM) {
         std::uniform_real_distribution runif;
         for (size_t r = 0; r < NR; ++r) {
             for (size_t c = 0; c < NC; ++c) {
-                if (runif(rng)) {
+                if (runif(rng) < 0.5) {
                     simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
                 }
             }
         }
-    } else {
-        std::uniform_int_distribution runif(0, ngroup - 1);
+    } else if (nan_simulation == GROUP) {
         for (size_t r = 0; r < NR; ++r) {
-            auto chosen = runif(rng);
+            auto chosen = rng() % ngroup;
             for (auto c : subsets[chosen]) {
+                simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+            }
+        }
+    } else {
+        for (size_t r = 0; r < NR; ++r) {
+            size_t start = (r % 2 == 0 ? 0 : NC / 2);
+            size_t end = (r % 2 == 0 ? NC / 2 : NC);
+            for (size_t c = start; c < end; ++c) {
                 simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
             }
         }
@@ -128,10 +139,10 @@ TEST_P(SkipNanGroupRssBasicTest, Row) {
 TEST_P(SkipNanGroupRssBasicTest, Column) {
     size_t NR = 99, NC = 155;
     auto params = GetParam();
-    const int num_threads = std::get<0>(params);
-    const int ngroup = std::get<1>(params);
-    const bool interleaved = std::get<2>(params);
-    const bool random_nan = std::get<3>(params);
+    const int ngroup = std::get<0>(params);
+    const bool interleaved = std::get<1>(params);
+    const auto nan_simulation = std::get<2>(params);
+    const int num_threads = std::get<3>(params);
 
     // Sprinkling in some NaNs.
     auto simulated = tatami_test::simulate_vector<double>(NR * NC, [&]{ 
@@ -139,28 +150,35 @@ TEST_P(SkipNanGroupRssBasicTest, Column) {
         opt.density = 0.3;
         opt.lower = 1;
         opt.upper = 2;
-        opt.seed = 191188 + num_threads + ngroup + interleaved;
+        opt.seed = 191188 + num_threads + ngroup + 5* interleaved + 10 * (int)nan_simulation;
         return opt;
     }());
 
     auto rgroups = generate_groups(interleaved, ngroup, NR);
     auto subsets = create_subsets(ngroup, rgroups);
 
-    std::mt19937_64 rng(num_threads + 2 * ngroup + 4 * interleaved + 8 * random_nan);
-    if (random_nan) {
+    std::mt19937_64 rng(num_threads + 2 * ngroup + 4 * interleaved + 8 * (int)nan_simulation);
+    if (nan_simulation == RANDOM) {
         std::uniform_real_distribution runif;
         for (size_t c = 0; c < NC; ++c) {
             for (size_t r = 0; r < NR; ++r) {
-                if (runif(rng)) {
+                if (runif(rng) < 0.5) {
                     simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
                 }
             }
         }
-    } else {
-        std::uniform_int_distribution runif(0, ngroup - 1);
+    } else if (nan_simulation == GROUP) {
         for (size_t c = 0; c < NC; ++c) {
-            auto chosen = runif(rng);
+            auto chosen = rng() % ngroup;
             for (auto r : subsets[chosen]) {
+                simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+            }
+        }
+    } else {
+        for (size_t c = 0; c < NC; ++c) {
+            size_t start = (c % 2 == 0 ? 0 : NR / 2);
+            size_t end = (c % 2 == 0 ? NR / 2 : NR);
+            for (size_t r = start; r < end; ++r) {
                 simulated[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
             }
         }
@@ -200,10 +218,10 @@ INSTANTIATE_TEST_SUITE_P(
     SkipNanGroupRss,
     SkipNanGroupRssBasicTest,
     ::testing::Combine(
-        ::testing::Values(1, 3),
         ::testing::Values(2, 3, 5),
         ::testing::Values(false, true), // interleaved
-        ::testing::Values(false, true) // random NaNs or per-group NaNs
+        ::testing::Values(RANDOM, GROUP, BLOCK), // random NaNs or per-group NaNs
+        ::testing::Values(1, 3)
     )
 );
 

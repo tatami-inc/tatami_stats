@@ -20,24 +20,40 @@ static void compare_result(
 
 /*******************************/
 
-class SkipNanRssTest : public ::testing::TestWithParam<int> {};
+enum SkipNanSimulationType { RANDOM, BLOCK };
+
+class SkipNanRssTest : public ::testing::TestWithParam<std::tuple<SkipNanSimulationType, int> > {};
 
 TEST_P(SkipNanRssTest, Row) {
-    const auto num_threads = GetParam();
+    const auto params = GetParam();
+    const auto simtype = std::get<0>(params);
+    const auto num_threads = std::get<1>(params);
 
     size_t NR = 52, NC = 83;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.1;
-        opt.seed = 44982197 + num_threads;
+        opt.seed = 44982197 + (int)simtype + num_threads;
         return opt;
     }());
 
-    std::mt19937_64 rng(num_threads + 1212938);
-    std::uniform_real_distribution runif;
-    for (size_t r = 0; r < NR; ++r) {
-        for (size_t c = 0; c < NC; ++c) {
-            if (runif(rng)) {
+    // Either randomly inserting NaNs within each row, or creating a block of NaNs in one half of the row.
+    // The latter tests that we handle situations where one thread contains all-NaNs while other threads have valid results.
+    if (simtype == RANDOM) {
+        std::mt19937_64 rng(num_threads + (int)simtype + 1212938);
+        std::uniform_real_distribution runif;
+        for (size_t r = 0; r < NR; ++r) {
+            for (size_t c = 0; c < NC; ++c) {
+                if (runif(rng) < 0.5) {
+                    dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+                }
+            }
+        }
+    } else {
+        for (size_t r = 0; r < NR; ++r) {
+            size_t start = (r % 2 == 0 ? 0 : NC / 2);
+            size_t end = (r % 2 == 0 ? NC / 2 : NC);
+            for (size_t c = start; c < end; ++c) {
                 dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
             }
         }
@@ -70,21 +86,35 @@ TEST_P(SkipNanRssTest, Row) {
 }
 
 TEST_P(SkipNanRssTest, Column) {
-    const auto num_threads = GetParam();
+    const auto params = GetParam();
+    const auto simtype = std::get<0>(params);
+    const auto num_threads = std::get<1>(params);
 
     size_t NR = 82, NC = 33;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.1;
-        opt.seed = 191353 + num_threads;
+        opt.seed = 191353 + num_threads + (int)simtype;
         return opt;
     }());
 
-    std::mt19937_64 rng(num_threads + 123298);
-    std::uniform_real_distribution runif;
-    for (size_t c = 0; c < NC; ++c) {
-        for (size_t r = 0; r < NR; ++r) {
-            if (runif(rng)) {
+    // Either randomly inserting NaNs within each row, or creating a block of NaNs in one half of the row.
+    // The latter tests that we handle situations where one thread contains all-NaNs while other threads have valid results.
+    if (simtype == RANDOM) {
+        std::mt19937_64 rng(num_threads + (int)simtype + 1212938);
+        std::uniform_real_distribution runif;
+        for (size_t c = 0; c < NC; ++c) {
+            for (size_t r = 0; r < NR; ++r) {
+                if (runif(rng) < 0.5) {
+                    dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+                }
+            }
+        }
+    } else {
+        for (size_t c = 0; c < NC; ++c) {
+            size_t start = (c % 2 == 0 ? 0 : NR / 2);
+            size_t end = (c % 2 == 0 ? NR / 2 : NR);
+            for (size_t r = start; r < end; ++r) {
                 dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
             }
         }
@@ -121,7 +151,10 @@ TEST_P(SkipNanRssTest, Column) {
 INSTANTIATE_TEST_SUITE_P(
     SkipNanRss,
     SkipNanRssTest,
-    ::testing::Values(1, 3)
+    ::testing::Combine(
+        ::testing::Values(RANDOM, BLOCK),
+        ::testing::Values(1, 3)
+    )
 );
 
 /*******************************/
