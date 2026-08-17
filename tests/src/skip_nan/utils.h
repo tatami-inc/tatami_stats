@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <vector>
 
-enum SkipNanSimulationType { NONE, RANDOM, BLOCK };
+enum SkipNanSimulationType { NONE, RANDOM, BLOCK, GROUP };
 
 inline void inject_nans_by_row(std::vector<double>& dump, std::size_t NR, std::size_t NC, SkipNanSimulationType nan_type, unsigned long long seed) {
     // Dump is assumed to be a row-major matrix.
@@ -63,5 +63,46 @@ inline void inject_nans_by_column(std::vector<double>& dump, std::size_t NR, std
     }
 }
 
+inline void inject_nans_by_row(
+    std::vector<double>& dump,
+    std::size_t NR,
+    std::size_t NC,
+    SkipNanSimulationType nan_type,
+    const std::vector<std::vector<int> >& groups,
+    unsigned long long seed
+) {
+    if (nan_type == GROUP) {
+        std::mt19937_64 rng(seed);
+        for (std::size_t r = 0; r < NR; ++r) {
+            auto chosen = rng() % groups.size();
+            for (auto c : groups[chosen]) {
+                dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+            }
+        }
+    } else {
+        inject_nans_by_row(dump, NR, NC, nan_type, seed);
+    }
+}
+
+inline void inject_nans_by_column(
+    std::vector<double>& dump,
+    std::size_t NR,
+    std::size_t NC,
+    SkipNanSimulationType nan_type,
+    const std::vector<std::vector<int> >& groups,
+    unsigned long long seed
+) {
+    if (nan_type == GROUP) {
+        std::mt19937_64 rng(seed);
+        for (std::size_t c = 0; c < NC; ++c) {
+            auto chosen = rng() % groups.size();
+            for (auto r : groups[chosen]) {
+                dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
+            }
+        }
+    } else {
+        inject_nans_by_column(dump, NR, NC, nan_type, seed);
+    }
+}
 
 #endif

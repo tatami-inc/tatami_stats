@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "utils.h"
 #include "../utils.h"
 #include "tatami_stats/skip_nan/rss.hpp"
 #include "tatami_test/tatami_test.hpp"
@@ -20,44 +21,22 @@ static void compare_result(
 
 /*******************************/
 
-enum SkipNanSimulationType { RANDOM, BLOCK };
-
 class SkipNanRssTest : public ::testing::TestWithParam<std::tuple<SkipNanSimulationType, int> > {};
 
 TEST_P(SkipNanRssTest, Row) {
     const auto params = GetParam();
-    const auto simtype = std::get<0>(params);
+    const auto nan_type = std::get<0>(params);
     const auto num_threads = std::get<1>(params);
 
     size_t NR = 52, NC = 83;
+    const unsigned long long seed = 44982197 + (int)nan_type + num_threads;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.1;
-        opt.seed = 44982197 + (int)simtype + num_threads;
+        opt.seed = seed;
         return opt;
     }());
-
-    // Either randomly inserting NaNs within each row, or creating a block of NaNs in one half of the row.
-    // The latter tests that we handle situations where one thread contains all-NaNs while other threads have valid results.
-    if (simtype == RANDOM) {
-        std::mt19937_64 rng(num_threads + (int)simtype + 1212938);
-        std::uniform_real_distribution runif;
-        for (size_t r = 0; r < NR; ++r) {
-            for (size_t c = 0; c < NC; ++c) {
-                if (runif(rng) < 0.5) {
-                    dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
-                }
-            }
-        }
-    } else {
-        for (size_t r = 0; r < NR; ++r) {
-            size_t start = (r % 2 == 0 ? 0 : NC / 2);
-            size_t end = (r % 2 == 0 ? NC / 2 : NC);
-            for (size_t c = start; c < end; ++c) {
-                dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
-            }
-        }
-    }
+    inject_nans_by_row(dump, NR, NC, nan_type, /* seed = */ 213 + seed);
 
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto dense_column = tatami::convert_to_dense(dense_row.get(), false);
@@ -87,38 +66,18 @@ TEST_P(SkipNanRssTest, Row) {
 
 TEST_P(SkipNanRssTest, Column) {
     const auto params = GetParam();
-    const auto simtype = std::get<0>(params);
+    const auto nan_type = std::get<0>(params);
     const auto num_threads = std::get<1>(params);
 
     size_t NR = 82, NC = 33;
+    const unsigned long long seed = num_threads + (int)nan_type;
     auto dump = tatami_test::simulate_vector<double>(NR * NC, [&]{
         tatami_test::SimulateVectorOptions opt;
         opt.density = 0.1;
-        opt.seed = 191353 + num_threads + (int)simtype;
+        opt.seed = 191353 + seed;
         return opt;
     }());
-
-    // Either randomly inserting NaNs within each row, or creating a block of NaNs in one half of the row.
-    // The latter tests that we handle situations where one thread contains all-NaNs while other threads have valid results.
-    if (simtype == RANDOM) {
-        std::mt19937_64 rng(num_threads + (int)simtype + 1212938);
-        std::uniform_real_distribution runif;
-        for (size_t c = 0; c < NC; ++c) {
-            for (size_t r = 0; r < NR; ++r) {
-                if (runif(rng) < 0.5) {
-                    dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
-                }
-            }
-        }
-    } else {
-        for (size_t c = 0; c < NC; ++c) {
-            size_t start = (c % 2 == 0 ? 0 : NR / 2);
-            size_t end = (c % 2 == 0 ? NR / 2 : NR);
-            for (size_t r = start; r < end; ++r) {
-                dump[r * NC + c] = std::numeric_limits<double>::quiet_NaN();
-            }
-        }
-    }
+    inject_nans_by_column(dump, NR, NC, nan_type, /* seed = */ 21 + seed);
 
     auto dense_row = std::unique_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, dump));
     auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
@@ -152,7 +111,7 @@ INSTANTIATE_TEST_SUITE_P(
     SkipNanRss,
     SkipNanRssTest,
     ::testing::Combine(
-        ::testing::Values(RANDOM, BLOCK),
+        ::testing::Values(NONE, RANDOM, BLOCK),
         ::testing::Values(1, 3)
     )
 );
@@ -255,6 +214,32 @@ TEST_P(SkipNanRssEdgeTest, OneObservation) {
         EXPECT_EQ(res.rss.size(), 10);
         EXPECT_EQ(res.rss, std::vector<double>(10));
         EXPECT_EQ(res.count, std::vector<int>(10, 1));
+    };
+
+    check_ok(tatami_stats::skip_nan::rss<double, int>(true, *dense_row, vopt));
+    check_ok(tatami_stats::skip_nan::rss<double, int>(true, *dense_column, vopt));
+    check_ok(tatami_stats::skip_nan::rss<double, int>(true, *sparse_row, vopt));
+    check_ok(tatami_stats::skip_nan::rss<double, int>(true, *sparse_column, vopt));
+}
+
+TEST_P(SkipNanRssEdgeTest, NoValidObservations) {
+    const int NR = 50, NC = 40;
+    std::vector<double> vec(NR * NC, std::numeric_limits<double>::quiet_NaN());
+
+    auto dense_row = std::shared_ptr<tatami::NumericMatrix>(new tatami::DenseRowMatrix<double, int>(NR, NC, std::move(vec)));
+    auto dense_column = tatami::convert_to_dense<double, int>(*dense_row, false, {});
+    auto sparse_row = tatami::convert_to_compressed_sparse<double, int>(*dense_row, true, {});
+    auto sparse_column = tatami::convert_to_compressed_sparse<double, int>(*dense_row, false, {});
+
+    tatami_stats::skip_nan::RssOptions vopt;
+    vopt.num_threads = GetParam();
+
+    auto check_ok = [&](const tatami_stats::skip_nan::RssResult<double, int>& res) -> void {
+        for (int r = 0; r < NR; ++r) {
+            EXPECT_TRUE(std::isnan(res.mean[r]));
+            EXPECT_EQ(res.rss[r], 0);
+            EXPECT_EQ(res.count[r], 0);
+        }
     };
 
     check_ok(tatami_stats::skip_nan::rss<double, int>(true, *dense_row, vopt));
