@@ -45,15 +45,6 @@
     <namespace>tatami_stats</namespace>
   </compound>
   <compound kind="file">
-    <name>range.hpp</name>
-    <path>tatami_stats/</path>
-    <filename>range_8hpp.html</filename>
-    <class kind="struct">tatami_stats::RangeOptions</class>
-    <class kind="struct">tatami_stats::RangeBuffers</class>
-    <class kind="struct">tatami_stats::RangeResult</class>
-    <namespace>tatami_stats</namespace>
-  </compound>
-  <compound kind="file">
     <name>group_rss.hpp</name>
     <path>tatami_stats/</path>
     <filename>group__rss_8hpp.html</filename>
@@ -69,6 +60,25 @@
     <class kind="struct">tatami_stats::skip_nan::GroupRssOptions</class>
     <class kind="struct">tatami_stats::skip_nan::GroupRssBuffers</class>
     <class kind="struct">tatami_stats::skip_nan::GroupRssResult</class>
+    <namespace>tatami_stats</namespace>
+    <namespace>tatami_stats::skip_nan</namespace>
+  </compound>
+  <compound kind="file">
+    <name>range.hpp</name>
+    <path>tatami_stats/</path>
+    <filename>range_8hpp.html</filename>
+    <class kind="struct">tatami_stats::RangeOptions</class>
+    <class kind="struct">tatami_stats::RangeBuffers</class>
+    <class kind="struct">tatami_stats::RangeResult</class>
+    <namespace>tatami_stats</namespace>
+  </compound>
+  <compound kind="file">
+    <name>range.hpp</name>
+    <path>tatami_stats/skip_nan/</path>
+    <filename>skip__nan_2range_8hpp.html</filename>
+    <class kind="struct">tatami_stats::skip_nan::RangeOptions</class>
+    <class kind="struct">tatami_stats::skip_nan::RangeBuffers</class>
+    <class kind="struct">tatami_stats::skip_nan::RangeResult</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::skip_nan</namespace>
   </compound>
@@ -418,16 +428,36 @@
     </member>
   </compound>
   <compound kind="struct">
+    <name>tatami_stats::skip_nan::RangeBuffers</name>
+    <filename>structtatami__stats_1_1skip__nan_1_1RangeBuffers.html</filename>
+    <templarg>typename Output_</templarg>
+    <templarg>typename Count_</templarg>
+    <member kind="variable">
+      <type>Output_ *</type>
+      <name>minimum</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeBuffers.html</anchorfile>
+      <anchor>a3a67b25c53659c5014355a86e9ea6ba3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_ *</type>
+      <name>maximum</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeBuffers.html</anchorfile>
+      <anchor>ab34ad392d680c94d61cee2280b5c7efe</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Count_ *</type>
+      <name>count</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeBuffers.html</anchorfile>
+      <anchor>a5487629e684acafdaa3e73af9fb6ecac</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
     <name>tatami_stats::RangeOptions</name>
     <filename>structtatami__stats_1_1RangeOptions.html</filename>
     <templarg>typename Output_</templarg>
-    <member kind="variable">
-      <type>bool</type>
-      <name>skip_nan</name>
-      <anchorfile>structtatami__stats_1_1RangeOptions.html</anchorfile>
-      <anchor>ab22812c114ae521b15d45c8a25e12862</anchor>
-      <arglist></arglist>
-    </member>
     <member kind="variable">
       <type>int</type>
       <name>num_threads</name>
@@ -451,6 +481,32 @@
     </member>
   </compound>
   <compound kind="struct">
+    <name>tatami_stats::skip_nan::RangeOptions</name>
+    <filename>structtatami__stats_1_1skip__nan_1_1RangeOptions.html</filename>
+    <templarg>typename Output_</templarg>
+    <member kind="variable">
+      <type>int</type>
+      <name>num_threads</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeOptions.html</anchorfile>
+      <anchor>a8f9c13941343502e51ef4fc408c1745d</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>minimum_placeholder</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeOptions.html</anchorfile>
+      <anchor>a5f0feb4cfdf23eac134585654e8e86e0</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>Output_</type>
+      <name>maximum_placeholder</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeOptions.html</anchorfile>
+      <anchor>a90ecd461519fa81900bc0b7d2d9c5e36</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
     <name>tatami_stats::RangeResult</name>
     <filename>structtatami__stats_1_1RangeResult.html</filename>
     <templarg>typename Output_</templarg>
@@ -466,6 +522,33 @@
       <name>maximum</name>
       <anchorfile>structtatami__stats_1_1RangeResult.html</anchorfile>
       <anchor>abd514236d2132c48d2c4aed304969467</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>tatami_stats::skip_nan::RangeResult</name>
+    <filename>structtatami__stats_1_1skip__nan_1_1RangeResult.html</filename>
+    <templarg>typename Output_</templarg>
+    <templarg>typename Count_</templarg>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ &gt;</type>
+      <name>minimum</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeResult.html</anchorfile>
+      <anchor>a30aae3b29e4d86df2c2ddc4e0944d3d9</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; Output_ &gt;</type>
+      <name>maximum</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeResult.html</anchorfile>
+      <anchor>aa597bbe33d53eba3bf49f7f448181c75</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>std::vector&lt; Count_ &gt;</type>
+      <name>count</name>
+      <anchorfile>structtatami__stats_1_1skip__nan_1_1RangeResult.html</anchorfile>
+      <anchor>ae0b0dfda4cb662bc78001a1ca2a5fd88</anchor>
       <arglist></arglist>
     </member>
   </compound>
@@ -902,6 +985,9 @@
     <class kind="struct">tatami_stats::skip_nan::GroupRssBuffers</class>
     <class kind="struct">tatami_stats::skip_nan::GroupRssOptions</class>
     <class kind="struct">tatami_stats::skip_nan::GroupRssResult</class>
+    <class kind="struct">tatami_stats::skip_nan::RangeBuffers</class>
+    <class kind="struct">tatami_stats::skip_nan::RangeOptions</class>
+    <class kind="struct">tatami_stats::skip_nan::RangeResult</class>
     <class kind="struct">tatami_stats::skip_nan::RssBuffers</class>
     <class kind="struct">tatami_stats::skip_nan::RssOptions</class>
     <class kind="struct">tatami_stats::skip_nan::RssResult</class>
@@ -918,6 +1004,34 @@
       <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
       <anchor>a09b461cff77987ff0a6ca2f7a4c58700</anchor>
       <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
+    </member>
+    <member kind="function">
+      <type>constexpr Output_</type>
+      <name>default_minimum_placeholder</name>
+      <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
+      <anchor>ae17d0067ad642adf88e26b983ff07710</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>constexpr Output_</type>
+      <name>default_maximum_placeholder</name>
+      <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
+      <anchor>a08e546d5185379feb647fd97a01ad406</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>range</name>
+      <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
+      <anchor>a38eaa26c1b9f40ec442455351904b6dc</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RangeBuffers&lt; Output_, Count_ &gt; &amp;output, const RangeOptions&lt; Output_ &gt; &amp;opt)</arglist>
+    </member>
+    <member kind="function">
+      <type>RangeResult&lt; Output_, Count_ &gt;</type>
+      <name>range</name>
+      <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
+      <anchor>af9e7e46034e1f548f308476d2ac01ed4</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const RangeOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>

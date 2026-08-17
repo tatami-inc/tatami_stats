@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tatami_stats: tatami_stats::RangeBuffers&lt; Output_ &gt; Struct Template Reference</title>
+<title>tatami_stats: tatami_stats::skip_nan::RangeResult&lt; Output_, Count_ &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -92,76 +92,96 @@ $(function(){ initResizable(false); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="structtatami__stats_1_1RangeBuffers.html">RangeBuffers</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacetatami__stats.html">tatami_stats</a></li><li class="navelem"><a class="el" href="namespacetatami__stats_1_1skip__nan.html">skip_nan</a></li><li class="navelem"><a class="el" href="structtatami__stats_1_1skip__nan_1_1RangeResult.html">RangeResult</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div id="doc-content">
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structtatami__stats_1_1RangeBuffers-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">tatami_stats::RangeBuffers&lt; Output_ &gt; Struct Template Reference</div></div>
+<a href="structtatami__stats_1_1skip__nan_1_1RangeResult-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">tatami_stats::skip_nan::RangeResult&lt; Output_, Count_ &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#a45b25bcbc2633a1936db754d80b5ed75">range()</a></code>.  
+<p>Results of <code><a class="el" href="namespacetatami__stats_1_1skip__nan.html#a38eaa26c1b9f40ec442455351904b6dc">skip_nan::range()</a></code>.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="range_8hpp_source.html">range.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="skip__nan_2range_8hpp_source.html">range.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:afe91ad4486e8aa33d2f4cc78cc3afb9c" id="r_afe91ad4486e8aa33d2f4cc78cc3afb9c"><td class="memItemLeft" align="right" valign="top">Output_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe91ad4486e8aa33d2f4cc78cc3afb9c">minimum</a></td></tr>
-<tr class="separator:afe91ad4486e8aa33d2f4cc78cc3afb9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9cd8249399e2e213d62aa3dc9b8f21c" id="r_ab9cd8249399e2e213d62aa3dc9b8f21c"><td class="memItemLeft" align="right" valign="top">Output_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab9cd8249399e2e213d62aa3dc9b8f21c">maximum</a></td></tr>
-<tr class="separator:ab9cd8249399e2e213d62aa3dc9b8f21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30aae3b29e4d86df2c2ddc4e0944d3d9" id="r_a30aae3b29e4d86df2c2ddc4e0944d3d9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30aae3b29e4d86df2c2ddc4e0944d3d9">minimum</a></td></tr>
+<tr class="separator:a30aae3b29e4d86df2c2ddc4e0944d3d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa597bbe33d53eba3bf49f7f448181c75" id="r_aa597bbe33d53eba3bf49f7f448181c75"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Output_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa597bbe33d53eba3bf49f7f448181c75">maximum</a></td></tr>
+<tr class="separator:aa597bbe33d53eba3bf49f7f448181c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0b0dfda4cb662bc78001a1ca2a5fd88" id="r_ae0b0dfda4cb662bc78001a1ca2a5fd88"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Count_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0b0dfda4cb662bc78001a1ca2a5fd88">count</a></td></tr>
+<tr class="separator:ae0b0dfda4cb662bc78001a1ca2a5fd88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_&gt;<br />
-struct tatami_stats::RangeBuffers&lt; Output_ &gt;</div><p>Result buffers for <code><a class="el" href="namespacetatami__stats.html#a45b25bcbc2633a1936db754d80b5ed75">range()</a></code>. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Output_, typename Count_&gt;<br />
+struct tatami_stats::skip_nan::RangeResult&lt; Output_, Count_ &gt;</div><p>Results of <code><a class="el" href="namespacetatami__stats_1_1skip__nan.html#a38eaa26c1b9f40ec442455351904b6dc">skip_nan::range()</a></code>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Output_</td><td>Floating-point type of the output data. </td></tr>
+    <tr><td class="paramname">Count_</td><td>Numeric type of the non-NaN counts. This is typically an integer type. </td></tr>
   </table>
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="afe91ad4486e8aa33d2f4cc78cc3afb9c" name="afe91ad4486e8aa33d2f4cc78cc3afb9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe91ad4486e8aa33d2f4cc78cc3afb9c">&#9670;&#160;</a></span>minimum</h2>
+<a id="a30aae3b29e4d86df2c2ddc4e0944d3d9" name="a30aae3b29e4d86df2c2ddc4e0944d3d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30aae3b29e4d86df2c2ddc4e0944d3d9">&#9670;&#160;</a></span>minimum</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_ &gt; </div>
+template&lt;typename Output_ , typename Count_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">Output_* <a class="el" href="structtatami__stats_1_1RangeBuffers.html">tatami_stats::RangeBuffers</a>&lt; Output_ &gt;::minimum</td>
+          <td class="memname">std::vector&lt;Output_&gt; <a class="el" href="structtatami__stats_1_1skip__nan_1_1RangeResult.html">tatami_stats::skip_nan::RangeResult</a>&lt; Output_, Count_ &gt;::minimum</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Pointer to an array of length equal to the number of rows/columns (depending on <code>row</code>). After calling <code><a class="el" href="namespacetatami__stats.html#a45b25bcbc2633a1936db754d80b5ed75">range()</a></code>, this is filled with the minimum value for each row/column. </p>
+<p>Vector of length equal to the number of rows/columns (depending on <code>row</code>), containing the minimum value for each row/column. </p>
 
 </div>
 </div>
-<a id="ab9cd8249399e2e213d62aa3dc9b8f21c" name="ab9cd8249399e2e213d62aa3dc9b8f21c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab9cd8249399e2e213d62aa3dc9b8f21c">&#9670;&#160;</a></span>maximum</h2>
+<a id="aa597bbe33d53eba3bf49f7f448181c75" name="aa597bbe33d53eba3bf49f7f448181c75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa597bbe33d53eba3bf49f7f448181c75">&#9670;&#160;</a></span>maximum</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Output_ &gt; </div>
+template&lt;typename Output_ , typename Count_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">Output_* <a class="el" href="structtatami__stats_1_1RangeBuffers.html">tatami_stats::RangeBuffers</a>&lt; Output_ &gt;::maximum</td>
+          <td class="memname">std::vector&lt;Output_&gt; <a class="el" href="structtatami__stats_1_1skip__nan_1_1RangeResult.html">tatami_stats::skip_nan::RangeResult</a>&lt; Output_, Count_ &gt;::maximum</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Pointer to an array of length equal to the number of rows/columns (depending on <code>row</code>). After calling <code><a class="el" href="namespacetatami__stats.html#a45b25bcbc2633a1936db754d80b5ed75">range()</a></code>, this is filled with the maximum value for each row/column. </p>
+<p>Vector of length equal to the number of rows/columns (depending on <code>row</code>), containing the maximum value for each row/column. </p>
+
+</div>
+</div>
+<a id="ae0b0dfda4cb662bc78001a1ca2a5fd88" name="ae0b0dfda4cb662bc78001a1ca2a5fd88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0b0dfda4cb662bc78001a1ca2a5fd88">&#9670;&#160;</a></span>count</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Output_ , typename Count_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;Count_&gt; <a class="el" href="structtatami__stats_1_1skip__nan_1_1RangeResult.html">tatami_stats::skip_nan::RangeResult</a>&lt; Output_, Count_ &gt;::count</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Vector of length equal to the appropriate dimension extent (rows for <code>row = true</code>, columns otherwise), containing the number of unskipped observations in each row/column. </p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>tatami_stats/<a class="el" href="range_8hpp_source.html">range.hpp</a></li>
+<li>tatami_stats/skip_nan/<a class="el" href="skip__nan_2range_8hpp_source.html">range.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

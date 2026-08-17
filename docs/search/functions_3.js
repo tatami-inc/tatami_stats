@@ -1,8 +1,8 @@
 var searchData=
 [
   ['data_0',['data',['https://tatami-inc.github.io/tatami/classtatami_1_1ArrayView.html#ad23ad79ab7ed43ebb652aa172e26977a',1,'tatami::ArrayView']]],
-  ['default_5fmaximum_5fplaceholder_1',['default_maximum_placeholder',['../namespacetatami__stats.html#a19fd208d4af82947e062c4958cc05ed4',1,'tatami_stats']]],
-  ['default_5fminimum_5fplaceholder_2',['default_minimum_placeholder',['../namespacetatami__stats.html#a30d1104a5430ca4252952df8194acd08',1,'tatami_stats']]],
+  ['default_5fmaximum_5fplaceholder_1',['default_maximum_placeholder',['../namespacetatami__stats.html#a19fd208d4af82947e062c4958cc05ed4',1,'tatami_stats::default_maximum_placeholder()'],['../namespacetatami__stats_1_1skip__nan.html#a08e546d5185379feb647fd97a01ad406',1,'tatami_stats::skip_nan::default_maximum_placeholder()']]],
+  ['default_5fminimum_5fplaceholder_2',['default_minimum_placeholder',['../namespacetatami__stats.html#a30d1104a5430ca4252952df8194acd08',1,'tatami_stats::default_minimum_placeholder()'],['../namespacetatami__stats_1_1skip__nan.html#ae17d0067ad642adf88e26b983ff07710',1,'tatami_stats::skip_nan::default_minimum_placeholder()']]],
   ['delayedbinaryisometricoperation_3',['DelayedBinaryIsometricOperation',['https://tatami-inc.github.io/tatami/classtatami_1_1DelayedBinaryIsometricOperation.html#a5b0f8bebfa5797832b258190bffc2a2f',1,'tatami::DelayedBinaryIsometricOperation']]],
   ['delayedbind_4',['DelayedBind',['https://tatami-inc.github.io/tatami/classtatami_1_1DelayedBind.html#a22b479c99b6034cfcab73bf05f03cc91',1,'tatami::DelayedBind']]],
   ['delayedcast_5',['DelayedCast',['https://tatami-inc.github.io/tatami/classtatami_1_1DelayedCast.html#a1fc5fdee58e8f23353c8fd73ef87001e',1,'tatami::DelayedCast']]],
