@@ -24,6 +24,7 @@ macro(make_test target)
         src/median.cpp
         src/quantile.cpp
         src/range.cpp
+        src/skip_nan/range.cpp
         src/count.cpp
         src/group_median.cpp
         src/group_sum.cpp
