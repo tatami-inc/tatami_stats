@@ -235,6 +235,12 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
         return;
     }
 
+    // No need to wipe dirty output buffers in the dense case, as we already set each entry of the output buffers.
+    if (is_sparse) {
+        std::fill_n(output.minimum, dim, 0);
+        std::fill_n(output.maximum, dim, 0);
+    }
+
     const auto nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
         Output_* min_ptr;
         Output_* max_ptr;
