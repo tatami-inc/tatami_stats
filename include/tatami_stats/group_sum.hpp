@@ -11,6 +11,7 @@
 #include "tatami/tatami.hpp"
 #include "sanisizer/sanisizer.hpp"
 #include "auveh/auveh.hpp"
+#include "jiwoo/jiwoo.hpp"
 
 /**
  * @file group_sum.hpp
@@ -139,7 +140,7 @@ void group_sum_running(
     if (do_parallel) {
         all_partial_sums.emplace(sanisizer::cast<I<decltype(all_partial_sums->size())> >(opt.num_threads - 1));
     }
-    LiberateArraysScope lib_all_sum(all_partial_sums); // RAII freeing of all threads' memory.
+    jiwoo::Scope lib_all_sum(all_partial_sums); // RAII freeing of all threads' memory.
 
     for (std::size_t g = 0; g < num_groups; ++g) {
         std::fill_n(output[g], dim, 0);
@@ -148,7 +149,7 @@ void group_sum_running(
     const auto nused = tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
         // If we can, directly dump the sum to the output pointers, otherwise put it into a temporary.
         std::optional<std::vector<Output_*> > cur_sums;
-        LiberateArraysScope libsum(cur_sums); // RAII freeing of this thread's memory.
+        jiwoo::Scope libsum(cur_sums); // RAII freeing of this thread's memory.
 
         Output_** sum_ptrs;
         if (!do_parallel) {
@@ -231,8 +232,7 @@ void group_sum_running(
 
         if (do_parallel) {
             if (thread > 0) {
-                (*all_partial_sums)[thread - 1] = std::move(cur_sums);
-                cur_sums.reset(); // clear pointers so they don't get prematurely freed by libsum's destructor.
+                jiwoo::transfer(cur_sums, (*all_partial_sums)[thread - 1]);
             }
         }
     }, otherdim, opt.num_threads);

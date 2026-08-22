@@ -12,8 +12,9 @@
 #include "tatami/tatami.hpp"
 #include "sanisizer/sanisizer.hpp"
 #include "quickstats/quickstats.hpp"
+#include "auveh/auveh.hpp"
+#include "jiwoo/jiwoo.hpp"
 
-#include "../utils.hpp"
 #include "../group_rss.hpp"
 
 /**
@@ -234,15 +235,15 @@ void group_rss_running(
         all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
         all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads));
     }
-    LiberateArraysScope lib_all_mean(all_partial_mean), lib_all_rss(all_partial_rss); // RAII freeing of all threads' memory.
-    LiberateArraysScope lib_all_count(all_partial_count);
+    jiwoo::Scope lib_all_mean(all_partial_mean), lib_all_rss(all_partial_rss); // RAII freeing of all threads' memory.
+    jiwoo::Scope lib_all_count(all_partial_count);
 
     const bool is_sparse = mat.is_sparse();
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
         std::optional<std::vector<Output_*> > cur_mean, cur_rss;
-        LiberateArraysScope libmean(cur_mean), librss(cur_rss); // RAII freeing of each thread's memory.
+        jiwoo::Scope libmean(cur_mean), librss(cur_rss); // RAII freeing of each thread's memory.
         std::optional<std::vector<Count_*> > cur_count;
-        LiberateArraysScope libcount(cur_count);
+        jiwoo::Scope libcount(cur_count);
 
         Output_** mean_ptrs;
         Output_** rss_ptrs;
@@ -355,13 +356,10 @@ void group_rss_running(
         }
 
         if (do_parallel) {
-            (*all_partial_count)[thread] = std::move(cur_count);
-            cur_count.reset(); // clear pointers so they don't get prematurely freed by libcount's destructor.
-            (*all_partial_mean)[thread] = std::move(cur_mean);
-            cur_mean.reset(); // clear pointers so they don't get prematurely freed by libmean's destructor.
+            jiwoo::transfer(cur_count, (*all_partial_count)[thread]);
+            jiwoo::transfer(cur_mean, (*all_partial_mean)[thread]);
             if (thread > 0) {
-                (*all_partial_rss)[thread - 1] = std::move(cur_rss);
-                cur_rss.reset(); // clear pointers so they don't get prematurely freed by librss's destructor.
+                jiwoo::transfer(cur_rss, (*all_partial_rss)[thread - 1]);
             }
         }
     }, otherdim, opt.num_threads);
