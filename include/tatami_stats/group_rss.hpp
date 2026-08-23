@@ -188,7 +188,7 @@ void group_rss_running_nonempty(
     const GroupRssOptions<Output_>& opt
 ) {
     const bool do_parallel = opt.num_threads > 1;
-    std::optional<std::vector<std::optional<std::vector<Output_*> > > > all_partial_mean, all_partial_rss;
+    std::optional<std::vector<std::optional<jiwoo::EquilengthArrays<Output_> > > > all_partial_mean, all_partial_rss;
     std::optional<std::vector<std::optional<std::vector<Count_> > > > all_partial_count;
     if (do_parallel) {
         // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
@@ -196,7 +196,6 @@ void group_rss_running_nonempty(
         all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
         all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads));
     }
-    jiwoo::Scope lib_all_mean(all_partial_mean), lib_all_rss(all_partial_rss); // RAII freeing of every thread's allocated memory.
 
     // All groups are assumed to be non-empty at this point,
     // which allows us to skip some allocations.
@@ -217,11 +216,10 @@ void group_rss_running_nonempty(
 
     const bool is_sparse = mat.is_sparse();
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-        std::optional<std::vector<Output_*> > cur_mean, cur_rss;
-        jiwoo::Scope libmean(cur_mean), librss(cur_rss); // RAII freeing of this thread's allocated memory. 
+        std::optional<jiwoo::EquilengthArrays<Output_> > cur_mean, cur_rss;
 
-        Output_** mean_ptrs;
-        Output_** rss_ptrs;
+        Output_* const * mean_ptrs;
+        Output_* const * rss_ptrs;
         if (!do_parallel) {
             // Storing mean and RSS directly in the output vector to cut down two allocations if we're not working in parallel.
             mean_ptrs = output.mean.data();
@@ -232,23 +230,21 @@ void group_rss_running_nonempty(
             if (thread == 0) {
                 rss_ptrs = output.rss.data();
             } else {
-                cur_rss.emplace(sanisizer::cast<I<decltype(cur_rss->size())> >(num_groups));
-                for (std::size_t g = 0; g < num_groups; ++g) {
-                    auto ptr = new Output_ [dim]; // dim can be cast to size_t, based on the tatami contract.
-                    (*cur_rss)[g] = ptr;
-                    std::fill_n(ptr, dim, 0);
-                }
-                rss_ptrs = cur_rss->data();
+                cur_rss.emplace(
+                    sanisizer::cast<I<decltype(cur_rss->size())> >(num_groups),
+                    static_cast<std::size_t>(dim), // cast to size_t is safe, based on the tatami contract.
+                    0
+                );
+                rss_ptrs = cur_rss->get();
             }
 
             // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
-            cur_mean.emplace(sanisizer::cast<I<decltype(cur_mean->size())> >(num_groups));
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                auto ptr = new Output_ [dim]; // dim can be cast to size_t, based on the tatami contract.
-                (*cur_mean)[g] = ptr;
-                std::fill_n(ptr, dim, 0);
-            }
-            mean_ptrs = cur_mean->data();
+            cur_mean.emplace(
+                sanisizer::cast<I<decltype(cur_mean->size())> >(num_groups),
+                static_cast<std::size_t>(dim), // cast to size_t is safe, based on the tatami contract.
+                0
+            );
+            mean_ptrs = cur_mean->get();
         }
 
         auto cur_count = sanisizer::create<std::vector<Count_> >(num_groups); 
@@ -309,9 +305,9 @@ void group_rss_running_nonempty(
 
         if (do_parallel) {
             (*all_partial_count)[thread] = std::move(cur_count);
-            jiwoo::transfer(cur_mean, (*all_partial_mean)[thread]);
+            (*all_partial_mean)[thread] = std::move(cur_mean);
             if (thread > 0) {
-                jiwoo::transfer(cur_rss, (*all_partial_rss)[thread - 1]);
+                (*all_partial_rss)[thread - 1] = std::move(cur_rss);
             }
         }
     }, otherdim, opt.num_threads);
@@ -333,7 +329,7 @@ void group_rss_running_nonempty(
                     continue;
                 }
 
-                const auto& cur_mean = (*(ap_mean[u]))[g];
+                const auto cur_mean = (*(ap_mean[u]))[g];
                 const Output_ mult = static_cast<Output_>(cur_count) / static_cast<Output_>(cur_global_count);
                 if (!initialized) { // Don't use u == 0, as the first non-empty 'g' might not occur in the first thread.
                     AUVEH_NODEP
@@ -354,7 +350,7 @@ void group_rss_running_nonempty(
 
         // Combining the RSS. 
         for (std::size_t g = 0; g < num_groups; ++g) {
-            const auto& cur_global = output.mean[g];
+            const auto cur_global = output.mean[g];
             const auto cur_output = output.rss[g];
             bool initialized = false;
 
@@ -364,7 +360,7 @@ void group_rss_running_nonempty(
                     continue;
                 }
 
-                const auto& cur_mean = (*(ap_mean[u]))[g];
+                const auto cur_mean = (*(ap_mean[u]))[g];
                 if (u == 0) { // Special case to avoid trying to access u - 1.
                     AUVEH_NODEP
                     for (Index_ d = 0; d < dim; ++d) {
@@ -372,7 +368,7 @@ void group_rss_running_nonempty(
                     }
                     initialized = true;
                 } else {
-                    const auto& cur_rss = (*(ap_rss[u - 1]))[g];
+                    const auto cur_rss = (*(ap_rss[u - 1]))[g];
                     if (!initialized) { // Don't use u == 0, as the first non-empty 'g' might not occur in the first thread.
                         AUVEH_NODEP
                         for (Index_ d = 0; d < dim; ++d) {

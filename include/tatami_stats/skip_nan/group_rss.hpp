@@ -227,27 +227,23 @@ void group_rss_running(
     }
 
     const bool do_parallel = opt.num_threads > 1;
-    std::optional<std::vector<std::optional<std::vector<Output_*> > > > all_partial_mean, all_partial_rss;
-    std::optional<std::vector<std::optional<std::vector<Count_*> > > > all_partial_count;
+    std::optional<std::vector<std::optional<jiwoo::EquilengthArrays<Output_> > > > all_partial_mean, all_partial_rss;
+    std::optional<std::vector<std::optional<jiwoo::EquilengthArrays<Count_> > > > all_partial_count;
     if (do_parallel) {
         // -1, as we'll repurpose the RSS output buffer to store the partial RSS of the first thread.
         all_partial_rss.emplace(sanisizer::cast<I<decltype(all_partial_rss->size())> >(opt.num_threads - 1));
         all_partial_mean.emplace(sanisizer::cast<I<decltype(all_partial_mean->size())> >(opt.num_threads));
         all_partial_count.emplace(sanisizer::cast<I<decltype(all_partial_count->size())> >(opt.num_threads));
     }
-    jiwoo::Scope lib_all_mean(all_partial_mean), lib_all_rss(all_partial_rss); // RAII freeing of all threads' memory.
-    jiwoo::Scope lib_all_count(all_partial_count);
 
     const bool is_sparse = mat.is_sparse();
     const int nused = tatami::parallelize([&](int thread, Index_ s, Index_ l) -> void {
-        std::optional<std::vector<Output_*> > cur_mean, cur_rss;
-        jiwoo::Scope libmean(cur_mean), librss(cur_rss); // RAII freeing of each thread's memory.
-        std::optional<std::vector<Count_*> > cur_count;
-        jiwoo::Scope libcount(cur_count);
+        std::optional<jiwoo::EquilengthArrays<Output_> > cur_mean, cur_rss;
+        std::optional<jiwoo::EquilengthArrays<Count_> > cur_count;
 
-        Output_** mean_ptrs;
-        Output_** rss_ptrs;
-        Count_** count_ptrs;
+        Output_* const * mean_ptrs;
+        Output_* const * rss_ptrs;
+        Count_* const * count_ptrs;
         if (!do_parallel) {
             // Storing mean and RSS directly in the output vector to cut down two allocations if we're not working in parallel.
             mean_ptrs = output.mean.data();
@@ -259,32 +255,29 @@ void group_rss_running(
             if (thread == 0) {
                 rss_ptrs = output.rss.data();
             } else {
-                cur_rss.emplace(sanisizer::cast<I<decltype(cur_rss->size())> >(num_groups));
-                for (std::size_t g = 0; g < num_groups; ++g) {
-                    auto ptr = new Output_ [dim]; // cast to size_t is safe due to the tatami contract.
-                    (*cur_rss)[g] = ptr;
-                    std::fill_n(ptr, dim, 0);
-                }
-                rss_ptrs = cur_rss->data();
+                cur_rss.emplace(
+                    sanisizer::cast<I<decltype(cur_rss->size())> >(num_groups),
+                    static_cast<std::size_t>(dim), // cast to size_t is safe due to the tatami contract.
+                    0
+                );
+                rss_ptrs = cur_rss->get();
             }
 
             // We can't do the same for the mean, though, as we need to keep the partial mean and the global mean separate for the reduction.
-            cur_mean.emplace(sanisizer::cast<I<decltype(cur_mean->size())> >(num_groups));
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                auto ptr = new Output_ [dim]; // cast to size_t is safe due to the tatami contract.
-                (*cur_mean)[g] = ptr;
-                std::fill_n(ptr, dim, 0);
-            }
-            mean_ptrs = cur_mean->data();
+            cur_mean.emplace(
+                sanisizer::cast<I<decltype(cur_mean->size())> >(num_groups),
+                static_cast<std::size_t>(dim),
+                0
+            );
+            mean_ptrs = cur_mean->get();
 
             // Similarly, we need to keep the global count separate from the partial count for reduction.
-            cur_count.emplace(sanisizer::cast<I<decltype(cur_count->size())> >(num_groups));
-            for (std::size_t g = 0; g < num_groups; ++g) {
-                auto ptr = new Count_ [dim]; // cast to size_t is safe due to the tatami contract.
-                (*cur_count)[g] = ptr;
-                std::fill_n(ptr, dim, 0);
-            }
-            count_ptrs = cur_count->data();
+            cur_count.emplace(
+                sanisizer::cast<I<decltype(cur_count->size())> >(num_groups),
+                static_cast<std::size_t>(dim),
+                0
+            );
+            count_ptrs = cur_count->get();
         }
 
         if (is_sparse) {
@@ -356,10 +349,10 @@ void group_rss_running(
         }
 
         if (do_parallel) {
-            jiwoo::transfer(cur_count, (*all_partial_count)[thread]);
-            jiwoo::transfer(cur_mean, (*all_partial_mean)[thread]);
+            (*all_partial_count)[thread] = std::move(cur_count);
+            (*all_partial_mean)[thread] = std::move(cur_mean);
             if (thread > 0) {
-                jiwoo::transfer(cur_rss, (*all_partial_rss)[thread - 1]);
+                (*all_partial_rss)[thread - 1] = std::move(cur_rss);
             }
         }
     }, otherdim, opt.num_threads);

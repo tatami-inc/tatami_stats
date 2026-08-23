@@ -136,11 +136,10 @@ void group_sum_running(
     const bool is_sparse = mat.is_sparse();
 
     const auto do_parallel = opt.num_threads > 1;
-    std::optional<std::vector<std::optional<std::vector<Output_*> > > > all_partial_sums;
+    std::optional<std::vector<std::optional<jiwoo::EquilengthArrays<Output_> > > > all_partial_sums;
     if (do_parallel) {
         all_partial_sums.emplace(sanisizer::cast<I<decltype(all_partial_sums->size())> >(opt.num_threads - 1));
     }
-    jiwoo::Scope lib_all_sum(all_partial_sums); // RAII freeing of all threads' memory.
 
     for (std::size_t g = 0; g < num_groups; ++g) {
         std::fill_n(output[g], dim, 0);
@@ -148,23 +147,21 @@ void group_sum_running(
 
     const auto nused = tatami::parallelize([&](int thread, Index_ start, Index_ len) -> void {
         // If we can, directly dump the sum to the output pointers, otherwise put it into a temporary.
-        std::optional<std::vector<Output_*> > cur_sums;
-        jiwoo::Scope libsum(cur_sums); // RAII freeing of this thread's memory.
+        std::optional<jiwoo::EquilengthArrays<Output_> > cur_sums;
 
-        Output_** sum_ptrs;
+        Output_* const * sum_ptrs;
         if (!do_parallel) {
             sum_ptrs = output.data();
         } else {
             if (thread == 0) {
                 sum_ptrs = output.data();
             } else {
-                cur_sums.emplace(sanisizer::cast<I<decltype(cur_sums->size())> >(num_groups));
-                for (std::size_t g = 0; g < num_groups; ++g) {
-                    auto ptr = new Output_ [dim]; // cast to size_t is safe due to the tatami contract.
-                    (*cur_sums)[g] = ptr;
-                    std::fill_n(ptr, dim, 0);
-                }
-                sum_ptrs = cur_sums->data();
+                cur_sums.emplace(
+                    sanisizer::cast<std::size_t>(num_groups),
+                    static_cast<std::size_t>(dim), // cast is safe due to the tatami contract.
+                    0
+                ); 
+                sum_ptrs = cur_sums->get();
             }
         }
 
@@ -232,7 +229,7 @@ void group_sum_running(
 
         if (do_parallel) {
             if (thread > 0) {
-                jiwoo::transfer(cur_sums, (*all_partial_sums)[thread - 1]);
+                (*all_partial_sums)[thread - 1] = std::move(cur_sums);
             }
         }
     }, otherdim, opt.num_threads);
@@ -241,7 +238,7 @@ void group_sum_running(
         for (std::size_t g = 0; g < num_groups; ++g) {
             const auto cur_out = output[g];
             for (int u = 1; u < nused; ++u) {
-                const auto& cur_sum = (*((*all_partial_sums)[u - 1]))[g];
+                const auto cur_sum = (*((*all_partial_sums)[u - 1]))[g];
                 AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     cur_out[d] += cur_sum[d];
