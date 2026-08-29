@@ -53,3 +53,6 @@ make_test(libtest)
 
 make_test(dirtytest)
 target_compile_definitions(dirtytest PUBLIC TATAMI_STATS_TEST_DIRTY=1)
+
+make_test(forcetest)
+target_compile_definitions(forcetest PUBLIC TATAMI_DEBUG_FORCE_COPY=1)
