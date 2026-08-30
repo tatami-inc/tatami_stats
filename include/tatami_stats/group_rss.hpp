@@ -69,22 +69,22 @@ struct GroupRssBuffers {
 /**
  * @cond
  */
-template<typename Output_, typename Count_, typename Index_>
+template<typename Group_, typename Count_, typename Output_, typename Index_>
 void group_rss_finish_means(
-    const std::size_t num_groups,
+    const Group_ num_groups,
     const Count_* const group_size,
     std::vector<Output_>& means,
     const Index_ i,
-    std::vector<Output_*>& output_means,
+    const std::vector<Output_*>& output_means,
     const Output_ placeholder
 ) {
-    for (std::size_t b = 0; b < num_groups; ++b) {
-        if (group_size[b]) {
-            means[b] /= group_size[b];
+    for (Group_ g = 0; g < num_groups; ++g) {
+        if (group_size[g]) {
+            means[g] /= group_size[g];
         } else {
-            means[b] = placeholder;
+            means[g] = placeholder;
         }
-        output_means[b][i] = means[b];
+        output_means[g][i] = means[g];
     }
 }
 
@@ -93,9 +93,9 @@ void group_rss_direct(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat, 
     const Group_* const group, 
-    const std::size_t num_groups, 
+    const Group_ num_groups, 
     const Count_* const group_size,
-    GroupRssBuffers<Output_>& output,
+    const GroupRssBuffers<Output_>& output,
     const GroupRssOptions<Output_>& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
@@ -127,7 +127,7 @@ void group_rss_direct(
                     const auto delta = range.value[i] - cur_means[g];
                     cur_rss[g] += delta * delta;
                 }
-                for (std::size_t g = 0; g < num_groups; ++g) {
+                for (Group_ g = 0; g < num_groups; ++g) {
                     if (group_size[g] > 0) { // preserve RSS = 0 if the group is empty, otherwise the placeholder mean might be a NaN that causes problems.
                         const Output_ my_rss = cur_rss[g] + cur_means[g] * cur_means[g] * (group_size[g] - cur_non_zeros[g]);
                         output.rss[g][s + x] = my_rss;
@@ -164,7 +164,7 @@ void group_rss_direct(
                     const auto delta = ptr[j] - cur_means[g];
                     cur_rss[g] += delta * delta;
                 }
-                for (std::size_t g = 0; g < num_groups; ++g) {
+                for (Group_ g = 0; g < num_groups; ++g) {
                     output.rss[g][s + x] = cur_rss[g];
                 }
 
@@ -182,9 +182,9 @@ void group_rss_running_nonempty(
     const Index_ otherdim,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group, 
-    const std::size_t num_groups, 
+    const Group_ num_groups, 
     const Count_* const group_size,
-    GroupRssBuffers<Output_>& output,
+    const GroupRssBuffers<Output_>& output,
     const GroupRssOptions<Output_>& opt
 ) {
     const bool do_parallel = opt.num_threads > 1;
@@ -199,18 +199,18 @@ void group_rss_running_nonempty(
 
     // All groups are assumed to be non-empty at this point,
     // which allows us to skip some allocations.
-    for (std::size_t g = 0; g < num_groups; ++g) {
+    for (Group_ g = 0; g < num_groups; ++g) {
         assert(group_size[g] > 0);
     }
 
     // We overwrite any existing value in the array in the do_parallel=true situation.
     // So, the initial value doesn't need to be zero.
     if (!do_parallel) {
-        for (std::size_t g = 0; g < num_groups; ++g) {
+        for (Group_ g = 0; g < num_groups; ++g) {
             std::fill_n(output.mean[g], dim, 0);
         }
     }
-    for (std::size_t g = 0; g < num_groups; ++g) {
+    for (Group_ g = 0; g < num_groups; ++g) {
         std::fill_n(output.rss[g], dim, 0);
     }
 
@@ -254,7 +254,7 @@ void group_rss_running_nonempty(
             auto vbuffer = tatami::create_container_of_Index_size<std::vector<Value_> >(dim);
             auto ibuffer = tatami::create_container_of_Index_size<std::vector<Index_> >(dim);
             auto nonzeros = sanisizer::create<std::vector<std::vector<Index_> > >(num_groups);
-            for (std::size_t g = 0; g < num_groups; ++g) {
+            for (Group_ g = 0; g < num_groups; ++g) {
                 tatami::resize_container_to_Index_size(nonzeros[g], dim);
             }
 
@@ -272,7 +272,7 @@ void group_rss_running_nonempty(
                 }
             }
 
-            for (std::size_t g = 0; g < num_groups; ++g) {
+            for (Group_ g = 0; g < num_groups; ++g) {
                 const auto curtotal = cur_count[g];
                 if (curtotal) {
                     const auto mptr = mean_ptrs[g];
@@ -317,7 +317,7 @@ void group_rss_running_nonempty(
         const auto& ap_mean = *all_partial_mean;
         const auto& ap_rss = *all_partial_rss;
 
-        for (std::size_t g = 0; g < num_groups; ++g) {
+        for (Group_ g = 0; g < num_groups; ++g) {
             const auto cur_output = output.mean[g];
             const auto cur_global_count = group_size[g];
             assert(cur_global_count > 0);
@@ -349,7 +349,7 @@ void group_rss_running_nonempty(
         }
 
         // Combining the RSS. 
-        for (std::size_t g = 0; g < num_groups; ++g) {
+        for (Group_ g = 0; g < num_groups; ++g) {
             const auto cur_global = output.mean[g];
             const auto cur_output = output.rss[g];
             bool initialized = false;
@@ -394,15 +394,15 @@ void group_rss_running(
     const bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group, 
-    const std::size_t num_groups, 
+    const Group_ num_groups, 
     const Count_* const group_size,
-    GroupRssBuffers<Output_>& output,
+    const GroupRssBuffers<Output_>& output,
     const GroupRssOptions<Output_>& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
     const auto otherdim = (row ? mat.ncol() : mat.nrow());
     if (otherdim == 0) {
-        for (std::size_t g = 0; g < num_groups; ++g) {
+        for (Group_ g = 0; g < num_groups; ++g) {
             std::fill_n(output.mean[g], dim, opt.mean_placeholder);
             std::fill_n(output.rss[g], dim, 0);
         }
@@ -410,7 +410,7 @@ void group_rss_running(
     }
 
     std::size_t num_empty = 0;
-    for (std::size_t g = 0; g < num_groups; ++g) {
+    for (Group_ g = 0; g < num_groups; ++g) {
         num_empty += (group_size[g] == 0);
     }
 
@@ -418,10 +418,10 @@ void group_rss_running(
     std::optional<std::vector<Count_> > new_group_size_store;
     std::optional<GroupRssBuffers<Output_> > new_output_store;
     std::optional<std::vector<Group_> > new_group_store;
-    std::size_t num_non_empty;
+    Group_ num_non_empty;
     const Count_* new_group_size;
     const Group_* new_group;
-    GroupRssBuffers<Output_>* new_output;
+    const GroupRssBuffers<Output_>* new_output;
 
     if (num_empty > 0) {
         num_non_empty = num_groups - num_empty; // must be positive, otherwise otherdim == 0 if all groups are empty.
@@ -432,7 +432,7 @@ void group_rss_running(
         new_output_store->rss.reserve(num_non_empty);
 
         auto mapping = sanisizer::create<std::vector<std::size_t> >(num_groups);
-        for (std::size_t g = 0; g < num_groups; ++g) {
+        for (Group_ g = 0; g < num_groups; ++g) {
             if (group_size[g]) {
                 mapping[g] = new_group_size_store->size();
                 new_group_size_store->push_back(group_size[g]);
@@ -501,9 +501,9 @@ void group_rss(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
-    const std::size_t num_groups,
+    const Group_ num_groups,
     const Count_* const group_size,
-    GroupRssBuffers<Output_>& output,
+    const GroupRssBuffers<Output_>& output,
     const GroupRssOptions<Output_>& opt
 ) {
     assert(sanisizer::is_equal(num_groups, output.mean.size()));
@@ -539,8 +539,8 @@ void group_rss(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
-    const std::size_t num_groups,
-    GroupRssBuffers<Output_>& output,
+    const Group_ num_groups,
+    const GroupRssBuffers<Output_>& output,
     const GroupRssOptions<Output_>& opt
 ) {
     auto group_size = sanisizer::create<std::vector<Index_> >(num_groups);
@@ -596,7 +596,7 @@ GroupRssResult<Output_> group_rss(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
-    const std::size_t num_groups,
+    const Group_ num_groups,
     const GroupRssOptions<Output_>& opt
 ) {
     GroupRssResult<Output_> output;
@@ -608,7 +608,7 @@ GroupRssResult<Output_> group_rss(
     sanisizer::resize(buffers.rss, num_groups);
 
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    for (std::size_t g = 0; g < num_groups; ++g) {
+    for (Group_ g = 0; g < num_groups; ++g) {
         tatami::resize_container_to_Index_size(output.mean[g], dim
 #ifdef TATAMI_STATS_TEST_DIRTY
             , -1

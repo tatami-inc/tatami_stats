@@ -61,8 +61,8 @@ void group_median(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
-    const std::size_t num_groups,
-    std::vector<Output_*>& output,
+    const Group_ num_groups,
+    const std::vector<Output_*>& output,
     const GroupMedianOptions& opt
 ) {
     const auto dim = (row ? mat.nrow() : mat.ncol());
@@ -143,13 +143,13 @@ std::vector<std::vector<Output_> > group_median(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
-    const std::size_t num_groups,
+    const Group_ num_groups,
     const GroupMedianOptions& opt
 ) {
     auto output = sanisizer::create<std::vector<std::vector<Output_> > >(num_groups);
     auto outptrs = sanisizer::create<std::vector<Output_*> >(num_groups);
     const auto dim = (row ? mat.nrow() : mat.ncol());
-    for (std::size_t g = 0; g < num_groups; ++g) {
+    for (Group_ g = 0; g < num_groups; ++g) {
         tatami::resize_container_to_Index_size(output[g], dim
 #ifdef TATAMI_STATS_TEST_DIRTY
             , -1

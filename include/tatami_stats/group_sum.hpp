@@ -46,8 +46,8 @@ void group_sum_direct(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* group,
-    const std::size_t num_groups,
-    std::vector<Output_*>& output,
+    const Group_ num_groups,
+    const std::vector<Output_*>& output,
     const GroupSumOptions& opt
 ) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
@@ -127,8 +127,8 @@ void group_sum_running(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* group,
-    const std::size_t num_groups,
-    std::vector<Output_*>& output,
+    const Group_ num_groups,
+    const std::vector<Output_*>& output,
     const GroupSumOptions& opt
 ) {
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
@@ -141,7 +141,7 @@ void group_sum_running(
         all_partial_sums.emplace(sanisizer::cast<I<decltype(all_partial_sums->size())> >(opt.num_threads - 1));
     }
 
-    for (std::size_t g = 0; g < num_groups; ++g) {
+    for (Group_ g = 0; g < num_groups; ++g) {
         std::fill_n(output[g], dim, 0);
     }
 
@@ -157,7 +157,7 @@ void group_sum_running(
                 sum_ptrs = output.data();
             } else {
                 cur_sums.emplace(
-                    sanisizer::cast<std::size_t>(num_groups),
+                    sanisizer::Cast(num_groups),
                     static_cast<std::size_t>(dim), // cast is safe due to the tatami contract.
                     0
                 ); 
@@ -235,7 +235,7 @@ void group_sum_running(
     }, otherdim, opt.num_threads);
 
     if (do_parallel) {
-        for (std::size_t g = 0; g < num_groups; ++g) {
+        for (Group_ g = 0; g < num_groups; ++g) {
             const auto cur_out = output[g];
             for (int u = 1; u < nused; ++u) {
                 const auto cur_sum = (*((*all_partial_sums)[u - 1]))[g];
@@ -278,8 +278,8 @@ void group_sum(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* group,
-    const std::size_t num_groups,
-    std::vector<Output_*>& output,
+    const Group_ num_groups,
+    const std::vector<Output_*>& output,
     const GroupSumOptions& opt
 ) {
     if (mat.prefer_rows() == row) {
@@ -317,13 +317,13 @@ std::vector<std::vector<Output_> > group_sum(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* group,
-    const std::size_t num_groups,
+    const Group_ num_groups,
     const GroupSumOptions& opt
 ) {
     auto output = sanisizer::create<std::vector<std::vector<Output_> > >(num_groups);
     auto ptrs = sanisizer::create<std::vector<Output_*> >(num_groups);
     const Index_ dim = (row ? mat.nrow() : mat.ncol());
-    for (std::size_t g = 0; g < num_groups; ++g) {
+    for (Group_ g = 0; g < num_groups; ++g) {
         tatami::resize_container_to_Index_size(output[g], dim
 #ifdef TATAMI_STATS_TEST_DIRTY
             , -1

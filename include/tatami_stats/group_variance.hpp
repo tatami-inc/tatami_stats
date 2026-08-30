@@ -102,9 +102,9 @@ void group_variance(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
-    const std::size_t num_groups,
+    const Group_ num_groups,
     const Count_* const group_size,
-    GroupVarianceBuffers<Output_>& output,
+    const GroupVarianceBuffers<Output_>& output,
     const GroupVarianceOptions<Output_>& opt
 ) {
     assert(sanisizer::is_equal(num_groups, output.mean.size()));
@@ -121,7 +121,7 @@ void group_variance(
 
             auto count = sanisizer::create<std::vector<std::vector<Index_> > >(num_groups);
             tmp.count.reserve(num_groups);
-            for (std::size_t g = 0; g < num_groups; ++g) {
+            for (Group_ g = 0; g < num_groups; ++g) {
                 tatami::resize_container_to_Index_size(count[g], dim);
                 tmp.count.push_back(count[g].data());
             }
@@ -129,7 +129,7 @@ void group_variance(
             skip_nan::GroupRssOptions ropt;
             ropt.num_threads = opt.num_threads;
             skip_nan::group_rss(row, mat, group, num_groups, tmp, ropt);
-            for (std::size_t g = 0; g < num_groups; ++g) {
+            for (Group_ g = 0; g < num_groups; ++g) {
                 const auto outvar = output.variance[g];
                 const auto curcounts = count[g];
                 AUVEH_NODEP
@@ -152,7 +152,7 @@ void group_variance(
             ropt.num_threads = opt.num_threads;
             group_rss(row, mat, group, num_groups, group_size, tmp, ropt);
 
-            for (std::size_t g = 0; g < num_groups; ++g) {
+            for (Group_ g = 0; g < num_groups; ++g) {
                 const auto outvar = output.variance[g];
                 const auto gsize = group_size[g];
                 if (gsize <= 1) {
@@ -191,8 +191,8 @@ void group_variance(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
-    const std::size_t num_groups,
-    GroupVarianceBuffers<Output_>& output,
+    const Group_ num_groups,
+    const GroupVarianceBuffers<Output_>& output,
     const GroupVarianceOptions<Output_>& opt
 ) {
     auto group_size = sanisizer::create<std::vector<Index_> >(num_groups);
@@ -248,7 +248,7 @@ GroupVarianceResult<Output_> group_variance(
     bool row,
     const tatami::Matrix<Value_, Index_>& mat,
     const Group_* const group,
-    const std::size_t num_groups,
+    const Group_ num_groups,
     const GroupVarianceOptions<Output_>& opt
 ) {
     GroupVarianceResult<Output_> output;
@@ -260,7 +260,7 @@ GroupVarianceResult<Output_> group_variance(
     sanisizer::resize(buffers.variance, num_groups);
     const auto dim = (row ? mat.nrow() : mat.ncol());
 
-    for (std::size_t g = 0; g < num_groups; ++g) {
+    for (Group_ g = 0; g < num_groups; ++g) {
         tatami::resize_container_to_Index_size(output.mean[g], dim
 #ifdef TATAMI_STATS_TEST_DIRTY
             , -1
