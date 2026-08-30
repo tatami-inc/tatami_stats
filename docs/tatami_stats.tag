@@ -814,71 +814,71 @@
       <type>void</type>
       <name>group_median</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a7f9ead1e0237477c8ff009eea44dcc5b</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, std::vector&lt; Output_ * &gt; &amp;output, const GroupMedianOptions &amp;opt)</arglist>
+      <anchor>a61c1c1041b4fdd2f402e287492ce426b</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const std::vector&lt; Output_ * &gt; &amp;output, const GroupMedianOptions &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
       <name>group_median</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a34a64e23fbbb053cf65ff2c056ff2623</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupMedianOptions &amp;opt)</arglist>
+      <anchor>a75692b387c1dce5d088622d186a09ae7</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const GroupMedianOptions &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a2e4d42da372e937273f77cd2d60f3940</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const Count_ *const group_size, GroupRssBuffers&lt; Output_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
+      <anchor>a541d213467a852dab0d29846936f4e10</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const Count_ *const group_size, const GroupRssBuffers&lt; Output_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>abb385340865f5cf7583b0f6095c4e68b</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
+      <anchor>a65275566eb5c414a28f74b38c88e99f8</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const GroupRssBuffers&lt; Output_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>GroupRssResult&lt; Output_ &gt;</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a497be61329fd13492fdd0e5d6f2479b1</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
+      <anchor>ab01051a4cd85cc05d86825ef23b5ce4f</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>group_sum</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a914d2af37165ace4dcbe0a54ee065fd7</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, std::vector&lt; Output_ * &gt; &amp;output, const GroupSumOptions &amp;opt)</arglist>
+      <anchor>a2bb6cf660ec7720844709aa98bf01039</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const Group_ num_groups, const std::vector&lt; Output_ * &gt; &amp;output, const GroupSumOptions &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; std::vector&lt; Output_ &gt; &gt;</type>
       <name>group_sum</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>aed9cbd9b45cde860ce180bd21760d3e9</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const std::size_t num_groups, const GroupSumOptions &amp;opt)</arglist>
+      <anchor>a5e1a037ca9e62475cc2710fd1399b16d</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *group, const Group_ num_groups, const GroupSumOptions &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>group_variance</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a407ba058750615bd33292afccc38e94e</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const Count_ *const group_size, GroupVarianceBuffers&lt; Output_ &gt; &amp;output, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
+      <anchor>a563f4e83e18560c180b2beeaa81a4302</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const Count_ *const group_size, const GroupVarianceBuffers&lt; Output_ &gt; &amp;output, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>group_variance</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a51a5db1a1eb13f26ddbf98657170f993</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupVarianceBuffers&lt; Output_ &gt; &amp;output, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
+      <anchor>a49ee64668a9d4fe78c058f35ce46d8e2</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const GroupVarianceBuffers&lt; Output_ &gt; &amp;output, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>GroupVarianceResult&lt; Output_ &gt;</type>
       <name>group_variance</name>
       <anchorfile>namespacetatami__stats.html</anchorfile>
-      <anchor>a15f35a5d06273df23b939ffc7af35133</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
+      <anchor>a1bf428692ccc27d5547b39321114d10b</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const GroupVarianceOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
@@ -995,15 +995,15 @@
       <type>void</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
-      <anchor>a12106828e9083d4c4087f88bf6590c9d</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_, Count_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
+      <anchor>ab7cb5ec02aa0f1168783f26e533e86e4</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const GroupRssBuffers&lt; Output_, Count_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>GroupRssResult&lt; Output_, Count_ &gt;</type>
       <name>group_rss</name>
       <anchorfile>namespacetatami__stats_1_1skip__nan.html</anchorfile>
-      <anchor>a09b461cff77987ff0a6ca2f7a4c58700</anchor>
-      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
+      <anchor>aec614d68289623c6ea1ce0cd4eb8c200</anchor>
+      <arglist>(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</arglist>
     </member>
     <member kind="function">
       <type>constexpr Output_</type>

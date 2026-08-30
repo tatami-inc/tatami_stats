@@ -149,8 +149,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> row,</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat, </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">const</span> Group_* <span class="keyword">const</span> group, </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">const</span> std::size_t num_groups, </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html">GroupRssBuffers&lt;Output_, Count_&gt;</a>&amp; output,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">const</span> Group_ num_groups, </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html">GroupRssBuffers&lt;Output_, Count_&gt;</a>&amp; output,</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html">GroupRssOptions&lt;Output_&gt;</a>&amp; opt</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>) {</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
@@ -185,7 +185,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                        ++cur_sizes[b];</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                    }</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                }</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                    <span class="keyword">const</span> <span class="keyword">auto</span> actual_size = full_group_sizes[g] - cur_sizes[g];</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                    cur_sizes[g] = actual_size;</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                    output.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html#aebf25a6f448be6282df1f416f0b4863d">count</a>[g][s + x] = actual_size;</div>
@@ -201,7 +201,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                        cur_rss[g] += delta * delta;</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                    }</div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                }</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                    <span class="keywordflow">if</span> (cur_sizes[g] &gt; 0) { <span class="comment">// preserve RSS = 0 for empty groups, otherwise placeholder mean might cause problems.</span></div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                        <span class="keyword">const</span> Output_ my_rss = cur_rss[g] + cur_means[g] * cur_means[g] * (cur_sizes[g] - cur_non_zeros[g]);</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                        output.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html#aa12832c80f97bc73cafd155648546732">rss</a>[g][s + x] = my_rss;</div>
@@ -237,7 +237,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                        ++cur_sizes[g];</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                    }</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                }</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                    output.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html#aebf25a6f448be6282df1f416f0b4863d">count</a>[g][s + x] = cur_sizes[g];</div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                }</div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                group_rss_finish_means(num_groups, cur_sizes.data(), cur_means, <span class="keyword">static_cast&lt;</span>Index_<span class="keyword">&gt;</span>(s + x), output.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html#a4e0c9aa61cdad1a0abfb192c4c6c6e0a">mean</a>, opt.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html#a33b4dccecbb33b2f69811326bf3e85ef">mean_placeholder</a>);</div>
@@ -251,7 +251,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                        cur_rss[g] += delta * delta;</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                    }</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                }</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                    output.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html#aa12832c80f97bc73cafd155648546732">rss</a>[g][s + x] = cur_rss[g];</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                }</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
@@ -268,24 +268,24 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> row,</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat,</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keyword">const</span> Group_* <span class="keyword">const</span> group, </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keyword">const</span> std::size_t num_groups, </div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    GroupRssBuffers&lt;Output_, Count_&gt;&amp; output,</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keyword">const</span> Group_ num_groups, </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keyword">const</span> GroupRssBuffers&lt;Output_, Count_&gt;&amp; output,</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keyword">const</span> GroupRssOptions&lt;Output_&gt;&amp; opt</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>) {</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        std::fill_n(output.rss[g], dim, 0);</div>
 <div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        std::fill_n(output.count[g], dim, 0);</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    }</div>
 <div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keyword">const</span> <span class="keyword">auto</span> otherdim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>());</div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">if</span> (otherdim == 0) {</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            std::fill_n(output.mean[g], dim, opt.mean_placeholder);</div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        }</div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keywordflow">return</span>; </div>
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            std::fill_n(output.mean[g], dim, 0);</div>
 <div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        }</div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    }</div>
@@ -349,7 +349,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            <span class="keyword">auto</span> vbuffer = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size&lt;std::vector&lt;Value_&gt;</a> &gt;(dim);</div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>            <span class="keyword">auto</span> ibuffer = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#ada885a7e7ae9dcafcaf98cde30622afc">tatami::create_container_of_Index_size&lt;std::vector&lt;Index_&gt;</a> &gt;(dim);</div>
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            <span class="keyword">auto</span> nonzeros = sanisizer::create&lt;std::vector&lt;std::vector&lt;Count_&gt; &gt; &gt;(num_groups);</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a>(nonzeros[g], dim);</div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            }</div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
@@ -376,7 +376,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>                }</div>
 <div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            }</div>
 <div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span> </div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>            <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>            <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>                <span class="keyword">const</span> <span class="keyword">auto</span> mptr = mean_ptrs[g];</div>
 <div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>                <span class="keyword">const</span> <span class="keyword">auto</span> rptr = rss_ptrs[g];</div>
 <div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>                <span class="keyword">const</span> <span class="keyword">auto</span> cptr = count_ptrs[g];</div>
@@ -427,7 +427,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; ap_rss = *all_partial_rss;</div>
 <div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; ap_count = *all_partial_count;</div>
 <div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span> </div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>            <span class="keyword">const</span> <span class="keyword">auto</span> cur_global_count = output.count[g];</div>
 <div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> u = 0; u &lt; nused; ++u) {</div>
 <div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; cur_count = (*(ap_count[u]))[g];</div>
@@ -439,7 +439,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        }</div>
 <div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span> </div>
 <div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        <span class="comment">// Computing the global mean.</span></div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>            <span class="keyword">const</span> <span class="keyword">auto</span> cur_global_count = output.count[g];</div>
 <div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>            <span class="keyword">const</span> <span class="keyword">auto</span> cur_global_mean = output.mean[g];</div>
 <div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span> </div>
@@ -458,7 +458,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span> </div>
 <div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>        <span class="comment">// Combining the RSS. We need to use the safe variant of recenter_rss(), just to protect against the</span></div>
 <div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        <span class="comment">// case where a group has no observations within a particular thread. </span></div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>            <span class="keyword">const</span> <span class="keyword">auto</span> cur_global_mean = output.mean[g];</div>
 <div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>            <span class="keyword">const</span> <span class="keyword">auto</span> cur_output = output.rss[g];</div>
 <div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> u = 0; u &lt; nused; ++u) {</div>
@@ -480,7 +480,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        }</div>
 <div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>    }</div>
 <div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span> </div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>        <span class="keyword">const</span> <span class="keyword">auto</span> mptr = output.mean[g];</div>
 <div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>        <span class="keyword">const</span> <span class="keyword">auto</span> cptr = output.count[g];</div>
 <div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>        <span class="keywordflow">for</span> (Index_ d = 0; d &lt; dim; ++d) {</div>
@@ -492,12 +492,12 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>}</div>
 <div class="line"><a id="l00453" name="l00453"></a><span class="lineno">  453</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Group_, <span class="keyword">typename</span> Output_, <span class="keyword">typename</span> Count_&gt;</div>
 <div class="foldopen" id="foldopen00454" data-start="{" data-end="}">
-<div class="line"><a id="l00454" name="l00454"></a><span class="lineno"><a class="line" href="namespacetatami__stats_1_1skip__nan.html#a12106828e9083d4c4087f88bf6590c9d">  454</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacetatami__stats_1_1skip__nan.html#a12106828e9083d4c4087f88bf6590c9d">group_rss</a>(</div>
+<div class="line"><a id="l00454" name="l00454"></a><span class="lineno"><a class="line" href="namespacetatami__stats_1_1skip__nan.html#ab7cb5ec02aa0f1168783f26e533e86e4">  454</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacetatami__stats_1_1skip__nan.html#ab7cb5ec02aa0f1168783f26e533e86e4">group_rss</a>(</div>
 <div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>    <span class="keywordtype">bool</span> row,</div>
 <div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat,</div>
 <div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span>    <span class="keyword">const</span> Group_* <span class="keyword">const</span> group,</div>
-<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>    <span class="keyword">const</span> std::size_t num_groups,</div>
-<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span>    <a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html">GroupRssBuffers&lt;Output_, Count_&gt;</a>&amp; output,</div>
+<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>    <span class="keyword">const</span> Group_ num_groups,</div>
+<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html">GroupRssBuffers&lt;Output_, Count_&gt;</a>&amp; output,</div>
 <div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html">GroupRssOptions&lt;Output_&gt;</a>&amp; opt</div>
 <div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span>) {</div>
 <div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span>    assert(sanisizer::is_equal(num_groups, output.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html#a4e0c9aa61cdad1a0abfb192c4c6c6e0a">mean</a>.size()));</div>
@@ -524,11 +524,11 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span> </div>
 <div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Output_, <span class="keyword">typename</span> Count_, <span class="keyword">typename</span> Value_, <span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Group_&gt; </div>
 <div class="foldopen" id="foldopen00524" data-start="{" data-end="}">
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno"><a class="line" href="namespacetatami__stats_1_1skip__nan.html#a09b461cff77987ff0a6ca2f7a4c58700">  524</a></span><a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssResult.html">GroupRssResult&lt;Output_, Count_&gt;</a> <a class="code hl_function" href="namespacetatami__stats_1_1skip__nan.html#a12106828e9083d4c4087f88bf6590c9d">group_rss</a>(</div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno"><a class="line" href="namespacetatami__stats_1_1skip__nan.html#aec614d68289623c6ea1ce0cd4eb8c200">  524</a></span><a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssResult.html">GroupRssResult&lt;Output_, Count_&gt;</a> <a class="code hl_function" href="namespacetatami__stats_1_1skip__nan.html#ab7cb5ec02aa0f1168783f26e533e86e4">group_rss</a>(</div>
 <div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>    <span class="keywordtype">bool</span> row,</div>
 <div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html">tatami::Matrix&lt;Value_, Index_&gt;</a>&amp; mat,</div>
 <div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>    <span class="keyword">const</span> Group_* <span class="keyword">const</span> group,</div>
-<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>    <span class="keyword">const</span> std::size_t num_groups,</div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>    <span class="keyword">const</span> Group_ num_groups,</div>
 <div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssOptions.html">GroupRssOptions&lt;Output_&gt;</a>&amp; opt</div>
 <div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>) {</div>
 <div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>    <a class="code hl_struct" href="structtatami__stats_1_1skip__nan_1_1GroupRssResult.html">GroupRssResult&lt;Output_, Count_&gt;</a> output;</div>
@@ -542,7 +542,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>    sanisizer::resize(buffers.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html#aebf25a6f448be6282df1f416f0b4863d">count</a>, num_groups);</div>
 <div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span> </div>
 <div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>    <span class="keyword">const</span> <span class="keyword">auto</span> dim = (row ? mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a54fe7b4baf78069d35ff00357a1b6cc6">nrow</a>() : mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#a1f6fec43d5bae3f831841646bc02377b">ncol</a>());</div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>    <span class="keywordflow">for</span> (std::size_t g = 0; g &lt; num_groups; ++g) {</div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>    <span class="keywordflow">for</span> (Group_ g = 0; g &lt; num_groups; ++g) {</div>
 <div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>        <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a>(output.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssResult.html#af455e506de8da25ff67f66a14facc791">mean</a>[g], dim</div>
 <div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>#ifdef TATAMI_STATS_TEST_DIRTY</div>
 <div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>            , -1</div>
@@ -565,7 +565,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>        buffers.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssBuffers.html#aebf25a6f448be6282df1f416f0b4863d">count</a>[g] = output.<a class="code hl_variable" href="structtatami__stats_1_1skip__nan_1_1GroupRssResult.html#aca76737a3d38ed37a410ac3e9d5dc585">count</a>[g].data();</div>
 <div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>    }</div>
 <div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span> </div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>    <a class="code hl_function" href="namespacetatami__stats_1_1skip__nan.html#a12106828e9083d4c4087f88bf6590c9d">group_rss</a>(row, mat, group, num_groups, buffers, opt);</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>    <a class="code hl_function" href="namespacetatami__stats_1_1skip__nan.html#ab7cb5ec02aa0f1168783f26e533e86e4">group_rss</a>(row, mat, group, num_groups, buffers, opt);</div>
 <div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>    <span class="keywordflow">return</span> output;</div>
 <div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>}</div>
 </div>
@@ -587,8 +587,8 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="anamespacequickstats_html_addf99f3c0f16a9bb7690e801ab33f84c"><div class="ttname"><a href="https://ltla.github.io/quickstats/namespacequickstats.html#addf99f3c0f16a9bb7690e801ab33f84c">quickstats::nan_if_available_else_zero</a></div><div class="ttdeci">constexpr Value_ nan_if_available_else_zero()</div></div>
 <div class="ttc" id="anamespacequickstats_html_ae0771a2a6576095f4e40e8b12fbd7fea"><div class="ttname"><a href="https://ltla.github.io/quickstats/namespacequickstats.html#ae0771a2a6576095f4e40e8b12fbd7fea">quickstats::update_rss_with_zeros</a></div><div class="ttdeci">void update_rss_with_zeros(Output_ &amp;mean, Output_ &amp;rss, const Count_ num_zeros, const Count_ num_total)</div></div>
 <div class="ttc" id="anamespacequickstats_html_aeec4c4524e73f23911b5a4430c184286"><div class="ttname"><a href="https://ltla.github.io/quickstats/namespacequickstats.html#aeec4c4524e73f23911b5a4430c184286">quickstats::update_rss</a></div><div class="ttdeci">void update_rss(Output_ &amp;mean, Output_ &amp;rss, const Input_ value, const Count_ num_total)</div></div>
-<div class="ttc" id="anamespacetatami__stats_1_1skip__nan_html_a12106828e9083d4c4087f88bf6590c9d"><div class="ttname"><a href="namespacetatami__stats_1_1skip__nan.html#a12106828e9083d4c4087f88bf6590c9d">tatami_stats::skip_nan::group_rss</a></div><div class="ttdeci">void group_rss(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const std::size_t num_groups, GroupRssBuffers&lt; Output_, Count_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</div><div class="ttdef"><b>Definition</b> group_rss.hpp:454</div></div>
 <div class="ttc" id="anamespacetatami__stats_1_1skip__nan_html_a38eaa26c1b9f40ec442455351904b6dc"><div class="ttname"><a href="namespacetatami__stats_1_1skip__nan.html#a38eaa26c1b9f40ec442455351904b6dc">tatami_stats::skip_nan::range</a></div><div class="ttdeci">void range(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, RangeBuffers&lt; Output_, Count_ &gt; &amp;output, const RangeOptions&lt; Output_ &gt; &amp;opt)</div><div class="ttdef"><b>Definition</b> range.hpp:425</div></div>
+<div class="ttc" id="anamespacetatami__stats_1_1skip__nan_html_ab7cb5ec02aa0f1168783f26e533e86e4"><div class="ttname"><a href="namespacetatami__stats_1_1skip__nan.html#ab7cb5ec02aa0f1168783f26e533e86e4">tatami_stats::skip_nan::group_rss</a></div><div class="ttdeci">void group_rss(bool row, const tatami::Matrix&lt; Value_, Index_ &gt; &amp;mat, const Group_ *const group, const Group_ num_groups, const GroupRssBuffers&lt; Output_, Count_ &gt; &amp;output, const GroupRssOptions&lt; Output_ &gt; &amp;opt)</div><div class="ttdef"><b>Definition</b> group_rss.hpp:454</div></div>
 <div class="ttc" id="anamespacetatami__stats_html"><div class="ttname"><a href="namespacetatami__stats.html">tatami_stats</a></div><div class="ttdoc">Functions to compute statistics from a tatami::Matrix.</div><div class="ttdef"><b>Definition</b> count.hpp:21</div></div>
 <div class="ttc" id="anamespacetatami_html_a61b43d2b751c7fcca6815f3be929d4d3"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/namespacetatami.html#a61b43d2b751c7fcca6815f3be929d4d3">tatami::resize_container_to_Index_size</a></div><div class="ttdeci">void resize_container_to_Index_size(Container_ &amp;container, const Index_ x, Args_ &amp;&amp;... args)</div></div>
 <div class="ttc" id="anamespacetatami_html_a9c3979c60e3d7e066be533f7ee3a2f97"><div class="ttname"><a href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a></div><div class="ttdeci">int parallelize(Function_ fun, const Index_ tasks, const int workers)</div></div>
