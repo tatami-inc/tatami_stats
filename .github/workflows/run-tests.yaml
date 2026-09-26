@@ -31,7 +31,7 @@ jobs:
         - {
             name: "macOS Latest Clang, release", 
             os: macos-latest,
-            release: false
+            release: true 
           }
 
     steps:

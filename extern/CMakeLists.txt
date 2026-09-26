@@ -19,12 +19,6 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-  auveh
-  GIT_REPOSITORY https://github.com/LTLA/auveh
-  GIT_TAG master # ^0.1.0
-)
-
-FetchContent_Declare(
   jiwoo
   GIT_REPOSITORY https://github.com/LTLA/jiwoo
   GIT_TAG master # ^0.1.0
@@ -33,5 +27,4 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tatami)
 FetchContent_MakeAvailable(sanisizer)
 FetchContent_MakeAvailable(quickstats)
-FetchContent_MakeAvailable(auveh)
 FetchContent_MakeAvailable(jiwoo)

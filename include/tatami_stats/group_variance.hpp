@@ -132,7 +132,6 @@ void group_variance(
             for (Group_ g = 0; g < num_groups; ++g) {
                 const auto outvar = output.variance[g];
                 const auto curcounts = count[g];
-                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     if (curcounts[d] <= 1) {
                         outvar[d] = opt.variance_placeholder;
@@ -158,7 +157,6 @@ void group_variance(
                 if (gsize <= 1) {
                     std::fill_n(outvar, dim, opt.variance_placeholder);
                 } else {
-                    AUVEH_NODEP
                     for (Index_ d = 0; d < dim; ++d) {
                         outvar[d] /= gsize - 1;
                     }

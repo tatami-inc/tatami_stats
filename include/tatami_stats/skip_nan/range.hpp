@@ -279,7 +279,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
 
                 // For the first observed vector in each thread, we can optimize it a little as we don't need to read existing min/max.
                 if (x == 0) {
-                    AUVEH_NODEP
                     for (Index_ i = 0; i < out.number; ++i) {
                         const auto val = out.value[i];
                         const auto idx = out.index[i];
@@ -294,7 +293,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                         ++nonzeros[idx];
                     }
                 } else {
-                    AUVEH_NODEP
                     for (Index_ i = 0; i < out.number; ++i) {
                         const auto val = out.value[i];
                         const auto idx = out.index[i];
@@ -315,7 +313,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                 }
             }
 
-            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 if (l > nonzeros[d]) {
                     count_ptr[d] += l - nonzeros[d];
@@ -336,7 +333,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                 if (x == 0) {
                     // For the first observed vector in each thread,
                     // we can optimize it a little as we don't need to read existing min/max.
-                    AUVEH_NODEP
                     for (Index_ i = 0; i < dim; ++i) {
                         const auto val = ptr[i];
                         if (!std::isnan(val)) {
@@ -349,7 +345,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                         }
                     }
                 } else {
-                    AUVEH_NODEP
                     for (Index_ i = 0; i < dim; ++i) {
                         const auto val = ptr[i];
                         if (!std::isnan(val)) {
@@ -383,7 +378,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
             const auto& cur_min = *((*all_partial_min)[u - 1]);
             const auto& cur_max = *((*all_partial_max)[u - 1]);
             const auto& cur_count = *((*all_partial_count)[u - 1]);
-            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 if (!cur_count[d]) {
                     continue;

@@ -244,7 +244,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                         std::fill_n(min_ptr, dim, 0);
                         std::fill_n(max_ptr, dim, 0);
                     }
-                    AUVEH_NODEP
                     for (Index_ i = 0; i < out.number; ++i) {
                         const auto val = out.value[i];
                         const auto idx = out.index[i];
@@ -252,12 +251,11 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                         max_ptr[idx] = val;
                     }
                 } else {
-                    AUVEH_NODEP
                     for (Index_ i = 0; i < out.number; ++i) {
                         const auto val = out.value[i];
                         const auto idx = out.index[i];
                         auto& min_current = min_ptr[idx];
-                        min_current = std::min(min_current, val); // using min/max as this is more easily vectorizable by the compiler.
+                        min_current = std::min(min_current, val);
                         auto& max_current = max_ptr[idx];
                         max_current = std::max(max_current, val);
                         ++nonzeros[idx];
@@ -265,7 +263,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                 }
             }
 
-            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 if (l > nonzeros[d]) {
                     auto& min_current = min_ptr[d];
@@ -287,11 +284,10 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
                     std::copy_n(ptr, dim, min_ptr);
                     std::copy_n(ptr, dim, max_ptr);
                 } else {
-                    AUVEH_NODEP
                     for (Index_ i = 0; i < dim; ++i) {
                         const auto val = ptr[i];
                         auto& min_current = min_ptr[i];
-                        min_current = std::min(min_current, val); // min/max is more easily vectorizable.
+                        min_current = std::min(min_current, val);
                         auto& max_current = max_ptr[i];
                         max_current = std::max(max_current, val);
                     }
@@ -311,7 +307,6 @@ void range_running(bool row, const tatami::Matrix<Value_, Index_>& mat, RangeBuf
         for (int u = 1; u < nused; ++u) {
             const auto& cur_min = *((*all_partial_min)[u - 1]);
             const auto& cur_max = *((*all_partial_max)[u - 1]);
-            AUVEH_NODEP
             for (Index_ d = 0; d < dim; ++d) {
                 // All threads would have processed at least one element,
                 // so we don't have to worry about dirty input buffers.

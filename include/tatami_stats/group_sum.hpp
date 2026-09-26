@@ -10,7 +10,6 @@
 
 #include "tatami/tatami.hpp"
 #include "sanisizer/sanisizer.hpp"
-#include "auveh/auveh.hpp"
 #include "jiwoo/jiwoo.hpp"
 
 /**
@@ -181,16 +180,12 @@ void group_sum_running(
                 nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
-                        AUVEH_NODEP
                         for (Index_ i = 0; i < range.number; ++i) {
                             const auto val = range.value[i];
-                            if (!std::isnan(val)) {
-                                sum_ptr[range.index[i]] += val;
-                            }
+                            sum_ptr[range.index[i]] += (std::isnan(val) ? 0 : val); // slightly nicer for vectorization.
                         }
                     },
                     [&]() -> void {
-                        AUVEH_NODEP
                         for (Index_ i = 0; i < range.number; ++i) {
                             sum_ptr[range.index[i]] += range.value[i];
                         }
@@ -209,16 +204,12 @@ void group_sum_running(
                 nanable_ifelse<Value_>(
                     opt.skip_nan,
                     [&]() -> void {
-                        AUVEH_NODEP
                         for (Index_ d = 0; d < dim; ++d) {
                             const auto val = ptr[d];
-                            if (!std::isnan(val)) {
-                                sum_ptr[d] += val;
-                            }
+                            sum_ptr[d] += (std::isnan(val) ? 0 : val); // slightly nicer for vectorization.
                         }
                     },
                     [&]() -> void {
-                        AUVEH_NODEP
                         for (Index_ d = 0; d < dim; ++d) {
                             sum_ptr[d] += ptr[d];
                         }
@@ -239,7 +230,6 @@ void group_sum_running(
             const auto cur_out = output[g];
             for (int u = 1; u < nused; ++u) {
                 const auto cur_sum = (*((*all_partial_sums)[u - 1]))[g];
-                AUVEH_NODEP
                 for (Index_ d = 0; d < dim; ++d) {
                     cur_out[d] += cur_sum[d];
                 }

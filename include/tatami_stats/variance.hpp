@@ -112,7 +112,6 @@ void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffe
             ropt.mean_placeholder = opt.mean_placeholder;
             skip_nan::rss(row, mat, tmp, ropt);
 
-            AUVEH_NODEP
             for (Index_ i = 0; i < dim; ++i) {
                 if (count[i] <= 1) {
                     output.variance[i] = opt.variance_placeholder;
@@ -135,7 +134,6 @@ void variance(bool row, const tatami::Matrix<Value_, Index_>& mat, VarianceBuffe
             if (otherdim <= 1) {
                 std::fill_n(output.variance, dim, opt.variance_placeholder);
             } else {
-                AUVEH_NODEP
                 for (Index_ i = 0; i < dim; ++i) {
                     output.variance[i] /= otherdim - 1;
                 }
