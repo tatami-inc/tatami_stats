@@ -203,7 +203,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    std::fill_n(output.rss, dim, 0);</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> is_sparse = mat.<a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/classtatami_1_1Matrix.html#ac57d65707ce22d8c175e43a82b8c6b90">is_sparse</a>();</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> nused = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a>([&amp;,dim](<span class="keywordtype">int</span> thread, Index_ s, Index_ l) -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> nused = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a>([&amp;](<span class="keywordtype">int</span> thread, Index_ s, Index_ l) -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        Output_* rss_ptr;</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        Output_* mean_ptr;</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        std::optional&lt;std::vector&lt;Output_&gt; &gt; cur_rss, cur_mean;</div>
@@ -244,7 +244,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            }</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            AUVEH_NODEP</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            <span class="keywordflow">for</span> (Index_ d = 0; d &lt; dim; ++d) {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            <span class="keywordflow">for</span> (Index_ d = 0, dimcopy = dim; d &lt; dimcopy; ++d) { <span class="comment">// make a copy of &#39;dim&#39; to help clang vectorize inside a lambda.</span></div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                <span class="comment">// otherdim &gt; 0 is guaranteed, so we can use the unsafe version.</span></div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                <a class="code hl_functionRef" href="https://ltla.github.io/quickstats/namespacequickstats.html#a7a1f48b44e913f31abcc368e96b19a57">quickstats::update_rss_with_zeros_unsafe</a>(mean_ptr[d], rss_ptr[d], <span class="keyword">static_cast&lt;</span>Index_<span class="keyword">&gt;</span>(l - nonzeros[d]), l);</div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            }</div>
@@ -256,7 +256,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keywordflow">for</span> (Index_ x = 0; x &lt; l; ++x) {</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                <span class="keyword">auto</span> out = ext-&gt;fetch(buffer.data());</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                AUVEH_NODEP</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                <span class="keywordflow">for</span> (Index_ d = 0; d &lt; dim; ++d) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                <span class="keywordflow">for</span> (Index_ d = 0, dimcopy = dim; d &lt; dimcopy; ++d) { <span class="comment">// make a copy of &#39;dim&#39; to help clang vectorize inside a lambda.</span></div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                    <a class="code hl_functionRef" href="https://ltla.github.io/quickstats/namespacequickstats.html#aeec4c4524e73f23911b5a4430c184286">quickstats::update_rss</a>(mean_ptr[d], rss_ptr[d], out[d], x + 1); <span class="comment">// increment is safe as &#39; x + 1 &lt;= l&#39; fits in an Index_.</span></div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                }</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            }</div>
