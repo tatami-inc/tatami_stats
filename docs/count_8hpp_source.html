@@ -185,7 +185,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    std::fill_n(output, dim, 0);</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> num_used = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a>([&amp;](<span class="keywordtype">int</span> thread, Index_ start, Index_ len) -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> num_used = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a>([&amp;,dim](<span class="keywordtype">int</span> thread, Index_ start, Index_ len) -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        Output_* out_ptr; </div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        std::optional&lt;std::vector&lt;Output_&gt; &gt; cur_count;</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">if</span> (!do_parallel) {</div>

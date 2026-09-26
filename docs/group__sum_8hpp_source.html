@@ -264,7 +264,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                    opt.skip_nan,</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                    [&amp;,range]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                        AUVEH_NODEP</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                        for (Index_ i = 0; i &lt; range.number; ++i) {</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                            const auto val = range.value[i];</div>
@@ -273,7 +273,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                            }</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                        }</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                    },</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                    [&amp;,<a class="code hl_function" href="namespacetatami__stats.html#a45b25bcbc2633a1936db754d80b5ed75">range</a>]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                        AUVEH_NODEP</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                        <span class="keywordflow">for</span> (Index_ i = 0; i &lt; <a class="code hl_function" href="namespacetatami__stats.html#a45b25bcbc2633a1936db754d80b5ed75">range</a>.number; ++i) {</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                            sum_ptr[<a class="code hl_function" href="namespacetatami__stats.html#a45b25bcbc2633a1936db754d80b5ed75">range</a>.index[i]] += <a class="code hl_function" href="namespacetatami__stats.html#a45b25bcbc2633a1936db754d80b5ed75">range</a>.value[i];</div>
@@ -292,7 +292,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                nanable_ifelse&lt;Value_&gt;(</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                    opt.skip_nan,</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>                    [&amp;,dim]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>                        AUVEH_NODEP</div>
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>                        for (Index_ d = 0; d &lt; dim; ++d) {</div>
 <div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                            const auto val = ptr[d];</div>
@@ -301,7 +301,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                            }</div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                        }</div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                    },</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                    [&amp;]() -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                    [&amp;,dim]() -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>                        AUVEH_NODEP</div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>                        <span class="keywordflow">for</span> (Index_ d = 0; d &lt; dim; ++d) {</div>
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>                            sum_ptr[d] += ptr[d];</div>

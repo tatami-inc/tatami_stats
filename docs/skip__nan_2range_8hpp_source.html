@@ -290,7 +290,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        std::fill_n(output.maximum, dim, 0);</div>
 <div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    }</div>
 <div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nused = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a>([&amp;](<span class="keywordtype">int</span> thread, Index_ s, Index_ l) -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nused = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a>([&amp;,dim](<span class="keywordtype">int</span> thread, Index_ s, Index_ l) -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        Output_* min_ptr;</div>
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        Output_* max_ptr;</div>
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        Count_* count_ptr;</div>
