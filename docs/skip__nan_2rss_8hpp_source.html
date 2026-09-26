@@ -212,7 +212,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        all_partial_count.emplace(sanisizer::cast&lt;I&lt;<span class="keyword">decltype</span>(all_partial_mean-&gt;size())&gt; &gt;(opt.num_threads));</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    }</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> nused = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a>([&amp;,dim](<span class="keywordtype">int</span> thread, Index_ s, Index_ l) -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> nused = <a class="code hl_functionRef" href="https://tatami-inc.github.io/tatami/namespacetatami.html#a9c3979c60e3d7e066be533f7ee3a2f97">tatami::parallelize</a>([&amp;](<span class="keywordtype">int</span> thread, Index_ s, Index_ l) -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        Output_* rss_ptr;</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        Output_* mean_ptr;</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        Count_* count_ptr;</div>
@@ -262,7 +262,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            }</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            AUVEH_NODEP</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keywordflow">for</span> (Index_ d = 0, dimcopy = d; d &lt; dimcopy; ++d) { <span class="comment">// make a copy of &#39;dim&#39; to help clang vectorize inside a lambda.</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keywordflow">for</span> (Index_ d = 0, dimcopy = dim; d &lt; dimcopy; ++d) { <span class="comment">// make a copy of &#39;dim&#39; to help clang vectorize inside a lambda.</span></div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                <span class="keyword">auto</span>&amp; unskipped_total = count_ptr[d];</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                unskipped_total = l - unskipped_total; <span class="comment">// could be zero, so the update with zeros needs to be safe.</span></div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                <a class="code hl_functionRef" href="https://ltla.github.io/quickstats/namespacequickstats.html#ae0771a2a6576095f4e40e8b12fbd7fea">quickstats::update_rss_with_zeros</a>(mean_ptr[d], rss_ptr[d], <span class="keyword">static_cast&lt;</span>Count_<span class="keyword">&gt;</span>(unskipped_total - nonzeros[d]), unskipped_total);</div>
