@@ -20,6 +20,11 @@ jobs:
             cov: true
           }
         - {
+            name: "Ubuntu Latest GCC, debug, force copy", 
+            os: ubuntu-latest,
+            force-copy: true
+          }
+        - {
             name: "Ubuntu Latest GCC, release", 
             os: ubuntu-latest,
             release: true
@@ -52,6 +57,10 @@ jobs:
       if: ${{ matrix.config.cov }}
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON 
 
+    - name: Configure debug Linux build with forced copies
+      if: ${{ matrix.config.force-copy }}
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DFORCE_COPY=ON 
+
     - name: Run the build
       run: cmake --build build
 
@@ -60,7 +69,7 @@ jobs:
         cd build/tests
         # Avoid using ctest because it's so slow; it starts a
         # new process for each individual test, which is crazy.
-        for exe in $(ctest --show-only=json-v1 | jq -r ".tests[] | .command | .[0]"  | sort | uniq)
+        for exe in $(ls *_test)
         do
             echo "#### RUNNING ${exe} ####"
             echo 

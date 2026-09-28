@@ -14,6 +14,8 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(DO_CODE_COVERAGE ON)
 endif()
 
+set(FORCE_COPY OFF CACHE BOOL "Force copy to buffers in fetch()")
+
 macro(make_test target)
     add_executable(
         ${target}
@@ -40,6 +42,10 @@ macro(make_test target)
     )
 
     target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
+    if (FORCE_COPY)
+        target_compile_definitions(${target} PRIVATE TATAMI_DEBUG_FORCE_COPY=1)
+    endif()
 
     if(DO_CODE_COVERAGE)
         target_compile_options(${target} PRIVATE -O0 -g --coverage)
