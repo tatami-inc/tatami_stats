@@ -15,25 +15,6 @@
     <namespace>tatami_stats</namespace>
   </compound>
   <compound kind="file">
-    <name>group_rss.hpp</name>
-    <path>tatami_stats/</path>
-    <filename>group__rss_8hpp.html</filename>
-    <class kind="struct">tatami_stats::GroupRssOptions</class>
-    <class kind="struct">tatami_stats::GroupRssBuffers</class>
-    <class kind="struct">tatami_stats::GroupRssResult</class>
-    <namespace>tatami_stats</namespace>
-  </compound>
-  <compound kind="file">
-    <name>group_rss.hpp</name>
-    <path>tatami_stats/skip_nan/</path>
-    <filename>skip__nan_2group__rss_8hpp.html</filename>
-    <class kind="struct">tatami_stats::skip_nan::GroupRssOptions</class>
-    <class kind="struct">tatami_stats::skip_nan::GroupRssBuffers</class>
-    <class kind="struct">tatami_stats::skip_nan::GroupRssResult</class>
-    <namespace>tatami_stats</namespace>
-    <namespace>tatami_stats::skip_nan</namespace>
-  </compound>
-  <compound kind="file">
     <name>group_sum.hpp</name>
     <path>tatami_stats/</path>
     <filename>group__sum_8hpp.html</filename>
@@ -79,6 +60,25 @@
     <class kind="struct">tatami_stats::skip_nan::RangeOptions</class>
     <class kind="struct">tatami_stats::skip_nan::RangeBuffers</class>
     <class kind="struct">tatami_stats::skip_nan::RangeResult</class>
+    <namespace>tatami_stats</namespace>
+    <namespace>tatami_stats::skip_nan</namespace>
+  </compound>
+  <compound kind="file">
+    <name>group_rss.hpp</name>
+    <path>tatami_stats/</path>
+    <filename>group__rss_8hpp.html</filename>
+    <class kind="struct">tatami_stats::GroupRssOptions</class>
+    <class kind="struct">tatami_stats::GroupRssBuffers</class>
+    <class kind="struct">tatami_stats::GroupRssResult</class>
+    <namespace>tatami_stats</namespace>
+  </compound>
+  <compound kind="file">
+    <name>group_rss.hpp</name>
+    <path>tatami_stats/skip_nan/</path>
+    <filename>skip__nan_2group__rss_8hpp.html</filename>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssOptions</class>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssBuffers</class>
+    <class kind="struct">tatami_stats::skip_nan::GroupRssResult</class>
     <namespace>tatami_stats</namespace>
     <namespace>tatami_stats::skip_nan</namespace>
   </compound>
