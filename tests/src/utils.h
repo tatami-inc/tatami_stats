@@ -1,7 +1,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "gtest/gtest.h"
+
 #include <cmath>
+#include <random>
+#include <algorithm>
+#include <cstddef>
 
 template<class L_, class R_>
 void compare_double_vectors(const L_& left, const R_& right) {
