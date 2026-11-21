@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(tatami_stats
-    VERSION 3.1.0
+project(
+    tatami_stats
+    VERSION 3.1.1
     DESCRIPTION "Matrix statistics for tatami"
     LANGUAGES CXX
 )
@@ -17,7 +18,7 @@ if(TATAMI_STATS_FETCH_EXTERN)
 else()
     find_package(tatami_tatami 4.1.0 CONFIG REQUIRED)
     find_package(ltla_quickstats 0.2.0 CONFIG REQUIRED)
-    find_package(ltla_sanisizer 0.2.0 CONFIG REQUIRED)
+    find_package(ltla_sanisizer 0.3.0 CONFIG REQUIRED)
     find_package(ltla_jiwoo 0.1.0 CONFIG REQUIRED)
 endif()
 
